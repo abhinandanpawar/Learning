@@ -1,0 +1,216 @@
+Agentic Software Factory (ASF)
+
+A lightweight, reproducible framework where you give:
+(a) a short idea brief + (b) tech choices (language, framework, DB).
+Then a team of cooperating AI agents does the rest—autonomously but responsibly—using a structured dialogue between three core roles from the paper: Prompt-Engineer/Planner, Builder/Responder, and Compliance-Guardian. 
+Cell
+ScienceDirect
+Peeref
+
+1) Core roles (the “Responsible Autonomy” triad)
+
+Planner (Prompt Engineer): turns your brief into precise tasks, specs, prompts, and tests; orchestrates tool use & other agents.
+
+Builder (Responder): writes code, schemas, tests, IaC, docs; runs scaffolds & refactors from feedback loops.
+
+Guardian (Compliance): enforces policy: security, privacy, licensing, safety, accessibility, and legal constraints; blocks risky actions and demands fixes before advancing.
+
+This enforced AI-to-AI dialogue with gated decision points is the backbone of “AI serving as its own user,” ensuring autonomy with accountability. 
+Cell
+Peeref
+
+2) Inputs (what you provide)
+
+A single Software Charter (YAML), minimal but decisive:
+
+project:
+  name: ClinicQueue
+  idea_brief: "WhatsApp-based clinic appointment queue + rescheduling."
+tech:
+  language: "Java"
+  framework: "Spring Boot 3"
+  database: "PostgreSQL"
+  frontend: "React + Vite"
+  infra: "Docker, k8s optional"
+non_functional:
+  availability: "99.9%"
+  region: "ap-south-1"
+  compliance: ["GDPR-lite", "PII-minimization"]
+constraints:
+  third_party: ["WhatsApp Cloud API"]
+  budget_tier: "startup"
+
+3) Pipeline (stages & artifacts)
+
+Each stage is a dialogue cycle between Planner ⇄ Builder ⇄ Guardian, ending with a signed decision log.
+
+Intake & Charter → expand brief, derive success metrics, risks, and “Definition of Done”.
+Artifacts: expanded PRD, risk log, guardrail config.
+
+Architecture & Specs → domain model, ADRs, service/API specs (OpenAPI/gRPC), DB schema & migrations.
+Artifacts: /specs, /adr, /db/migrations.
+
+Scaffolding & Codegen → repo skeleton, services, controllers, entities, seed data.
+Artifacts: /services, /domain, /web, /scripts.
+
+Quality & Tests → unit + integration + e2e, security checks, performance budgets.
+Artifacts: /tests, coverage & performance baselines.
+
+DevOps & Environments → Dockerfiles, CI/CD, IaC (optional), secrets policy, preview env.
+Artifacts: /deploy, /ops, pipelines & helm charts (optional).
+
+Docs & Handover → README, runbooks, API docs, changelog, onboarding guide.
+Artifacts: /docs, /docs/runbook.md.
+
+The paper’s principle of structured AI-AI conversation with explicit role separation maps exactly to these gated stages. 
+Cell
+Osuva
+
+4) Dialogue contract (how agents “think together”)
+
+RAICC — Responsible AI Interaction & Compliance Contract:
+
+raicc:
+  steps:
+    - propose: Planner drafts plan/spec or change
+    - build: Builder produces code/artifact + runnable proof (tests/preview)
+    - critique: Planner reviews for correctness & completeness
+    - compliance_gate: Guardian checks security, privacy, license, safety
+    - decide: auto-approve if all green; else loop with actionable diffs
+  evidence_required:
+    - tests_pass
+    - static_analysis_clean
+    - sbom_no_high_vulns
+    - secrets_scan_clean
+    - license_policy_ok
+  logs:
+    - decisions.md
+    - guardian_findings.json
+
+
+This mirrors the paper’s enforced dialogue and responsibility gating to keep autonomy safe and auditable. 
+Cell
+Peeref
+
+5) Guardrails (what “autonomy” is allowed to do)
+
+Allowed: scaffold repos, generate code & tests, run linters, start containers, spin preview envs, generate docs.
+
+Always gated by Guardian: schema changes on prod data, dependency adds, external calls with PII, license changes, infra spend.
+
+Hard stops: secret exfiltration, unsafe prompts, forbidden licenses, policy violations (data residency, retention).
+
+Proof required: unit+integration tests, SBOM diff, secret scan, vulnerability report, policy checklist.
+
+(Aligns with “responsible autonomy” and governance patterns linked from the article’s ecosystem.) 
+ScienceDirect
+
+6) Minimal repo blueprint (language-agnostic)
+repo/
+ ├─ charter.yml
+ ├─ adr/                     # architecture decision records
+ ├─ specs/                   # OpenAPI/grpc/contracts
+ ├─ domain/                  # entities, aggregates, DTOs
+ ├─ services/                # business services
+ ├─ web/                     # controllers/routes
+ ├─ db/                      # migrations/seeds
+ ├─ tests/                   # unit/integration/e2e
+ ├─ ops/                     # Dockerfile, compose, CI/CD, SBOM
+ ├─ docs/                    # runbook, API docs, onboarding
+ └─ governance/              # guardian rules, license allowlist, decision logs
+
+
+Spring Boot variant adds: pom.xml, src/main/java/..., application.yaml.
+Node/NestJS adds: package.json, nest-cli.json. (Builder picks templates automatically from charter.yml.)
+
+7) Quality gates (auto-blocking)
+
+Static analysis: detekt/spotbugs/eslint.
+
+Tests: unit ≥ 85% critical lines; integration smoke on PR; e2e on preview.
+
+Security: SAST, secrets scan, SBOM + dep vulns (fail on High/Critical).
+
+Perf: baseline p95 latency budgets; regression >10% fails.
+
+Docs: updated ADR for architecture-affecting changes.
+
+These are exactly what the Guardian agent enforces before a stage “decide” step. 
+Cell
+
+8) Planner prompt skeletons (ready to paste into your orchestrator)
+
+A. Expand the brief → PRD
+
+You are the Planner. Input: charter.yml. Output: /docs/PRD.md + risks.md.
+Include problem, users, jobs-to-be-done, scope (v1/v-next), success metrics, constraints,
+non-functionals, and acceptance criteria. Ask ZERO questions—infer responsibly and justify.
+
+
+B. From PRD → Architecture
+
+Planner → produce ADRs (adr/), C4 model text, OpenAPI (specs/api.yaml), DB schema with migrations.
+Include trade-offs, capacity planning, data retention, PII map, and error taxonomy.
+
+
+C. Build iteration
+
+Builder → scaffold repo per blueprint; generate code matching specs; generate tests;
+create Docker Compose for local runs; seed data; update README with one-line run.
+
+
+D. Compliance pass
+
+Guardian → run license check, SBOM, SAST, secrets scan, PII policy, accessibility notes;
+emit actionable diffs if failing; block merge until green.
+
+
+This follows the paper’s Prompt-Engineer ⇄ Responder ⇄ Compliance-Guardian loop. 
+Peeref
+
+9) Example one-shot charter → outcomes
+
+If you feed the YAML sample above, ASF will output in one pass:
+
+docs/PRD.md, adr/0001-choice-of-spring-boot.md
+
+specs/api.yaml (appointments, slots, reschedules)
+
+db/migrations/V1__init.sql (patients, appointments, audit)
+
+services/* + web/* controllers
+
+tests/* unit & integration
+
+ops/Dockerfile, docker-compose.yml, ops/ci.yml
+
+governance/guardian_findings.json + decisions.md
+
+All changes are approved only after the Guardian gate is green. 
+Cell
+
+10) Optional extensions
+
+Multi-agent review boards: add “Security Reviewer”, “Performance Reviewer”, “UX Reviewer”; Planner aggregates votes. 
+Cell
+
+Ethics overlays: consent & data-use policies, explainability notes, and audit trails (maps nicely onto the paper’s “responsibility” framing). 
+Cambridge University Press & Assessment
+SpringerLink
+
+Red-team loops: adversarial prompts & fuzzing before production.
+
+Telemetry-by-default: logs, metrics, traces; SLOs + alerts; runbooks.
+
+11) What this is grounded in
+
+The Heliyon article formalizes AI-to-AI dialogues with role separation (Planner/Responder/Guardian) to achieve “responsible autonomy.” We’ve operationalized those roles into a software factory with measurable gates. 
+Cell
+ScienceDirect
+
+Open versions and summaries (University of Vaasa, Peeref) highlight the enforced dialogue and compliance focus that our Guardian agent embodies. 
+Osuva
+Peeref
+
+Governance & RAI literature informs the guardrails and procedural checks. 
+ScienceDirect
