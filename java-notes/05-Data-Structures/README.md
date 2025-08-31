@@ -1,81 +1,59 @@
-# 05 - Data Structures in Java
+# 05 - Data Structures: Organizing Your Data
 
-Data structures are used to store and organize data. Java provides a rich set of data structures in its Collections Framework.
+As language designers, we knew we had to provide you with a powerful and flexible set of tools for organizing your data. This is where the Java Collections Framework comes in. It's a set of data structures that we designed to handle common programming tasks.
 
-## 1. Arrays
+Let's look at a few of the most important ones, and the design trade-offs we made for each.
 
-An array is a container object that holds a fixed number of values of a single type. The length of an array is established when the array is created.
+## 1. `ArrayList`: The Go-To List
 
-```java
-// Declare and initialize an array of integers
-int[] numbers = {10, 20, 30, 40, 50};
+An `ArrayList` is a resizable array. It's probably the most common data structure you'll use.
 
-// Access an element
-int firstNumber = numbers[0]; // 10
-
-// Get the length of the array
-int length = numbers.length; // 5
-```
-
-## 2. ArrayList
-
-An `ArrayList` is a resizable array. It grows its size to accommodate new elements and shrinks the size when the elements are removed.
+In our e-commerce app, we could use an `ArrayList` to store the products in a shopping cart.
 
 ```java
-import java.util.ArrayList;
-
-ArrayList<String> names = new ArrayList<>();
-
-// Add elements
-names.add("Alice");
-names.add("Bob");
-names.add("Charlie");
-
-// Access an element
-String firstName = names.get(0); // "Alice"
-
-// Get the size
-int size = names.size(); // 3
+ArrayList<Product> shoppingCart = new ArrayList<>();
+shoppingCart.add(laptop);
+shoppingCart.add(book);
 ```
 
-## 3. LinkedList
+**Memory and Performance Deep Dive:**
 
-A `LinkedList` is a linear data structure where the elements are not stored in contiguous locations. The elements are linked using pointers. It is very efficient for insertions and deletions.
+*   **Memory:** An `ArrayList` is backed by a plain old array on the heap.
+*   **Performance:** Accessing an element by its index (`shoppingCart.get(0)`) is very fast (O(1) time complexity). However, adding or removing an element from the middle of the list can be slow (O(n)) because it requires shifting all the subsequent elements.
+*   **Resizing:** When you add an element to a full `ArrayList`, we have to create a new, larger array and copy all the elements over. This can be an expensive operation.
+
+**System Design Insight:** `ArrayList` is a great choice when you need fast random access to elements and you don't do a lot of insertions and deletions in the middle of the list.
+
+## 2. `LinkedList`: The Flexible List
+
+A `LinkedList` is a sequence of nodes, where each node points to the next one.
+
+**Memory and Performance Deep Dive:**
+
+*   **Memory:** Each node in a `LinkedList` is a separate object on the heap, which means it has more memory overhead than an `ArrayList`.
+*   **Performance:** Adding or removing an element from a `LinkedList` is very fast (O(1)) if you have a reference to the node. However, accessing an element by index is slow (O(n)) because we have to traverse the list from the beginning.
+
+**System Design Insight:** `LinkedList` is a good choice when you have a lot of insertions and deletions, especially at the beginning or end of the list.
+
+## 3. `HashMap`: The "Key-Value" Store
+
+A `HashMap` stores key-value pairs. It's incredibly useful for looking up values by a key.
+
+In our e-commerce app, we could use a `HashMap` to store the quantity of each product in the shopping cart.
 
 ```java
-import java.util.LinkedList;
-
-LinkedList<String> cars = new LinkedList<>();
-
-// Add elements
-cars.add("Volvo");
-cars.add("BMW");
-cars.add("Ford");
-
-// Add an element at the beginning
-cars.addFirst("Mazda");
+HashMap<Product, Integer> cartQuantities = new HashMap<>();
+cartQuantities.put(laptop, 1);
+cartQuantities.put(book, 2);
 ```
 
-## 4. HashMap
+**Memory and Performance Deep Dive:**
 
-A `HashMap` stores items in "key/value" pairs. It is an unordered collection and does not allow duplicate keys.
+*   **Memory:** A `HashMap` uses an array of linked lists (or trees, since Java 8) to store its data. It has a higher memory overhead than a simple list.
+*   **Performance:** `HashMap` provides constant-time performance (O(1)) for `get` and `put` operations, assuming the hash function disperses the elements properly among the buckets. This is why it's so fast.
 
-```java
-import java.util.HashMap;
-
-HashMap<String, Integer> studentScores = new HashMap<>();
-
-// Add key-value pairs
-studentScores.put("Alice", 95);
-studentScores.put("Bob", 80);
-
-// Access a value by key
-int aliceScore = studentScores.get("Alice"); // 95
-
-// Check if a key exists
-boolean hasBob = studentScores.containsKey("Bob"); // true
-```
+**System Design Insight:** `HashMap` is the perfect tool when you need to quickly look up a value by a key. It's one of the most important data structures for system design.
 
 ---
 
-[Previous: 04 - Advanced OOP](../04-Advanced-OOP/README.md) | [Next: 06 - Exception Handling](../06-Exception-Handling/README.md)
+[Previous: 04 - Advanced OOP: Interfaces and Abstraction](../04-Advanced-OOP/README.md) | [Next: 06 - Exception Handling: Dealing with the Unexpected](../06-Exception-Handling/README.md)
