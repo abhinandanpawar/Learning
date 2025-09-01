@@ -22,4 +22,19 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [13 - Java Ecosystem](./13-Java-Ecosystem/README.md)
 *   [14 - New Java Features](./14-New-Java-Features/README.md)
 
+---
+
+## Advanced Topics for the Experienced Developer
+
+This section contains a series of concise, reference-style notes on topics that are relevant for developers with a few years of experience.
+
+*   [15 - Core Language Refresh (Java 17+)](./15-core-language-refresh.md)
+*   [16 - Collections & Streams Cheat-Sheet](./16-collections-and-streams.md)
+*   [17 - Concurrency Essentials](./17-concurrency-essentials.md)
+*   [18 - Modern Memory Management](./18-modern-memory-management.md)
+*   [19 - Spring Boot Mini-Playbook](./19-spring-boot-playbook.md)
+*   [20 - Architectural Patterns](./20-architectural-patterns.md)
+*   [21 - Performance & Observability](./21-performance-and-observability.md)
+*   [22 - Interview & Growth Prep](./22-interview-and-growth-prep.md)
+
 Happy learning!
