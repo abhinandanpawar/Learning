@@ -98,4 +98,60 @@ A thread can be in one of six states, which are defined in the `Thread.State` en
 
 ---
 
+### Q36, Q37, Q69, Q81: How do you create a thread? Can you restart a dead thread?
+
+To understand this, let's look at the two traditional ways to create a thread and its lifecycle.
+
+**The Code Example:**
+```java
+// Option 1: Implement the Runnable interface (Preferred)
+class MyTask implements Runnable {
+    @Override
+    public void run() { // This method is the entry point for the new thread.
+        System.out.println("Hello from a Runnable!");
+    }
+}
+
+// Option 2: Extend the Thread class
+class MyThread extends Thread {
+    @Override
+    public void run() {
+        System.out.println("Hello from a Thread!");
+    }
+}
+
+public class ThreadCreationExample {
+    public static void main(String[] args) throws InterruptedException {
+        // Create and start a thread using a Runnable
+        Thread t1 = new Thread(new MyTask());
+        t1.start(); // This moves the thread from NEW to RUNNABLE state
+
+        // Create and start a thread by extending Thread
+        Thread t2 = new MyThread();
+        t2.start();
+
+        // Wait for the threads to finish
+        t1.join();
+        t2.join();
+
+        // Q69: Can a dead thread be started again?
+        System.out.println("t1 state after completion: " + t1.getState()); // TERMINATED
+        // t1.start(); // This would throw an IllegalThreadStateException
+    }
+}
+```
+
+**Detailed Explanation:**
+There are two ways to define the work that a thread will do:
+1.  **Implement `Runnable`:** You create a class that implements the `Runnable` interface. This interface has a single method, `run()`. This is the preferred approach because it separates the task (the `Runnable`) from the execution mechanism (the `Thread` object).
+2.  **Extend `Thread`:** You create a class that extends `Thread` and overrides its `run()` method. This is less flexible, as your class cannot extend any other class.
+
+In both cases, you **must** call the `start()` method to create a new OS-level thread and have it execute the `run()` method. You should never call `run()` directly.
+
+**The Principal's Take:**
+*   **Lifecycle:** A thread can only be started once. After it completes its work and its `run()` method returns, it enters the `TERMINATED` state. You **cannot** restart a dead thread. Attempting to call `start()` on a terminated thread will result in an `IllegalThreadStateException`.
+*   **Best Practice:** As we discussed earlier in this guide, in modern applications, you should **almost never** manage threads directly by creating `Thread` objects. You should always use an `ExecutorService` to manage a pool of threads for you. This is more efficient, more robust, and provides better control over your application's resources. The `Runnable` task you create, however, is still the same.
+
+---
+
 [Previous: 09 - IO Streams: Talking to the Outside World](../09-IO-Streams/README.md) | [Next: 11 - The Java Memory Model: A Deep Dive](../11-Java-Memory-Model/README.md)
