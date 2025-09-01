@@ -118,4 +118,73 @@ In the next chapter, we'll explore the core of Java's design: Object-Oriented Pr
 
 ---
 
+## Interview Deep Dives
+
+### Q9: What is the difference between `double` and `float` variables in Java?
+
+To understand this, let's check this example that deals with the price of a product.
+
+**The Code Example:**
+```java
+public class PrecisionExample {
+    public static void main(String[] args) {
+        // float is a single-precision 32-bit floating point number
+        float itemPrice = 25.99f; // Note the 'f' suffix
+
+        // double is a double-precision 64-bit floating point number
+        double orderTotal = 129.95;
+
+        System.out.println("Item price (float): " + itemPrice);
+        System.out.println("Order total (double): " + orderTotal);
+    }
+}
+```
+
+**Detailed Explanation:**
+The primary difference between `double` and `float` is their **precision** and **storage size**.
+
+*   **Storage:** A `float` uses 4 bytes (32 bits) of memory, while a `double` uses 8 bytes (64 bits).
+*   **Precision:** This difference in storage size means a `double` can represent a much larger range of numbers with a higher degree of accuracy (about 15-17 decimal digits) compared to a `float` (about 6-7 decimal digits).
+
+**The Principal's Take:**
+*   **System Design:** For most applications, especially financial calculations, you should **always default to `double`**. In fact, for handling money, you should use the `BigDecimal` class to get exact control over rounding and precision, as floating-point numbers can introduce small inaccuracies.
+*   **Memory:** The only time to consider `float` is in memory-constrained environments where you are storing a very large array of floating-point numbers, such as in scientific computing or graphics programming, and the loss of precision is acceptable.
+
+---
+
+### Q10: What is the `final` keyword in Java?
+
+To understand this, let's check this example of setting a sales tax rate.
+
+**The Code Example:**
+```java
+public class FinalExample {
+
+    // 1. A final variable is a constant.
+    public static final double SALES_TAX_RATE = 0.08;
+
+    // 2. A final method cannot be overridden by subclasses.
+    public final void displayWelcomeMessage() {
+        System.out.println("Welcome to our store!");
+    }
+
+    // 3. A final class cannot be extended (inherited from).
+    // public final class MyFinalClass {}
+}
+```
+
+**Detailed Explanation:**
+The `final` keyword is a modifier that can be applied to variables, methods, and classes. It has a slightly different meaning in each context, but the core idea is the same: **it makes something unchangeable.**
+
+1.  **`final` variables:** A `final` variable is a **constant**. Its value cannot be changed after it has been initialized. This is useful for defining things like mathematical constants (`PI`) or application-wide configuration values (like our `SALES_TAX_RATE`).
+    *   **Memory/JVM Insight:** `public static final` variables are true constants that are resolved at compile time. The JVM may perform optimizations like inlining their values directly into the code that uses them.
+
+2.  **`final` methods:** A `final` method **cannot be overridden** by a subclass.
+    *   **System Design:** You would use this when you have a method in a superclass that has an implementation that should not be changed by any subclass. This is a way to enforce a part of an algorithm or a contract.
+
+3.  **`final` classes:** A `final` class **cannot be subclassed** (inherited from).
+    *   **System Design:** This is used for classes that are "perfect" and should not be tampered with. A great example is the `String` class in Java. We made it `final` to ensure that its behavior is always consistent and predictable, which is crucial for security and reliability. When you pass a `String` to a method, you can be sure that the method can't change the string's content by casting it to a malicious subclass.
+
+---
+
 [Previous: 01 - Getting Started: Your First Conversation with the JVM](../01-Getting-Started/README.md) | [Next: 03 - Object-Oriented Programming: Building with Blueprints](../03-Object-Oriented-Programming/README.md)

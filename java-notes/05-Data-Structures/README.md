@@ -86,4 +86,93 @@ for (Integer quantity : cartQuantities.values()) {
 
 ---
 
+## Interview Deep Dives
+
+### Q34 & Q91: What's the difference between an Array and a `Vector`? How do you increase an array's size?
+
+To understand this, let's look at the evolution of dynamic arrays in Java.
+
+**The Code Example:**
+```java
+import java.util.Arrays;
+import java.util.Vector;
+import java.util.ArrayList;
+
+public class ArrayEvolution {
+    public static void main(String[] args) {
+        // 1. Plain Array: Fixed size.
+        String[] plainArray = new String[2];
+        plainArray[0] = "A";
+        plainArray[1] = "B";
+        // plainArray[2] = "C"; // This would throw an ArrayIndexOutOfBoundsException
+
+        // 2. Vector: The "old way". Synchronized and slow.
+        Vector<String> vector = new Vector<>();
+        vector.add("A");
+        vector.add("B");
+
+        // 3. ArrayList: The "new way". Not synchronized and fast.
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("A");
+        arrayList.add("B");
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **Array:** An array is a fixed-size data structure. Once you create it, you **cannot change its size**. If you need a larger array, you must create a new one and copy the elements from the old one.
+*   **`Vector`:** `Vector` was one of the original collection classes in Java 1.0. It's essentially a resizable array. Its key characteristic is that all of its public methods are `synchronized`. This means it is thread-safe, but it also means it's slow, as every operation requires acquiring a lock.
+*   **`ArrayList`:** `ArrayList` was introduced in Java 1.2 as a replacement for `Vector`. It is also a resizable array, but its methods are **not synchronized**.
+
+**The Principal's Take:**
+*   **System Design:** **You should almost never use `Vector` in new code.** It's considered a legacy class. If you need thread safety, you should use a modern alternative like `ConcurrentHashMap` or wrap a collection using `Collections.synchronizedList()`. For single-threaded access, `ArrayList` is the clear winner due to its better performance. The "dynamic" or "resizable" nature of `ArrayList` and `Vector` is a perfect answer to "How can we increase the size of an array?". You don't. You use a better data structure.
+
+---
+
+### Q54: What's the difference between a Stack and a Queue?
+
+To understand this, let's look at how they handle data.
+
+**The Code Example:**
+```java
+import java.util.Stack; // Legacy class, avoid!
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Deque;
+import java.util.ArrayDeque;
+
+public class StackVsQueue {
+    public static void main(String[] args) {
+        // Stack: LIFO (Last-In, First-Out)
+        // Principal's take: Don't use Stack. Use a Deque instead.
+        Deque<String> stack = new ArrayDeque<>();
+        stack.push("A"); // A
+        stack.push("B"); // B, A
+        stack.push("C"); // C, B, A
+        System.out.println("Stack pop: " + stack.pop()); // C
+        System.out.println("Stack pop: " + stack.pop()); // B
+
+        // Queue: FIFO (First-In, First-Out)
+        Queue<String> queue = new LinkedList<>();
+        queue.add("A"); // A
+        queue.add("B"); // A, B
+        queue.add("C"); // A, B, C
+        System.out.println("Queue poll: " + queue.poll()); // A
+        System.out.println("Queue poll: " + queue.poll()); // B
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **Stack (LIFO):** A stack follows the "Last-In, First-Out" principle. The last item you add (`push`) is the first item you remove (`pop`). Think of a stack of plates.
+*   **Queue (FIFO):** A queue follows the "First-In, First-Out" principle. The first item you add is the first item you remove. Think of a line at a ticket counter.
+
+**The Principal's Take:**
+*   **System Design:** Stacks are useful for problems involving recursion, parsing expressions, or maintaining a history (like the "back" button in a browser). Queues are fundamental in system design for handling tasks in the order they were received, such as in message queues (like RabbitMQ or SQS) or for managing requests in a web server.
+*   **Implementation:** The original `java.util.Stack` class is a legacy class that extends `Vector`, so it's synchronized and slow. **Do not use it.** The modern way to implement a stack is to use any class that implements the `Deque` (Double-Ended Queue) interface, such as `ArrayDeque`. For a queue, `LinkedList` or `ArrayDeque` are both good choices.
+
+---
+
 [Previous: 04 - Advanced OOP: Interfaces and Abstraction](../04-Advanced-OOP/README.md) | [Next: 06 - Exception Handling: Dealing with the Unexpected](../06-Exception-Handling/README.md)

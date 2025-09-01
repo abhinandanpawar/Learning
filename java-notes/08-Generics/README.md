@@ -44,4 +44,41 @@ This ensures that our shopping cart can only hold `Product` objects (or subclass
 
 ---
 
+## Interview Deep Dives
+
+### How are Generics implemented in Java? What is Type Erasure?
+
+To understand this, let's look at what the compiler does with generic code.
+
+**The Code Example:**
+```java
+// You write this:
+List<String> names = new ArrayList<>();
+names.add("Jules");
+String name = names.get(0);
+```
+
+**What the Compiler Generates (Conceptually):**
+After the compiler checks for type safety, it "erases" the generic type information. The code that the JVM executes looks more like this:
+
+```java
+// The compiler generates this:
+List names = new ArrayList();
+names.add("Jules");
+String name = (String) names.get(0); // Note the inserted cast!
+```
+
+**Detailed Explanation:**
+This process is called **Type Erasure**. It means that the generic type information (`<String>`) is only present at compile-time. At runtime, the JVM only sees the raw, non-generic types (like `List` and `ArrayList`). The compiler enforces type safety and then inserts the necessary casts for you.
+
+**The Principal's Take:**
+*   **Why was it done this way?** The primary reason for Type Erasure was **backward compatibility**. When generics were introduced in Java 5, there was a huge amount of existing Java code that was not generic. Type Erasure allowed new, generic code to interoperate seamlessly with old, non-generic code (the "raw types"). It was a pragmatic trade-off.
+*   **What are the consequences?** Type Erasure has some important consequences that you might be asked about in an interview:
+    *   You cannot get the generic type at runtime (e.g., `names.getClass()` will not tell you that it's a list of `String`).
+    *   You cannot create an instance of a generic type parameter (e.g., `new T()`).
+    *   You cannot create an array of a generic type (e.g., `new T[10]`).
+*   **Interview Tip:** Understanding Type Erasure and its consequences is a key differentiator between a junior developer who just *uses* generics and a senior developer who *understands* them. Be prepared to discuss why it exists and what its limitations are.
+
+---
+
 [Previous: 07 - The Java Collections Framework: A Deeper Look](../07-Java-Collections-Framework/README.md) | [Next: 09 - IO Streams: Talking to the Outside World](../09-IO-Streams/README.md)

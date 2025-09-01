@@ -90,4 +90,91 @@ Abstraction is about hiding the implementation details and showing only the esse
 
 ---
 
+## Interview Deep Dives
+
+### Q1: What is the difference between an Inner Class and a Sub-Class?
+
+To understand this, let's check this example.
+
+**The Code Example:**
+```java
+// A Sub-Class uses inheritance (the "is-a" relationship)
+class EBook extends Product {
+    public EBook(String name, double price) {
+        super(name, price);
+    }
+    // ... EBook specific methods
+}
+
+public class Order {
+    private long orderId;
+    private List<Product> items;
+
+    // An Inner Class has a special relationship with the outer class
+    // (the "has-a" relationship, but with special access)
+    public class OrderLine {
+        private Product product;
+        private int quantity;
+
+        public double getLineTotal() {
+            // The inner class can access private fields of the outer class!
+            System.out.println("Calculating total for order: " + orderId);
+            return product.getPrice() * quantity;
+        }
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **Sub-class (Inheritance):** A sub-class `EBook` **is a** `Product`. It inherits the public and protected members of its parent. This is a fundamental concept for code reuse and polymorphism.
+*   **Inner Class:** An inner class `OrderLine` is a class that is nested inside another class, `Order`. It is used as a helper class that is tightly coupled to its outer class. The key feature is that the inner class instance has a special, hidden reference to an instance of the outer class, which allows it to access the outer class's private members (like `orderId`).
+
+**The Principal's Take:**
+*   **System Design:** Use **inheritance** when you have a true "is-a" relationship and want to model a hierarchy of types. Use an **inner class** when you have a helper class that only makes sense in the context of its outer class and needs close access to its state. A common use case for inner classes is for implementing event listeners or iterators.
+
+---
+
+### Q5: What is a singleton class? Give a practical example of its usage.
+
+**The Code Example:**
+The Singleton pattern ensures that a class has only one instance and provides a global point of access to it.
+
+```java
+public class DatabaseConnectionManager {
+
+    // 1. The single instance, created at class loading time.
+    private static final DatabaseConnectionManager INSTANCE = new DatabaseConnectionManager();
+
+    // 2. A private constructor to prevent anyone else from creating an instance.
+    private DatabaseConnectionManager() {
+        // Initialize the database connection here
+        System.out.println("Database connection manager initialized.");
+    }
+
+    // 3. A public static method to get the single instance.
+    public static DatabaseConnectionManager getInstance() {
+        return INSTANCE;
+    }
+
+    public void connect() {
+        System.out.println("Connected to the database.");
+    }
+}
+
+// Usage:
+// DatabaseConnectionManager manager = new DatabaseConnectionManager(); // This will give a compile error!
+// DatabaseConnectionManager manager = DatabaseConnectionManager.getInstance();
+// manager.connect();
+```
+
+**Detailed Explanation:**
+The key to the Singleton pattern is a `private` constructor and a `public static` method that returns the single instance. The instance itself is stored in a `private static final` field. This implementation is simple and thread-safe.
+
+**The Principal's Take:**
+*   **System Design:** The Singleton pattern should be used with **extreme caution**. While it's useful for managing a truly global resource like a database connection pool or a logging configuration, it can also be an anti-pattern. It introduces global state into your application, which can make code hard to test and reason about.
+*   **Trade-offs:** Singletons can make dependency injection and testing difficult. Before you create a singleton, ask yourself: "Can I achieve the same result by creating a regular object and passing it as a dependency to the objects that need it?". In modern frameworks like Spring, the framework manages the lifecycle of your beans as singletons by default, which is a much cleaner approach.
+
+---
+
 [Previous: 02 - Java Basics: The Building Blocks of the Language](../02-Java-Basics/README.md) | [Next: 04 - Advanced OOP: Interfaces and Abstraction](../04-Advanced-OOP/README.md)
