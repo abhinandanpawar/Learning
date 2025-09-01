@@ -37,5 +37,6 @@ This section contains a series of concise, reference-style notes on topics that 
 *   [21 - Performance & Observability](./21-performance-and-observability.md)
 *   [22 - Interview & Growth Prep](./22-interview-and-growth-prep.md)
 *   [23 - A Deep Dive into the Stream API](./23-stream-api-deep-dive.md)
+*   [24 - Java Networking: Talking to the Internet](./24-java-networking.md)
 
 Happy learning!
