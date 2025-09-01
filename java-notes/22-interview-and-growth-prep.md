@@ -1,31 +1,38 @@
-# 22 - Interview & Growth Prep
+# 22 - Interview & Growth Prep: Leveling Up
 
-This chapter provides a checklist of topics to review for interviews and for your continued growth as a Java developer.
-
-## Common Pitfalls to Review
-
-*   **Autoboxing in hot loops:** Creating a lot of wrapper objects in a tight loop can cause GC pressure.
-*   **Deadlocks with nested locks:** Be able to explain how deadlocks can occur and how to avoid them.
-*   **Misuse of `Optional`:** `Optional` is intended to be used as a return type, not as a field in a class or as a method parameter.
-*   **`String` concatenation in loops:** Use `StringBuilder` instead of `+` to concatenate strings in a loop.
-
-## Algorithm Drills
-
-*   **Practice on arrays and strings.** These are the most common topics in coding interviews.
-*   **Use Java Streams first.** Try to solve the problem with a functional approach using streams.
-*   **Re-implement imperatively.** Then, re-implement the same solution with a traditional `for` loop to compare the performance and readability trade-offs.
-
-## System Design Questions
-
-*   **Sketch a high-level class diagram.**
-*   **Sketch a sequence flow diagram.**
-*   **Highlight trade-offs immediately.** When you make a design choice, immediately state the trade-offs (e.g., "I'm choosing consistency over latency here because...").
-
-## Staying Up-to-Date
-
-*   **Follow the Java release cadence.** A new version of Java is released every six months. Keep an eye on the new features.
-*   **Read blogs and articles.** Follow prominent Java developers and publications.
-*   **Contribute to open source.** This is one of the best ways to learn and grow as a developer.
+Moving from a senior to a principal role is less about knowing more syntax and more about demonstrating impact, influence, and a deep understanding of trade-offs.
 
 ---
-[< Previous: 21 - Performance & Observability](./21-performance-and-observability.md) | [Up: Table of Contents](./README.md)
+
+## 1. Technical Interview Prep: Beyond LeetCode
+
+**The Principal's Take:** At a senior level, nobody cares if you can reverse a binary tree on a whiteboard. They care if you can design and build a real system.
+
+### System Design Interviews
+This is the most important part of a senior/principal interview.
+*   **The Process:**
+    1.  **Clarify Requirements:** Spend the first 5-10 minutes asking questions. What are the functional requirements? What are the non-functional requirements (scale, latency, availability)?
+    2.  **Back-of-the-Envelope Estimation:** Do some quick math. How much data? How many requests per second? This will inform your design.
+    3.  **High-Level Design:** Draw the big boxes and arrows. What are the main services? How do they communicate? What kind of database will you use?
+    4.  **Deep Dive:** Pick one component and go deep. Design the API, the database schema, or the caching strategy.
+*   **Key Skill:** **Articulating Trade-offs.** Every decision you make has a trade-off. "I'm choosing Kafka here for its durability and scalability, but the trade-off is higher operational complexity compared to a simple message queue."
+
+### Coding Interviews
+*   **Focus on Cleanliness:** Your code should be clean, well-structured, and easy to read. Use meaningful variable names.
+*   **Think Aloud:** Explain your thought process as you code. The interviewer is testing your problem-solving skills, not just your coding skills.
+
+---
+
+## 2. Professional Growth: Becoming a Force Multiplier
+
+**The Principal's Take:** Your job is no longer just about writing code. It's about making the entire team more effective.
+
+### How to Grow Your Impact:
+*   **Write Design Docs:** Before you build any significant feature, write a one-page design document. This forces you to think through the design and allows others to give feedback.
+*   **Lead Code Reviews:** Don't just look for bugs. Look for opportunities to improve the design, simplify the code, and mentor other developers.
+*   **Own a System:** Become the go-to expert for a particular service or component. Understand its architecture, its performance characteristics, and its operational issues.
+*   **Present Your Work:** Give a tech talk to your team or a brown-bag session on a new technology you've been exploring. This builds your influence and communication skills.
+*   **Stay Curious:** The tech world moves fast. Dedicate time each week to reading blogs, watching conference talks, and experimenting with new technologies.
+
+---
+[< Previous: 21 - Performance & Observability: A Principal's Checklist >](./21-performance-and-observability.md) | [Up: Table of Contents](./README.md)
