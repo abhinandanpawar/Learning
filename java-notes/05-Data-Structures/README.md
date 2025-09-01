@@ -11,9 +11,23 @@ An `ArrayList` is a resizable array. It's probably the most common data structur
 In our e-commerce app, we could use an `ArrayList` to store the products in a shopping cart.
 
 ```java
+// Assuming Product class from previous chapter
+Product laptop = new Product("Laptop", 1200.00);
+Product book = new Product("Java for Kids", 25.00);
+
 ArrayList<Product> shoppingCart = new ArrayList<>();
 shoppingCart.add(laptop);
 shoppingCart.add(book);
+
+// Iterate over the shopping cart
+for (Product product : shoppingCart) {
+    product.display();
+}
+
+// Remove an item
+shoppingCart.remove(book);
+
+System.out.println("Cart size: " + shoppingCart.size()); // 1
 ```
 
 **Memory and Performance Deep Dive:**
@@ -45,6 +59,22 @@ In our e-commerce app, we could use a `HashMap` to store the quantity of each pr
 HashMap<Product, Integer> cartQuantities = new HashMap<>();
 cartQuantities.put(laptop, 1);
 cartQuantities.put(book, 2);
+
+// Get the quantity of a product
+int laptopQuantity = cartQuantities.get(laptop); // 1
+
+// Update the quantity
+cartQuantities.put(laptop, laptopQuantity + 1);
+
+// Iterate over the keys
+for (Product product : cartQuantities.keySet()) {
+    System.out.println(product.getName());
+}
+
+// Iterate over the values
+for (Integer quantity : cartQuantities.values()) {
+    System.out.println(quantity);
+}
 ```
 
 **Memory and Performance Deep Dive:**

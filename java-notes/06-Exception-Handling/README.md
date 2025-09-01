@@ -45,6 +45,35 @@ public void processPayment(PaymentDetails details) {
 
 This is a clean way to separate the payment logic from the error-handling logic.
 
+### Creating Your Own Exceptions
+
+You can also create your own custom exceptions by extending the `Exception` class. This is a good way to handle application-specific errors.
+
+```java
+// 1. Define your custom exception
+class InsufficientStockException extends Exception {
+    public InsufficientStockException(String message) {
+        super(message);
+    }
+}
+
+// 2. A method that throws your custom exception
+public void placeOrder(Product product, int quantity) throws InsufficientStockException {
+    if (product.getStock() < quantity) {
+        throw new InsufficientStockException("Not enough stock for " + product.getName());
+    }
+    // ... proceed with order
+}
+
+// 3. Handle your custom exception
+try {
+    placeOrder(laptop, 1);
+} catch (InsufficientStockException e) {
+    System.out.println(e.getMessage());
+    // Show an error message to the user
+}
+```
+
 ---
 
 [Previous: 05 - Data Structures: Organizing Your Data](../05-Data-Structures/README.md) | [Next: 07 - Java Collections Framework: A Deeper Look](../07-Java-Collections-Framework/README.md)

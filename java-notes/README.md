@@ -36,5 +36,6 @@ This section contains a series of concise, reference-style notes on topics that 
 *   [20 - Architectural Patterns](./20-architectural-patterns.md)
 *   [21 - Performance & Observability](./21-performance-and-observability.md)
 *   [22 - Interview & Growth Prep](./22-interview-and-growth-prep.md)
+*   [23 - A Deep Dive into the Stream API](./23-stream-api-deep-dive.md)
 
 Happy learning!

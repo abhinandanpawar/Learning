@@ -7,27 +7,41 @@ Object-Oriented Programming (OOP) was at the heart of our design for Java. We wa
 *   **Class:** A class is the blueprint. It defines the structure and behavior of a type of object.
 *   **Object:** An object is the actual building created from the blueprint. It's an instance of a class.
 
-Let's model a `Product` in our e-commerce application:
+Let's model a `Product` in our e-commerce application. A good `Product` class should encapsulate its data.
 
 ```java
 public class Product {
-    // Instance variables (state)
-    String name;
-    double price;
+    // Private instance variables (state)
+    private String name;
+    private double price;
+
+    // Constructor: a special method for creating objects
+    public Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    // Getter methods
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
 
     // Method (behavior)
-    void display() {
+    public void display() {
         System.out.println(name + ": $" + price);
     }
 }
 ```
 
-When you create an object, you are creating an instance of that class on the heap.
+When you create an object, you now use the constructor to provide the initial state.
 
 ```java
-Product laptop = new Product();
-laptop.name = "Laptop";
-laptop.price = 1200.00;
+Product laptop = new Product("Laptop", 1200.00);
+laptop.display(); // Laptop: $1200.0
 ```
 
 **JVM Deep Dive: Object Layout on the Heap**
