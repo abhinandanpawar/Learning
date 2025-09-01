@@ -63,16 +63,55 @@ Operators are how we perform actions on our variables.
 
 Control flow statements allow us to make decisions and repeat actions.
 
+**`if-else` statement:**
 ```java
 int stock = 10;
 
 if (stock > 0) {
     System.out.println("In stock");
+} else {
+    System.out.println("Out of stock");
 }
+```
 
-for (int i = 0; i < 5; i++) {
-    // ...
+**`for` loop:**
+```java
+// Print numbers from 1 to 5
+for (int i = 1; i <= 5; i++) {
+    System.out.println(i);
 }
+```
+
+**`while` loop:**
+```java
+int count = 0;
+while (count < 3) {
+    System.out.println("Hello!");
+    count++;
+}
+```
+
+**`switch` statement:**
+```java
+int dayOfWeek = 3;
+String dayName;
+
+switch (dayOfWeek) {
+    case 1:
+        dayName = "Monday";
+        break;
+    case 2:
+        dayName = "Tuesday";
+        break;
+    case 3:
+        dayName = "Wednesday";
+        break;
+    // ... and so on
+    default:
+        dayName = "Unknown";
+        break;
+}
+System.out.println(dayName); // Wednesday
 ```
 
 In the next chapter, we'll explore the core of Java's design: Object-Oriented Programming. We'll see how we can use classes and objects to model our e-commerce application.
