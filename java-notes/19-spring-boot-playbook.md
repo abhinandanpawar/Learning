@@ -1,50 +1,74 @@
-# 19 - Spring Boot Mini-Playbook
+# 19 - Spring Boot: A Principal's Production Playbook
 
-This chapter provides a quick "playbook" for getting started with Spring Boot.
+Spring Boot is more than a framework; it's a platform for building production-grade, standalone applications. A principal engineer should have a strong, opinionated view on how to use it effectively.
 
-## Starter Stack
+---
 
-To create a simple web application, you only need one dependency.
+## 1. The "Right" Dependencies: A Starter Stack
 
+Your `pom.xml` or `build.gradle` is a statement of your service's architecture. Keep it clean.
+
+**System Design Context:** Every dependency you add increases the binary size, attack surface, and cognitive load of your application. Be deliberate.
+
+### Core Stack for a RESTful Service:
 ```xml
+<!-- For building web applications, including RESTful applications -->
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-web</artifactId>
 </dependency>
+
+<!-- For production-ready features like health checks and metrics -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+<!-- For writing clean, modern data access layers -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+<!-- For robust testing -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
 ```
 
-## Mandatory Annotations
+---
 
-These are the core annotations you'll use in almost every Spring Boot application.
+## 2. Structuring Your Application: A Clean Architecture
 
-*   `@SpringBootApplication`: The main annotation that enables Spring Boot's auto-configuration.
-*   `@RestController`: For creating REST APIs.
-*   `@GetMapping`, `@PostMapping`, etc.: For mapping HTTP requests to your controller methods.
-*   `@Service`: For your business logic layer.
-*   `@Repository`: For your data access layer.
-*   `@Autowired`: For dependency injection.
+**The Principal's Take:** Don't just throw all your classes in one package. Structure your application to reflect its architecture. A simple, clean architecture separates concerns:
 
-## Profiles
-
-> **Best Practice:** Use profiles to manage different configurations for different environments (dev, stage, prod). You can create separate configuration files like `application-dev.yml`, `application-prod.yml`, etc.
-
-## Actuator
-
-The Spring Boot Actuator provides production-ready features for monitoring and managing your application.
-
-*   Add the `spring-boot-starter-actuator` dependency.
-*   Access endpoints like `/actuator/health` and `/actuator/metrics`.
-*   **Important:** Remember to secure the Actuator endpoints in production!
-
-## Testing Stack
-
-> **Interview Tip:** Be prepared to talk about how you test your Spring Boot applications.
-
-A typical testing stack includes:
-*   **JUnit 5:** The standard for unit testing.
-*   **Spring Boot Test:** Provides `@SpringBootTest` for integration testing.
-*   **Mockito:** For creating mock objects.
-*   **Testcontainers:** For running real dependencies (like a database) in a Docker container during your tests.
+*   `com.example.app.web`: Controllers (`@RestController`) - The entry point to your application.
+*   `com.example.app.service`: Services (`@Service`) - The business logic.
+*   `com.example.app.repository`: Repositories (`@Repository`) - The data access layer.
+*   `com.example.app.domain`: Your domain objects (JPA Entities, Records).
 
 ---
-[< Previous: 18 - Modern Memory Management](./18-modern-memory-management.md) | [Up: Table of Contents](./README.md) | [Next: 20 - Architectural Patterns >](./20-architectural-patterns.md)
+
+## 3. Configuration: Your Application's Control Panel
+
+**Production-Oriented Advice:** Externalize your configuration. Never hard-code connection strings, API keys, or other environment-specific values.
+
+*   **Use `application.yml` (or `.properties`)**: This is the standard for Spring Boot configuration.
+*   **Use Profiles:** Define profiles (`dev`, `staging`, `prod`) in separate `application-{profile}.yml` files. Activate a profile with the `spring.profiles.active` property.
+*   **Use `@ConfigurationProperties`:** For type-safe access to your configuration. Create a record or class that maps to a prefix in your YAML file. This is much cleaner than scattering `@Value` annotations throughout your code.
+
+---
+
+## 4. The Definitive Testing Strategy
+
+**The Principal's Take:** Your test suite is a safety net that enables you to refactor and deploy with confidence. A principal engineer advocates for a balanced test pyramid.
+
+*   **Unit Tests (`@Test` with Mockito):** The base of your pyramid. Test your services and other business logic components in isolation. Mock their dependencies. These are fast.
+*   **Integration Tests (`@SpringBootTest`):** Test the integration between your service and a real dependency, like a database.
+    *   **The Gold Standard: `Testcontainers`**. Use Testcontainers to spin up a real database in a Docker container for your integration tests. This is much more reliable than using an in-memory database like H2, which can behave differently from your production database.
+*   **API / End-to-End Tests:** Use `@SpringBootTest` with `webEnvironment = WebEnvironment.RANDOM_PORT` and `TestRestTemplate` to make real HTTP calls to your running application.
+
+---
+[< Previous: 18 - Modern Memory Management: A Principal's Guide >](./18-modern-memory-management.md) | [Up: Table of Contents](./README.md) | [Next: 20 - Architectural Patterns: A Principal's Field Guide >](./20-architectural-patterns.md)
