@@ -1,0 +1,313 @@
+Java Programming Cheatsheet - AMAN BARNWAL
+
+Hello, World.
+
+
+
+
+Editing, compiling, and executing.
+
+
+
+
+Built-in data types.
+
+
+
+
+Declaration and assignment statements.
+
+
+
+
+Integers.
+-----------------------Page 1 End-----------------------
+
+Floating-point numbers.
+
+
+
+
+Booleans.
+-----------------------Page 2 End-----------------------
+
+Comparison operators.
+
+
+
+
+Printing.
+
+
+
+
+Parsing command-line arguments.
+
+
+
+
+Math library.
+-----------------------Page 3 End-----------------------
+
+The full java.lang.Math API.
+
+
+
+Java library calls.
+
+
+
+
+Type conversion.
+-----------------------Page 4 End-----------------------
+
+Anatomy of an if statement.
+
+
+
+
+If and if-else statements.
+
+
+
+
+Nested if-else statement.
+-----------------------Page 5 End-----------------------
+
+Anatomy of a while loop.
+
+
+
+
+Anatomy of a for loop.
+
+
+
+
+Loops.
+-----------------------Page 6 End-----------------------
+
+Break statement.
+
+
+
+
+Do-while loop.
+
+
+
+
+Switch statement.
+-----------------------Page 7 End-----------------------
+
+Arrays.
+
+
+
+
+Inline array initialization.
+
+
+
+
+Typical array-processing code.
+
+
+
+
+Two-dimensional arrays.
+-----------------------Page 8 End-----------------------
+
+Inline initialization.
+
+
+
+
+Our standard output library.
+
+
+
+
+The full StdOut API.
+
+
+
+Formatted printing.
+-----------------------Page 9 End-----------------------
+
+Our standard input library.
+
+
+
+
+The full StdIn API.
+
+
+
+Our standard drawing library.
+-----------------------Page 10 End-----------------------
+
+The full StdDraw API.
+
+
+
+Our standard audio library.
+
+
+
+
+The full StdAudio API.
+
+
+
+Command line.
+-----------------------Page 11 End-----------------------
+
+Redirection and piping.
+
+
+
+
+                          
+    
+    
+    
+
+
+
+
+
+Functions.
+-----------------------Page 12 End-----------------------
+
+Libraries of functions.
+-----------------------Page 13 End-----------------------
+
+Our standard random library.
+
+
+
+
+The full StdRandom API.
+
+
+
+Our standard statistics library.
+-----------------------Page 14 End-----------------------
+
+The full StdStats API.
+
+
+
+Using an object.
+
+
+
+
+Instance variables.
+
+
+
+
+Constructors.
+
+
+
+
+Instance methods.
+-----------------------Page 15 End-----------------------
+
+Classes.
+
+
+
+
+Object-oriented libraries.
+-----------------------Page 16 End-----------------------
+
+Java's String data type.
+-----------------------Page 17 End-----------------------
+
+The full java.lang.String API.
+
+
+
+
+Java's Color data type.
+-----------------------Page 18 End-----------------------
+
+The full java.awt.Color API.
+
+
+
+Our input library.
+
+
+
+
+The full In API.
+
+
+
+Our output library.
+-----------------------Page 19 End-----------------------
+
+The full Out API.
+
+
+
+Our picture library.
+
+
+
+
+The full Picture API.
+
+
+
+Our stack data type.
+
+
+
+
+The full Stack API.
+
+
+
+Our queue data type.
+
+
+
+
+The full Queue API.
+-----------------------Page 20 End-----------------------
+
+Iterable.
+
+
+
+
+Our symbol table data type.
+
+
+
+
+The full ST API.
+
+
+
+Our set data type.
+-----------------------Page 21 End-----------------------
+
+The full SET API.
+
+
+
+Our graph data type.
+
+
+
+
+The full Graph API.
+-----------------------Page 22 End-----------------------
+
