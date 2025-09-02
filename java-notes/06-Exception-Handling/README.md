@@ -154,4 +154,72 @@ if (product.getStock() < quantity) {
 
 ---
 
+### Q: What is the difference between an `Exception` and an `Error`?
+
+This question tests your understanding of the `Throwable` class hierarchy.
+
+**The Principal's Take:** Both `Exception` and `Error` are subclasses of `Throwable`. You should catch `Exception`s, but you should almost never try to catch `Error`s.
+
+**The Hierarchy:**
+```
+      Throwable
+       /     \
+    Error   Exception
+             /       \
+  CheckedExc  RuntimeException
+```
+
+*   **`Error`:** An `Error` indicates a serious problem that a reasonable application should not try to catch. These are problems that are external to the application and that the application usually cannot anticipate or recover from. Examples include `OutOfMemoryError`, `StackOverflowError`, and `NoClassDefFoundError`.
+*   **`Exception`:** An `Exception` indicates a condition that a reasonable application might want to catch. There are two types of `Exception`s:
+    *   **Checked Exceptions:** These are exceptions that the compiler forces you to handle (e.g., `IOException`, `SQLException`).
+    *   **Unchecked Exceptions (RuntimeExceptions):** These are exceptions that are typically caused by programming errors (e.g., `NullPointerException`, `IllegalArgumentException`).
+
+**System Design Insight:**
+When you are designing an API, you need to decide what kind of exceptions your methods will throw.
+*   If you are writing a method that can fail due to an external condition that the caller should be prepared to handle (e.g., a network service is unavailable), you should use a **checked exception**.
+*   If you are writing a method and a caller passes an invalid argument, you should throw an **unchecked exception** (e.g., `IllegalArgumentException`).
+
+---
+
+### Q: What is the difference between `throw` and `throws`?
+
+These two keywords are often confused, but they have very different purposes.
+
+| Keyword | Purpose | Usage |
+|---|---|---|
+| **`throw`** | To manually throw an exception within a method. | `throw new MyException("Something bad happened");` |
+| **`throws`**| To declare the exceptions that a method might throw. | `public void myMethod() throws MyException, AnotherException { ... }` |
+
+**The Code Example:**
+```java
+public class ThrowVsThrows {
+
+    // The 'throws' keyword declares that this method can throw an IOException.
+    public void readFile() throws IOException {
+        // ... some code that might throw an IOException ...
+
+        // The 'throw' keyword is used to actually throw the exception.
+        throw new IOException("File not found");
+    }
+
+    public void processFile() {
+        try {
+            readFile();
+        } catch (IOException e) {
+            System.out.println("Caught the exception: " + e.getMessage());
+        }
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **`throw`:** You use the `throw` keyword inside a method to create and throw a new exception object. This is used to signal an error condition.
+*   **`throws`:** You use the `throws` keyword in a method signature to tell the callers of your method that it might throw certain checked exceptions. This forces the callers to handle those exceptions (either by catching them or by declaring that they also `throw` them).
+
+**The Principal's Take:**
+The `throws` clause is a key part of our design for checked exceptions. It's a way of making the error-handling contract of a method explicit. When you see a `throws` clause in a method signature, it's a clear signal that you need to be prepared to handle those potential errors.
+
+---
+
 [Previous: 05 - Data Structures: Organizing Your Data](../05-Data-Structures/README.md) | [Next: 07 - Java Collections Framework: A Deeper Look](../07-Java-Collections-Framework/README.md)

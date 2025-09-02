@@ -153,4 +153,102 @@ Declaring a class `abstract` means one thing: **it cannot be instantiated**. You
 
 ---
 
+### Q: When and how do you use the `super` keyword?
+
+The `super` keyword is a reference variable that is used to refer to the immediate parent class object.
+
+**The Principal's Take:** `super` is essential for controlling how a subclass interacts with its superclass, particularly when calling constructors and overridden methods.
+
+**Usage Scenarios:**
+
+1.  **To access data members of the parent class** when the parent and child have members with the same name.
+2.  **To call methods of the parent class** when they are overridden by the child class.
+3.  **To call the constructor of the parent class** (both default and parameterized). This is its most common and important use.
+
+**The Code Example:**
+```java
+class Animal {
+    String color = "white";
+
+    Animal() {
+        System.out.println("Animal is created");
+    }
+
+    void eat() {
+        System.out.println("eating...");
+    }
+}
+
+class Dog extends Animal {
+    String color = "black";
+
+    Dog() {
+        super(); // 1. Calls the parent class constructor. This is done implicitly if not written.
+        System.out.println("Dog is created");
+    }
+
+    void printColor() {
+        System.out.println(color); // Prints color of Dog class
+        System.out.println(super.color); // 2. Prints color of Animal class
+    }
+
+    @Override
+    void eat() {
+        System.out.println("eating bread...");
+        super.eat(); // 3. Calls the parent class's eat method
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **`super()` for Constructors:** The call to `super()` in the `Dog` constructor invokes the constructor of the parent class, `Animal`. If you don't explicitly call `super()`, the compiler will implicitly insert a call to the superclass's no-argument constructor as the first statement. If the superclass does not have a no-argument constructor, you *must* explicitly call `super()` with the appropriate arguments.
+*   **`super` for Members:** `super.color` is used to access the `color` field from the `Animal` class, distinguishing it from the `color` field in the `Dog` class.
+*   **`super` for Methods:** `super.eat()` is used inside the overridden `eat` method in `Dog` to call the original implementation from the `Animal` class. This is a common pattern when you want to extend the behavior of a superclass method, not just replace it.
+
+---
+
+### Q: What is Object Cloning and how do you achieve it?
+
+Object cloning is the process of creating an exact copy of an object.
+
+**The Principal's Take:** Java's cloning mechanism is a bit tricky and has some design flaws. While you need to understand it for interviews, in modern Java, it's often better to use other approaches like copy constructors or factory methods to create copies of objects.
+
+**How to Achieve It:**
+To make an object cloneable, you need to do two things:
+1.  Implement the `java.lang.Cloneable` interface. This is a "marker interface" - it has no methods. It just tells the JVM that your object is allowed to be cloned.
+2.  Override the `Object.clone()` method. The default implementation of `clone()` in the `Object` class performs a "shallow copy".
+
+**The Code Example:**
+```java
+class Student implements Cloneable {
+    int id;
+    String name;
+
+    Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    // Overriding the clone method to provide a deep copy
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **Shallow vs. Deep Copy:**
+    *   A **shallow copy** (the default behavior of `Object.clone()`) copies the fields of an object. If a field is a primitive type, its value is copied. If a field is a reference to an object, only the reference is copied, not the object itself. This means both the original and the cloned object will point to the same referenced objects.
+    *   A **deep copy** copies everything. If a field is a reference to an object, a copy of that object is also made.
+*   **The `Cloneable` Marker Interface:** If you call `clone()` on an object that does not implement `Cloneable`, it will throw a `CloneNotSupportedException`. We designed it this way to give developers control over which objects can be cloned.
+*   **`super.clone()`:** The call to `super.clone()` in the example performs a shallow copy. If your object contains references to other mutable objects, you would need to override `clone()` to perform a deep copy by also cloning those referenced objects.
+
+**System Design Insight:**
+The `Cloneable` interface is considered a flawed design by many, including some of the original designers. It lacks a `clone` method, and the mechanism is not type-safe (it returns `Object`). For these reasons, it's often recommended to avoid it in new code and to favor other copying mechanisms.
+
+---
+
 [Previous: 03 - Object-Oriented Programming: Building with Blueprints](../03-Object-Oriented-Programming/README.md) | [Next: 05 - Data Structures: Organizing Your Data](../05-Data-Structures/README.md)

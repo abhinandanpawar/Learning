@@ -59,4 +59,72 @@ This is the fundamental rhythm of Java development. In the next chapter, we'll s
 
 ---
 
+## Interview Deep Dives
+
+### Q: What is the difference between the JDK and the JRE?
+
+This is a fundamental question that tests your understanding of the Java ecosystem.
+
+*   **JRE (Java Runtime Environment):** This is the environment that you need to *run* a Java application. It includes the JVM and the core Java libraries. If you are a user who just wants to run a Java program, you only need the JRE.
+*   **JDK (Java Development Kit):** This is the toolkit that you need to *develop* Java applications. It includes everything in the JRE, plus the compiler (`javac`), debuggers, and other development tools like `javadoc` and `jdb`.
+
+**The Principal's Take:**
+As a developer, you will always install the JDK. The JRE is a subset of the JDK. Understanding this distinction is important for understanding how Java applications are built and distributed.
+
+### Q: How do you work with Java from the command line?
+
+While most developers use an IDE, it's important to know how to compile and run Java from the command line. This is especially useful for understanding the build process and for working in environments where an IDE is not available.
+
+**The Compilation and Execution Process:**
+
+1.  **Write your code:** Save your code in a `.java` file (e.g., `HelloWorld.java`).
+2.  **Compile:** Open a terminal or command prompt, navigate to the directory where you saved your file, and run the compiler:
+    ```bash
+    javac HelloWorld.java
+    ```
+    This will create a `HelloWorld.class` file, which contains the Java bytecode.
+3.  **Run:** Run the program using the `java` command, followed by the name of the class (not the filename):
+    ```bash
+    java HelloWorld
+    ```
+    The JVM will then execute the bytecode.
+
+**Command-Line Arguments:**
+You can pass arguments to your Java program from the command line. These arguments are available in the `String[] args` array in your `main` method.
+
+```java
+public class Greeter {
+    public static void main(String[] args) {
+        if (args.length > 0) {
+            System.out.println("Hello, " + args[0]);
+        } else {
+            System.out.println("Hello, World!");
+        }
+    }
+}
+```
+
+You would run this like:
+```bash
+javac Greeter.java
+java Greeter Jules  # Output: Hello, Jules
+```
+
+**Redirection and Piping:**
+You can also use standard command-line redirection and piping with your Java programs.
+
+*   **Redirecting Output:**
+    ```bash
+    java Greeter Jules > output.txt # The output will be written to output.txt
+    ```
+*   **Piping:**
+    ```bash
+    cat names.txt | java Greeter # This is more complex and requires your program to read from standard input.
+    ```
+
+**The Principal's Take:**
+Knowing how to work with Java from the command line is a fundamental skill. It helps you understand what your IDE is doing for you under the hood and is essential for automation and scripting.
+
+---
+
 [Previous: 00 - A Conversation with the Designer: An Introduction to Java](../00-Introduction/README.md) | [Next: 02 - Java Basics: The Building Blocks of the Language](../02-Java-Basics/README.md)

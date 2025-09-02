@@ -80,6 +80,111 @@ To solve this, we use the `synchronized` keyword.
 
 ---
 
+### Q: What is the difference between a synchronized method and a synchronized block?
+
+This question tests your understanding of how to use the `synchronized` keyword effectively.
+
+**The Principal's Take:** Synchronized blocks are more flexible and are often preferred over synchronized methods because they allow you to lock on any object and to scope the synchronization to the smallest possible block of code.
+
+| Feature | Synchronized Method | Synchronized Block |
+|---|---|---|
+| **Lock Object** | The lock is on the `this` object (for instance methods) or the `Class` object (for static methods). | You can explicitly specify the object to lock on. |
+| **Scope** | The entire method is synchronized. | Only the code within the block is synchronized. |
+| **Flexibility** | Less flexible. | More flexible. Allows for finer-grained locking. |
+
+**The Code Example:**
+```java
+public class SynchronizationComparison {
+
+    // Synchronized method: locks on 'this'
+    public synchronized void synchronizedMethod() {
+        // ...
+    }
+
+    // Synchronized block: locks on 'this'
+    public void synchronizedBlockOnThis() {
+        synchronized (this) {
+            // ...
+        }
+    }
+
+    private final Object lock = new Object();
+
+    // Synchronized block: locks on a private lock object
+    public void synchronizedBlockOnPrivateLock() {
+        synchronized (lock) {
+            // ...
+        }
+    }
+}
+```
+
+**System Design Insight:**
+*   **Minimize the scope of synchronization:** You should only synchronize the critical section of your code that accesses shared data. Synchronizing entire methods can lead to performance bottlenecks, as it holds the lock for longer than necessary. This is a strong argument for preferring synchronized blocks.
+*   **Avoid locking on `this`:** Locking on `this` (which is what a synchronized method does implicitly) can be risky because it exposes the lock to external code. Another class could acquire a lock on your object and cause a deadlock. It is a best practice to use a `private final Object` as your lock object. This encapsulates the lock within your class and prevents external interference.
+
+---
+
+### Q: What is a deadlock and how can you prevent it?
+
+A deadlock is a situation where two or more threads are blocked forever, waiting for each other.
+
+**The Principal's Take:** Deadlocks are one of the most feared concurrency issues. They can be very hard to debug because they often depend on timing and are not easily reproducible. The best way to deal with deadlocks is to design your code to prevent them from happening in the first place.
+
+**A Classic Deadlock Scenario:**
+Imagine two threads, Thread 1 and Thread 2, and two resources, Lock A and Lock B.
+1.  Thread 1 acquires Lock A.
+2.  Thread 2 acquires Lock B.
+3.  Thread 1 tries to acquire Lock B, but it's held by Thread 2, so Thread 1 blocks.
+4.  Thread 2 tries to acquire Lock A, but it's held by Thread 1, so Thread 2 blocks.
+
+Now, both threads are blocked, waiting for a lock held by the other thread. They will wait forever.
+
+**How to Prevent Deadlocks:**
+The most common way to prevent deadlocks is to ensure that all threads acquire locks in the same order.
+
+**The Code Example:**
+```java
+public class DeadlockExample {
+    private final Object lockA = new Object();
+    private final Object lockB = new Object();
+
+    public void method1() {
+        synchronized (lockA) {
+            // ...
+            synchronized (lockB) {
+                // ...
+            }
+        }
+    }
+
+    public void method2() {
+        // This can cause a deadlock if called concurrently with method1
+        // synchronized (lockB) {
+        //     // ...
+        //     synchronized (lockA) {
+        //         // ...
+        //     }
+        // }
+
+        // This is the correct way: acquire locks in the same order as method1
+        synchronized (lockA) {
+            // ...
+            synchronized (lockB) {
+                // ...
+            }
+        }
+    }
+}
+```
+
+**System Design Insight:**
+*   **Lock Ordering:** Enforcing a strict order for acquiring locks is the simplest and most effective way to prevent deadlocks.
+*   **Timeouts:** Using `tryLock` with a timeout (from the `java.util.concurrent.locks.Lock` interface) can be another way to mitigate deadlocks. If a thread can't acquire a lock within a certain amount of time, it can back off and try again later.
+*   **Deadlock Detection:** The JVM is not able to prevent deadlocks, but it can detect them. You can use a tool like `jstack` or a profiler to get a thread dump, which will show you if any threads are in a deadlock state.
+
+---
+
 ### Q58: Describe the different states of a thread.
 
 A thread can be in one of six states, which are defined in the `Thread.State` enum.

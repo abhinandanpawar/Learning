@@ -32,4 +32,29 @@ Let's begin.
 
 ---
 
+## Interview Deep Dives
+
+### Q4 & Q5: Where does Java fit in the world of programming paradigms?
+
+To understand Java's design, it's helpful to see where it fits in the broader landscape of programming languages.
+
+**Programming Paradigms** are different ways or styles in which to think about and structure programs. The two main categories are:
+
+1.  **Imperative Programming:** This paradigm focuses on **how** to execute program logic. It's a sequence of statements that change the program's state.
+    *   **Procedural Programming:** A sub-paradigm where programs are built from procedures or subroutines (e.g., C).
+    *   **Object-Oriented Programming (OOP):** A sub-paradigm where programs are organized as objects that contain both data and behavior. **This is where Java lives.** We chose OOP to help developers manage the complexity of large applications by modeling real-world entities.
+    *   **Parallel Programming:** A sub-paradigm that focuses on executing tasks simultaneously.
+
+2.  **Declarative Programming:** This paradigm focuses on **what** to execute, not how. It defines the logic without describing the control flow.
+    *   **Functional Programming:** A sub-paradigm where programs are constructed by applying and composing functions (e.g., Haskell, Lisp). We've incorporated many functional ideas into modern Java with features like Lambdas and Streams.
+    *   **Logical Programming:** A sub-paradigm based on formal logic (e.g., Prolog).
+
+**What about Structured Programming?**
+Structured Programming is not a paradigm itself, but a fundamental principle that is part of almost all modern paradigms. It states that programs should use structured control flow (e.g., `if/then/else`, `for`, `while`) instead of `goto` statements. We, of course, built Java on this principle.
+
+**The Principal's Take:**
+Java is fundamentally an **imperative, object-oriented** language. This was a deliberate design choice to provide a familiar and powerful model for building large-scale systems. However, we've also recognized the power of the declarative, functional paradigm, which is why we've integrated features like the Streams API into the language. As a principal engineer, you should be comfortable using both the OOP and functional features of Java, and know when to apply each.
+
+---
+
 [Next: 01 - Getting Started: Your First Conversation with the JVM](../01-Getting-Started/README.md)

@@ -21,6 +21,18 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [12 - System Design with Java](./12-System-Design-with-Java/README.md)
 *   [13 - Java Ecosystem](./13-Java-Ecosystem/README.md)
 *   [14 - New Java Features](./14-New-Java-Features/README.md)
+*   [15 - JDBC and Database Connectivity](./15-JDBC/README.md)
+*   [16 - GUI Development with Swing and JavaFX](./16-GUI/README.md)
+*   [17 - Unit Testing with JUnit](./17-Unit-Testing/README.md)
+*   [18 - Java Best Practices and Code Quality](./18-Best-Practices/README.md)
+*   [19 - Project Development and Real-World Applications](./19-Project-Development/README.md)
+*   [20 - Trees](./20-Trees/README.md)
+*   [21 - Graphs](./21-Graphs/README.md)
+*   [22 - Dynamic Programming](./22-Dynamic-Programming/README.md)
+*   [23 - Bit Manipulation](./23-Bit-Manipulation/README.md)
+*   [24 - Recursion and Backtracking](./24-Recursion-and-Backtracking/README.md)
+*   [25 - Interview and Growth Prep](./25-Interview-and-Growth-Prep/README.md)
+*   [26 - Java Networking](./26-Java-Networking/README.md)
 
 ---
 

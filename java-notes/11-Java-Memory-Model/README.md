@@ -67,6 +67,15 @@ This group of questions revolves around how Java manages memory, a critical topi
     *   **A:** There is no simple, direct way to get the exact size of a single object in your Java code. The actual size is implementation-dependent and includes the object header in addition to the fields.
     *   **Principal's Take:** This is a bit of a trick question. While you can't get the size programmatically, you can use profiling tools like **JFR** or **VisualVM** to analyze the memory usage of your application and see how much space different types of objects are taking up on the heap. This is the practical way to answer the underlying question, which is usually about diagnosing memory usage problems.
 
+*   **Q: What is the purpose of the `finalize()` method?**
+    *   **A:** The `finalize()` method is called by the garbage collector on an object just before it is about to be reclaimed. It's a chance to perform any last-minute cleanup of resources held by the object.
+    *   **Principal's Take:** The `finalize()` method is a relic and should be avoided. It's unreliable (there's no guarantee when or even if it will be called), it can cause performance issues, and it can resurrect objects, making them harder to garbage collect. For resource cleanup, you should always use `try-with-resources` or a `finally` block.
+
+*   **Q: What is the PermGen/Metaspace area of the heap?**
+    *   **A:** In older versions of Java (before Java 8), the **Permanent Generation (PermGen)** was a special area of the heap used to store class metadata, interned strings, and static content. It had a fixed size and could cause `OutOfMemoryError: PermGen space` if too many classes were loaded.
+    *   In **Java 8 and later**, PermGen was replaced by **Metaspace**. Metaspace is allocated from native memory, not the Java heap, and it can grow automatically by default. This change was made to reduce the frequency of PermGen-related `OutOfMemoryError`s.
+    *   **Principal's Take:** Understanding the evolution from PermGen to Metaspace is important for diagnosing memory issues in different versions of Java. While Metaspace is more flexible, you still need to monitor it, as a classloader leak can still exhaust native memory.
+
 ---
 
 [Previous: 10 - Multithreading and Concurrency: Juggling Multiple Tasks](../10-Multithreading-and-Concurrency/README.md) | [Next: 12 - System Design with Java: Building Large-Scale Systems](../12-System-Design-with-Java/README.md)

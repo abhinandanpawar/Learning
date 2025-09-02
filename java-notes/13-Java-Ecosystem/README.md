@@ -68,4 +68,21 @@ implementation("org.springframework.boot:spring-boot-starter-web")
 
 ---
 
+### A Principal's Production Playbook for Spring Boot
+
+Spring Boot is more than a framework; it's a platform for building production-grade, standalone applications. A principal engineer should have a strong, opinionated view on how to use it effectively.
+
+*   **Core Dependencies:** For a typical RESTful service, you'll want `spring-boot-starter-web` (for building web applications), `spring-boot-starter-actuator` (for production-ready features like health checks), `spring-boot-starter-data-jpa` (for database access), and `spring-boot-starter-test` (for testing).
+
+*   **Application Structure:** Structure your application to reflect its architecture. A clean approach is to separate concerns into packages: `web` (controllers), `service` (business logic), `repository` (data access), and `domain` (your entities).
+
+*   **Configuration:** Externalize your configuration using `application.yml`. Use profiles (`dev`, `prod`) for different environments and use `@ConfigurationProperties` for type-safe access to your configuration.
+
+*   **Testing Strategy:** Employ a balanced test pyramid.
+    *   **Unit Tests:** Use `@Test` with Mockito to test components in isolation.
+    *   **Integration Tests:** Use `@SpringBootTest` and **Testcontainers** to test the integration with real dependencies like a database.
+    *   **API / End-to-End Tests:** Use `@SpringBootTest` with `webEnvironment = WebEnvironment.RANDOM_PORT` and `TestRestTemplate` to make real HTTP calls to your running application.
+
+---
+
 [Previous: 12 - System Design with Java: Building Large-Scale Systems](../12-System-Design-with-Java/README.md) | [Next: 14 - New Java Features: The Evolution of the Language](../14-New-Java-Features/README.md)

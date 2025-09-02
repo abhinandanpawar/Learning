@@ -6,35 +6,76 @@ Since Java 9, we've moved to a new, faster release cadence: a new version of Jav
 
 Here are some of the most important features we've added in recent years.
 
-## 1. Functional Programming: Lambdas and Streams (Java 8)
+## 1. Records: True Immutable Data Carriers
 
-We saw the rise of functional programming and knew we had to bring its power to Java. In Java 8, we introduced:
+**System Design Context:** In distributed systems, you are constantly passing data between services. These Data Transfer Objects (DTOs) should be simple, immutable carriers of data. Before records, this meant writing hundreds of lines of boilerplate `getters`, `equals`, `hashCode`, and `toString`.
 
-*   **Lambda Expressions:** A concise way to represent anonymous functions.
-*   **Streams API:** A powerful new way to process collections of data in a declarative style.
+**The Principal's Take:** `records` are the canonical way to model immutable data aggregates. They are not "just boilerplate reduction". They are a semantic statement: "This object is a simple, transparent holder for its data."
 
-This was a massive change for the language, but it was essential to keep Java relevant in a world of big data and multi-core processors.
+### Complete, Runnable Example:
+```java
+public class RecordExample {
 
-## 2. Making Your Code More Concise: `var` and Records
+    // A record is a concise, final, immutable data class.
+    public record UserDto(long id, String email) {
+        // You can add compact constructors for validation.
+        public UserDto {
+            if (id < 0) {
+                throw new IllegalArgumentException("ID cannot be negative");
+            }
+        }
+    }
 
-We've also been working to reduce the amount of "boilerplate" code you have to write in Java.
+    public static void main(String[] args) {
+        UserDto user = new UserDto(123L, "test@example.com");
+        System.out.println(user); // Prints: UserDto[id=123, email=test@example.com]
+        System.out.println("User ID: " + user.id()); // Accessor method
+    }
+}
+```
 
-*   **`var` (Java 10):** This allows the compiler to infer the type of a local variable, which can make your code more readable.
-*   **Records (Java 14):** This is a new, compact syntax for creating simple, immutable data classes.
-
-## 3. Smarter, Safer Code: Pattern Matching
-
-Pattern matching is a powerful feature that we've been gradually adding to the language.
-
-*   **Pattern Matching for `instanceof` (Java 14):** This simplifies the common pattern of checking an object's type and then casting it.
-*   **Switch Expressions (Java 14):** A more powerful and less error-prone version of the traditional `switch` statement.
-
-## The Future of Java
-
-We're not done yet. We're constantly working on new features to make Java more productive, more performant, and more enjoyable to use. The future of Java is bright.
+### Memory Flow & JVM Deep Dive:
+A `record` is just a special kind of `class` under the hood. When `new UserDto(...)` is called:
+1.  An object is allocated on the **Heap**.
+2.  The object header points to the `UserDto` class metadata.
+3.  The fields (`id` and `email` reference) are stored in the object. They are `private` and `final` by default.
+4.  The compiler auto-generates the canonical constructor, `equals()`, `hashCode()`, `toString()`, and accessor methods (e.g., `id()`, `email()`).
 
 ---
 
+## 2. Pattern Matching: Type-Safe, Boilerplate-Free Logic
+
+**System Design Context:** Polymorphism is great, but sometimes you have to work with a general type (`Object`, or a `sealed` interface) and perform different logic based on the concrete type. Pattern matching cleans up this code dramatically.
+
+**The Principal's Take:** Pattern matching isn't just about saving a few lines of code. It moves type-checking logic from boilerplate `if/else` chains into the language itself, making it more declarative and less error-prone. It's a key enabler for features like `sealed` classes.
+
+### Complete, Runnable Example:
+```java
+public class PatternMatchingExample {
+
+    sealed interface Shape permits Circle, Square {}
+    record Circle(double radius) implements Shape {}
+    record Square(double side) implements Shape {}
+
+    public static double getArea(Shape shape) {
+        return switch (shape) {
+            case Circle c -> Math.PI * c.radius() * c.radius();
+            case Square s -> s.side() * s.side();
+        };
+    }
+
+    public static void main(String[] args) {
+        Shape circle = new Circle(10);
+        System.out.println("Area of circle: " + getArea(circle));
+    }
+}
+```
+
+### Deep Dive into Trade-offs:
+*   **Pattern Matching `switch` vs. Polymorphism:** For a closed set of types (like a `sealed` interface), a pattern matching `switch` is often cleaner and more maintainable than implementing a method on each subclass (the classic visitor or polymorphic pattern). It co-locates the logic. For an open set of types, polymorphism is more extensible.
+*   **Guards:** You can add `when` clauses (guards) to your patterns for more complex logic, e.g., `case Circle c when c.radius() > 100 -> ...`.
+
+---
 ## Interview Deep Dives
 
 ### What is the difference between an LTS and a non-LTS version of Java?
@@ -52,4 +93,14 @@ Since Java 9, Oracle has moved to a new, time-based release model with a new fea
 
 ---
 
-[Previous: 13 - The Java Ecosystem: Tools of the Trade](../13-Java-Ecosystem/README.md)
+### A Deep Dive into the Stream API
+
+The Stream API is not just a tool for writing less code; it's a paradigm shift from imperative to declarative data processing.
+
+*   **The Stream Pipeline:** Think of a stream pipeline as an assembly line for your data: `source -> intermediate op -> ... -> terminal op`. Streams are **lazy**; no work is done until the terminal operation is called. This allows the JVM to be very efficient.
+*   **Advanced `Collectors`:** The real power of streams comes from the `Collectors` class. You can use collectors like `groupingBy` and `summingDouble` to perform complex aggregations and transformations on your data.
+*   **Parallel Streams:** Be very careful with `parallel()`. It is not a magic performance booster. It uses the common `ForkJoinPool`, and if you submit a task that blocks (e.g., a network call), you can starve the pool and harm your application's performance. Only use it for CPU-intensive tasks on very large datasets.
+
+---
+
+[Previous: 13 - The Java Ecosystem: Tools of the Trade](../13-Java-Ecosystem/README.md) | [Next: 15 - JDBC and Database Connectivity](../15-JDBC/README.md)

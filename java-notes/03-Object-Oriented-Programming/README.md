@@ -177,4 +177,137 @@ The key to the Singleton pattern is a `private` constructor and a `public static
 
 ---
 
+### Q: What is a Constructor? Can it be overloaded?
+
+**The Code Example:**
+```java
+public class Product {
+    private String name;
+    private double price;
+
+    // Default constructor (no arguments)
+    public Product() {
+        this.name = "Default Product";
+        this.price = 0.0;
+    }
+
+    // Parameterized constructor
+    public Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    // Copy constructor
+    public Product(Product other) {
+        this.name = other.name;
+        this.price = other.price;
+    }
+}
+```
+
+**Detailed Explanation:**
+A **constructor** is a special method that is called when an object is created (`new`). Its primary purpose is to initialize the object's state.
+
+*   **Rules for constructors:**
+    *   A constructor's name must be the same as the class name.
+    *   A constructor cannot have an explicit return type.
+*   **Default Constructor:** If you don't define any constructor in a class, the Java compiler will create a default, no-argument constructor for you.
+*   **Constructor Overloading:** Just like methods, constructors can be overloaded. This means you can have multiple constructors in a class, as long as they have different parameter lists. This provides different ways to create and initialize an object.
+*   **Copy Constructor:** A copy constructor is a constructor that takes another object of the same class as an argument and initializes the new object with the values from the existing object. While Java doesn't provide an automatic copy constructor like C++, you can write one yourself, as shown in the example.
+
+**The Principal's Take:**
+Constructors are fundamental to OOP in Java. They ensure that an object is in a valid state as soon as it's created. Using constructor overloading is a clean way to provide flexible object creation. While copy constructors are less common in idiomatic Java (people often use `clone()` or factory methods instead), understanding the pattern is important.
+
+---
+
+### Q: What is the difference between Method Overloading and Method Overriding?
+
+This is a fundamental question about polymorphism in Java.
+
+**The Principal's Take:** Overloading is about having multiple methods with the same name but different signatures in the same class. Overriding is about a subclass providing a specific implementation for a method that is already defined in its superclass.
+
+| Feature | Method Overloading (Compile-time Polymorphism) | Method Overriding (Runtime Polymorphism) |
+|---|---|---|
+| **Purpose** | To provide different ways to call a method with different arguments. | To provide a specific implementation of a method in a subclass. |
+| **Scope** | Occurs within the same class. | Occurs between a superclass and a subclass. |
+| **Signature** | Methods must have different signatures (different number or type of parameters). | Methods must have the same signature (same name, number, and type of parameters). |
+| **Return Type** | Can be different. | Must be the same or a covariant type. |
+| **`static` methods** | Can be overloaded. | Cannot be overridden (this is called method hiding). |
+
+**The Code Example:**
+```java
+class Shape {
+    // Overloaded method
+    public void draw() {
+        System.out.println("Drawing a generic shape.");
+    }
+
+    public void draw(String color) {
+        System.out.println("Drawing a " + color + " shape.");
+    }
+
+    public double getArea() {
+        return 0.0;
+    }
+}
+
+class Circle extends Shape {
+    private double radius;
+
+    public Circle(double radius) { this.radius = radius; }
+
+    // Overriding the getArea method
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   **Overloading:** In the `Shape` class, the `draw()` method is overloaded. We have two versions: one with no arguments and one that takes a `String`. The compiler decides which one to call based on the arguments you provide at compile time.
+*   **Overriding:** The `Circle` class `extends` `Shape` and provides its own version of the `getArea()` method. When you call `getArea()` on a `Circle` object, the JVM uses the object's actual type at runtime to decide which version of the method to execute (the one in `Circle`). The `@Override` annotation is not required, but it's a best practice as it tells the compiler to check that you are actually overriding a method from the superclass.
+
+**System Design Insight:**
+*   **Overloading** is a form of "syntactic sugar" that makes an API more convenient to use.
+*   **Overriding** is the mechanism that enables runtime polymorphism, which is a cornerstone of flexible and extensible object-oriented design. It allows you to write code that operates on a general type (like `Shape`) while correctly executing the specific behavior of a concrete type (like `Circle`).
+
+---
+
+### Q: What are the different types of inheritance? Why doesn't Java support multiple inheritance?
+
+Inheritance is a fundamental pillar of OOP, but it's important to understand its different forms and limitations.
+
+**The Principal's Take:** We made a conscious design decision to exclude multiple inheritance of classes from Java. This was to avoid the complexity and ambiguity of the "Diamond Problem". We provided interfaces as a cleaner way to achieve a similar goal.
+
+**Types of Inheritance:**
+
+*   **Single Inheritance:** A class can inherit from only one superclass. This is the model that Java follows.
+*   **Multilevel Inheritance:** A class can inherit from a class that itself inherits from another class (e.g., `C` extends `B`, and `B` extends `A`). This is supported in Java.
+*   **Hierarchical Inheritance:** Multiple classes can inherit from a single superclass (e.g., `B` extends `A`, and `C` extends `A`). This is also supported in Java.
+*   **Multiple Inheritance:** A class inherits from multiple superclasses. **Java does not support this for classes.**
+*   **Hybrid Inheritance:** A mix of two or more of the above types of inheritance. Since Java doesn't support multiple inheritance, it doesn't support hybrid inheritance that involves multiple inheritance.
+
+**The "Diamond Problem": Why Multiple Inheritance is Tricky**
+
+Imagine two classes, `B` and `C`, that both inherit from a class `A`. And a class `D` inherits from both `B` and `C`. If `A` has a method `foo()`, and both `B` and `C` override it, which version of `foo()` should `D` inherit? This ambiguity is known as the Diamond Problem.
+
+```
+      A
+     / \
+    B   C
+     \ /
+      D
+```
+
+**Java's Solution: Interfaces**
+We solved this by allowing a class to `implement` multiple interfaces. An interface defines a contract of methods, but it doesn't provide an implementation for instance methods (prior to Java 8's default methods). This means there is no ambiguity about which implementation to inherit. A class can promise to fulfill multiple contracts (interfaces) while only inheriting the implementation from one superclass.
+
+**System Design Insight:**
+*   **Favor Composition over Inheritance:** This is a common design principle. Instead of inheriting from a class to get its functionality, you can hold an instance of that class as a field. This is often more flexible and less coupled.
+*   **Use Interfaces for Contracts:** Use interfaces to define the "what" (the contract), and use classes to define the "how" (the implementation). This leads to a more flexible and testable design.
+
+---
+
 [Previous: 02 - Java Basics: The Building Blocks of the Language](../02-Java-Basics/README.md) | [Next: 04 - Advanced OOP: Interfaces and Abstraction](../04-Advanced-OOP/README.md)

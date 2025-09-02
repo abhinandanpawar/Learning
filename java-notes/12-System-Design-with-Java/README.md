@@ -77,4 +77,18 @@ System design interviews are less about specific Java knowledge and more about y
 
 ---
 
+### A Field Guide to Architectural Patterns
+
+When you are in a system design interview, being able to discuss and apply established architectural patterns shows a level of sophistication and experience. Here are a few key patterns to have in your toolkit.
+
+*   **Hexagonal / Clean Architecture:** The goal of this pattern is to protect your core business logic from being tightly coupled to external concerns like your web framework or database. Your core logic defines "ports" (Java interfaces), and all external technologies are implemented as "adapters" that plug into these ports. This is the gold standard for building maintainable, long-lived applications.
+
+*   **CQRS (Command Query Responsibility Segregation):** This pattern separates the "write" model (Commands) from the "read" model (Queries). This is useful when the way you write data is very different from the way you read it. For example, you might use a complex, normalized model for writes, but a denormalized, read-optimized view for queries. This pattern adds complexity, so only use it when you have a clear need for separate read/write models.
+
+*   **Circuit Breaker:** This is a non-negotiable pattern for any production microservice that has downstream dependencies. It wraps a dangerous operation (like a network call) in a component that monitors for failures. If the number of failures exceeds a threshold, the circuit "opens", and all subsequent calls fail immediately without even trying to make the network call. This prevents cascading failures. Use a library like **Resilience4j**.
+
+*   **Saga:** This pattern is used to manage data consistency across multiple services in a distributed transaction. It models a long-running transaction as a sequence of smaller, local transactions. If a step fails, the saga executes a series of compensating transactions to undo the previous steps. This is a complex pattern, and you should be prepared to discuss the trade-offs between different implementations (e.g., Choreography vs. Orchestration).
+
+---
+
 [Previous: 11 - The Java Memory Model: A Deep Dive](../11-Java-Memory-Model/README.md) | [Next: 13 - The Java Ecosystem: Tools of the Trade](../13-Java-Ecosystem/README.md)
