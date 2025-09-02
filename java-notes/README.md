@@ -35,6 +35,7 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [26 - Java Networking](./26-Java-Networking/README.md)
 *   [27 - Spring Boot Handbook](./spring_boot_handbook.md)
 
+---
 
 ## Advanced Topics for the Experienced Developer
 
