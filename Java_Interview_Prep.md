@@ -209,6 +209,7 @@ These three are the core components of the Java platform. It's essential to unde
         ```
     *   Enums are much more than just constants; they are special classes. They can have constructors, methods, and instance variables.
 
+
 ---
 
 ## Chapter 2: Object-Oriented Programming (OOP)
@@ -301,6 +302,7 @@ OOP is the paradigm upon which Java is built. A strong understanding of its prin
 *   **Follow-up Q: Can you use `this()` and `super()` in the same constructor?**
     *   No. Both `this()` and `super()` must be the very first statement in a constructor. You can't have both, so you must choose one.
 
+
 #### **Q17: What is the difference between `super()` and `this()`?**
 
 *   **Interviewer's Angle:** This question checks your understanding of constructor chaining.
@@ -311,6 +313,7 @@ OOP is the paradigm upon which Java is built. A strong understanding of its prin
         1.  The call to `this()` or `super()` must be the **very first statement** in the constructor.
         2.  You can only have **one** of them in a constructor. You cannot have both `this()` and `super()` in the same constructor.
         3.  If you don't explicitly call `super()` in a subclass constructor, the compiler will implicitly insert a call to the superclass's no-argument constructor.
+
 
 ---
 
@@ -376,6 +379,7 @@ These two concepts are fundamental to polymorphism in Java.
     *   The compiler would not know which method to call. Consider this code: `myObject.calculate()`. If you have two `calculate()` methods, one returning `int` and one returning `double`, how does the compiler know which one you intended to call?
     *   While you could argue that it's clear in an assignment like `int result = myObject.calculate();`, Java allows you to call a method without assigning its return value. In that ambiguous case (`myObject.calculate();`), there's no way for the compiler to decide. To avoid this ambiguity, Java makes it a rule that the method signature (name and parameters) must be unique for overloading.
 
+
 #### **Q22: What is a Covariant Return Type?**
 
 *   **Interviewer's Angle:** Tests your knowledge of a more subtle feature of method overriding introduced in Java 5.
@@ -398,6 +402,7 @@ These two concepts are fundamental to polymorphism in Java.
         }
         ```
     *   This feature allows for more specific return types in subclasses, which can eliminate the need for casting in the client code.
+
 
 ### 3.3. Abstraction in Detail
 
@@ -463,6 +468,7 @@ These two concepts are fundamental to polymorphism in Java.
 | `protected` |    Yes     |     Yes      |         Yes          |      No       |
 | `default`   |    Yes     |     Yes      |          No          |      No       |
 | `private`   |    Yes     |      No      |          No          |      No       |
+
 
 ---
 
@@ -1004,6 +1010,7 @@ Following standard coding conventions is a hallmark of a professional developer.
 
 ## Chapter 20: Tricky Questions
 
+
 This section includes questions that don't fit neatly into other categories but are common in interviews to test your depth of knowledge and problem-solving skills.
 
 #### **Q95: What is the difference between `fail-fast` and `fail-safe` iterators?**
@@ -1523,6 +1530,7 @@ Multithreading is a powerful Java feature that allows for the concurrent executi
     *   **`run()`:** This is a normal method call. If you call `run()` directly, no new thread is created. The `run()` method will be executed on the *current* thread, just like any other method call. Your program will remain single-threaded.
     *   **In short:** To achieve multithreading, you **must** call the `start()` method.
 
+
 #### **Q40: Explain the lifecycle of a thread.**
 
 *   **Interviewer's Angle:** A fundamental question to ensure you understand the different states a thread can be in.
@@ -1536,6 +1544,7 @@ Multithreading is a powerful Java feature that allows for the concurrent executi
         *   It has called `Thread.sleep()`.
         *   It has called `Thread.join()` on another thread.
     5.  **Terminated (Dead):** A thread is in this state when its `run()` method has completed execution. It cannot be restarted.
+
 
 ### 6.2. Synchronization and Thread Safety
 
@@ -1610,6 +1619,7 @@ Multithreading is a powerful Java feature that allows for the concurrent executi
     *   **Examples:** The Garbage Collector (GC) is a classic example of a daemon thread.
     *   **Usage:** They are used for background tasks that should not prevent the application from closing, like monitoring, logging, or caching.
     *   You can set a thread to be a daemon by calling `thread.setDaemon(true)` **before** calling `start()`.
+
 
 ---
 
@@ -1763,6 +1773,7 @@ This final chapter on Core Java covers some of the "behind-the-scenes" magic tha
         *   **Derived fields:** Fields whose values can be calculated from other fields. There's no need to save them, as they can be recalculated after deserialization.
         *   **Non-serializable fields:** Fields that refer to objects that do not implement the `Serializable` interface (like a database connection).
 
+
 #### **Q55: What is `serialVersionUID` and why is it important?**
 
 *   **Interviewer's Angle:** An advanced serialization question that tests your understanding of versioning and compatibility.
@@ -1771,6 +1782,7 @@ This final chapter on Core Java covers some of the "behind-the-scenes" magic tha
     *   **Purpose:** It is used during deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to serialization.
     *   **How it works:** When an object is serialized, the `serialVersionUID` is stored with it. When it's deserialized, the JVM compares the `serialVersionUID` of the serialized object with the `serialVersionUID` of the corresponding class on the receiver's end. If they don't match, an `InvalidClassException` is thrown.
     *   **Why it's important:** If you don't explicitly declare a `serialVersionUID`, the JVM will generate one based on the class's structure (fields, methods, etc.). If you then change the class (e.g., add a new field), the JVM will generate a new, different `serialVersionUID`. This will break deserialization of any old objects that were serialized with the previous version of the class. By explicitly declaring a `serialVersionUID`, you are telling the JVM that the new version of the class is compatible with the old version, and you are taking responsibility for handling the compatibility yourself. This gives you control over the versioning of your serialized classes.
+
 
 ---
 
