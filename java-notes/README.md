@@ -33,22 +33,6 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [24 - Recursion and Backtracking](./24-Recursion-and-Backtracking/README.md)
 *   [25 - Interview and Growth Prep](./25-Interview-and-Growth-Prep/README.md)
 *   [26 - Java Networking](./26-Java-Networking/README.md)
-
----
-
-## Advanced Topics for the Experienced Developer
-
-This section contains a series of concise, reference-style notes on topics that are relevant for developers with a few years of experience.
-
-*   [15 - Core Language Refresh (Java 17+)](./15-core-language-refresh.md)
-*   [16 - Collections & Streams Cheat-Sheet](./16-collections-and-streams.md)
-*   [17 - Concurrency Essentials](./17-concurrency-essentials.md)
-*   [18 - Modern Memory Management](./18-modern-memory-management.md)
-*   [19 - Spring Boot Mini-Playbook](./19-spring-boot-playbook.md)
-*   [20 - Architectural Patterns](./20-architectural-patterns.md)
-*   [21 - Performance & Observability](./21-performance-and-observability.md)
-*   [22 - Interview & Growth Prep](./22-interview-and-growth-prep.md)
-*   [23 - A Deep Dive into the Stream API](./23-stream-api-deep-dive.md)
-*   [24 - Java Networking: Talking to the Internet](./24-java-networking.md)
+*   [27 - Spring Boot Handbook](./spring_boot_handbook.md)
 
 Happy learning!
