@@ -73,6 +73,143 @@ These three are the core components of the Java platform. It's essential to unde
     *   **`char`**: It is a 16-bit unsigned integer that represents a UTF-16 Unicode character. Its range is from 0 to 65,535. It's used to store single characters.
     *   **Key Difference:** The primary difference is their purpose and size. `byte` is for raw 8-bit data, while `char` is for 16-bit characters, allowing it to represent characters from most of the world's languages.
 
+#### **Q8: What is the difference between `length` and `length()`?**
+
+*   **Interviewer's Angle:** A classic question to check for attention to detail and understanding of the difference between arrays and objects in Java.
+*   **How to Answer:**
+    *   **`length`**: This is an **instance variable** (a property) of an **array**. It returns the size of the array, i.e., the number of elements the array can hold.
+        ```java
+        int[] numbers = new int[10];
+        System.out.println(numbers.length); // Prints 10
+        ```
+    *   **`length()`**: This is a **method** of the `java.lang.String` class. It returns the number of characters in the string.
+        ```java
+        String s = "Hello";
+        System.out.println(s.length()); // Prints 5
+        ```
+    *   **In short:** `length` is for arrays, `length()` is for Strings.
+
+#### **Q9: What is the difference between the `>>` and `>>>` operators?**
+
+*   **Interviewer's Angle:** A niche question, but it shows a deep understanding of Java's bitwise operators.
+*   **How to Answer:**
+    *   Both are bitwise right shift operators.
+    *   **`>>` (Signed Right Shift):** This operator shifts the bits of the number to the right, but it preserves the sign bit (the most significant bit). If the number is positive, the new bits on the left are filled with 0s. If the number is negative, the new bits are filled with 1s.
+    *   **`>>>` (Unsigned Right Shift):** This operator also shifts the bits to the right, but it always fills the new bits on the left with 0s, regardless of the sign of the original number. This is also called "zero-fill right shift".
+    *   **Example:** For a positive number, both operators do the same thing. The difference appears for negative numbers.
+        ```java
+        int a = -8; // 11111111 11111111 11111111 11111000
+        System.out.println(a >> 2);  // -2 (preserves sign)
+        System.out.println(a >>> 2); // 1073741822 (fills with zeros)
+        ```
+
+#### **Q10: What is the `instanceof` operator and how is it used?**
+
+*   **Interviewer's Angle:** Checks your understanding of runtime type identification.
+*   **How to Answer:**
+    *   The `instanceof` operator is a binary operator used to test if an object is an instance of a particular class, a subclass, or an implementation of an interface.
+    *   It returns a boolean value (`true` or `false`).
+    *   **Syntax:** `(objectReference instanceof Type)`
+    *   **Usage:** It's often used before a cast to avoid a `ClassCastException`.
+        ```java
+        Object obj = "Hello World";
+
+        if (obj instanceof String) {
+            String s = (String) obj; // Safe to cast
+            System.out.println(s.toUpperCase());
+        }
+        ```
+    *   If the `objectReference` is `null`, `instanceof` will always return `false`.
+
+#### **Q11: What are Wrapper Classes in Java?**
+
+*   **Interviewer's Angle:** Tests your knowledge of how Java handles primitives and objects.
+*   **How to Answer:**
+    *   Wrapper classes are a set of classes in Java that "wrap" a primitive data type into an object. Each of Java's eight primitive data types has a corresponding wrapper class:
+        *   `byte` -> `Byte`
+        *   `short` -> `Short`
+        *   `int` -> `Integer`
+        *   `long` -> `Long`
+        *   `float` -> `Float`
+        *   `double` -> `Double`
+        *   `char` -> `Character`
+        *   `boolean` -> `Boolean`
+    *   **Purpose:**
+        1.  The Java Collections Framework works with objects, so you cannot store primitives directly in a `List` or `Map`. You must use their wrapper class (e.g., `List<Integer>`).
+        2.  They provide utility methods related to the primitive type (e.g., `Integer.parseInt()`, `Character.isDigit()`).
+        3.  An object is needed to support `null` values, which primitives cannot have.
+
+#### **Q12: What are autoboxing and unboxing?**
+
+*   **Interviewer's Angle:** A direct follow-up to wrapper classes, checking your knowledge of a key Java 5 feature.
+*   **How to Answer:**
+    *   **Autoboxing:** This is the automatic conversion that the Java compiler makes between a primitive type and its corresponding wrapper class. For example, converting an `int` to an `Integer`.
+        ```java
+        // Before Java 5 (manual boxing)
+        Integer integerObject = Integer.valueOf(10);
+        // Java 5 and later (autoboxing)
+        Integer autoBoxed = 10;
+        ```
+    *   **Unboxing:** This is the reverse of autoboxing. It's the automatic conversion of a wrapper class object back to its corresponding primitive type. For example, converting an `Integer` to an `int`.
+        ```java
+        // Before Java 5 (manual unboxing)
+        int i = integerObject.intValue();
+        // Java 5 and later (unboxing)
+        int autoUnboxed = autoBoxed;
+        ```
+    *   This feature simplifies the code and makes it more readable, especially when working with collections.
+
+#### **Q13: What is Type Conversion (Casting) in Java?**
+
+*   **Interviewer's Angle:** Checks your understanding of how Java handles different primitive types.
+*   **How to Answer:**
+    *   Type conversion is the process of converting a value from one data type to another. There are two types of conversion:
+    *   **Widening Conversion (Implicit):** This happens automatically when you convert a smaller data type to a larger data type. It's safe because there is no loss of information.
+        ```java
+        int i = 100;
+        long l = i; // widening (int to long)
+        float f = l; // widening (long to float)
+        ```
+    *   **Narrowing Conversion (Explicit):** This requires an explicit cast. It's when you convert a larger data type to a smaller one. This is potentially unsafe as it can lead to a loss of information.
+        ```java
+        double d = 100.04;
+        long l = (long)d; // narrowing (double to long)
+        int i = (int)l;   // narrowing (long to int)
+        ```
+
+#### **Q14: What are Varargs?**
+
+*   **Interviewer's Angle:** Checks your knowledge of Java 5 features that simplify code.
+*   **How to Answer:**
+    *   Varargs (variable-length arguments) is a feature that allows a method to accept zero or more arguments of the same type.
+    *   **Syntax:** A vararg is declared by using an ellipsis (`...`) after the data type of the parameter.
+        ```java
+        public void printNumbers(int... numbers) {
+            for (int number : numbers) {
+                System.out.print(number + " ");
+            }
+        }
+        ```
+    *   Inside the method, the vararg is treated as an array of the specified type.
+    *   **Rules:**
+        1.  There can be only one vararg parameter in a method.
+        2.  The vararg parameter must be the last parameter in the method signature.
+
+#### **Q15: What is an Enum?**
+
+*   **Interviewer's Angle:** Checks your understanding of type-safe constants.
+*   **How to Answer:**
+    *   An `enum` is a special data type that enables for a variable to be a set of predefined constants. The variable must be equal to one of the values that have been predefined for it.
+    *   Before enums, the common way to represent a fixed set of constants was using `public static final` variables. Enums provide type-safety and are more powerful.
+    *   **Example:**
+        ```java
+        public enum Day {
+            SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+        }
+        ```
+    *   Enums are much more than just constants; they are special classes. They can have constructors, methods, and instance variables.
+
+
 ---
 
 ## Chapter 2: Object-Oriented Programming (OOP)
@@ -165,6 +302,19 @@ OOP is the paradigm upon which Java is built. A strong understanding of its prin
 *   **Follow-up Q: Can you use `this()` and `super()` in the same constructor?**
     *   No. Both `this()` and `super()` must be the very first statement in a constructor. You can't have both, so you must choose one.
 
+
+#### **Q17: What is the difference between `super()` and `this()`?**
+
+*   **Interviewer's Angle:** This question checks your understanding of constructor chaining.
+*   **How to Answer:**
+    *   **`this()`**: Used to call a constructor from another overloaded constructor in the **same class**. This is known as constructor chaining.
+    *   **`super()`**: Used to call a constructor from the **parent class**.
+    *   **Key Rules:**
+        1.  The call to `this()` or `super()` must be the **very first statement** in the constructor.
+        2.  You can only have **one** of them in a constructor. You cannot have both `this()` and `super()` in the same constructor.
+        3.  If you don't explicitly call `super()` in a subclass constructor, the compiler will implicitly insert a call to the superclass's no-argument constructor.
+
+
 ---
 
 ## Chapter 3: Deeper OOP Concepts
@@ -229,6 +379,31 @@ These two concepts are fundamental to polymorphism in Java.
     *   The compiler would not know which method to call. Consider this code: `myObject.calculate()`. If you have two `calculate()` methods, one returning `int` and one returning `double`, how does the compiler know which one you intended to call?
     *   While you could argue that it's clear in an assignment like `int result = myObject.calculate();`, Java allows you to call a method without assigning its return value. In that ambiguous case (`myObject.calculate();`), there's no way for the compiler to decide. To avoid this ambiguity, Java makes it a rule that the method signature (name and parameters) must be unique for overloading.
 
+
+#### **Q22: What is a Covariant Return Type?**
+
+*   **Interviewer's Angle:** Tests your knowledge of a more subtle feature of method overriding introduced in Java 5.
+*   **How to Answer:**
+    *   A covariant return type refers to the ability of a subclass method to override a superclass method and return an object that is a **subtype** of the object returned by the superclass method.
+    *   Before Java 5, an overriding method had to have the exact same return type as the method it was overriding.
+    *   **Example:**
+        ```java
+        class Animal {
+            public Animal getSelf() {
+                return this;
+            }
+        }
+
+        class Dog extends Animal {
+            @Override
+            public Dog getSelf() { // Covariant return type (Dog is a subtype of Animal)
+                return this;
+            }
+        }
+        ```
+    *   This feature allows for more specific return types in subclasses, which can eliminate the need for casting in the client code.
+
+
 ### 3.3. Abstraction in Detail
 
 #### **Q22: What is the difference between an abstract class and an interface?**
@@ -273,6 +448,27 @@ These two concepts are fundamental to polymorphism in Java.
     *   A `final` variable that is not initialized at the point of declaration is called a blank `final` variable.
     *   It **must** be initialized, but the initialization can be deferred to the constructor. This is useful when the value of the constant depends on arguments passed to the constructor.
     *   A blank `final` instance variable must be initialized in every constructor of the class. A blank `final static` variable must be initialized in a `static` block.
+
+### 3.5. Access Modifiers
+
+#### **Q26: What are the access modifiers in Java? Explain their visibility.**
+
+*   **Interviewer's Angle:** A fundamental question about encapsulation and visibility control.
+*   **How to Answer:** Java has four access modifiers that control the visibility of classes, methods, and variables.
+    *   **`public`**: The member is accessible from anywhere, in any class or package. This is the least restrictive modifier.
+    *   **`protected`**: The member is accessible within its own package and by subclasses in other packages.
+    *   **`default` (or package-private)**: This is the access level when no modifier is specified. The member is only accessible within its own package. It cannot be accessed from outside the package, even by a subclass.
+    *   **`private`**: The member is only accessible within its own class. This is the most restrictive modifier.
+
+    Here is a summary table:
+
+| Modifier    | Same Class | Same Package | Subclass (Diff. Pkg) | Other Package |
+| :---------- | :--------: | :----------: | :------------------: | :-----------: |
+| `public`    |    Yes     |     Yes      |         Yes          |      Yes      |
+| `protected` |    Yes     |     Yes      |         Yes          |      No       |
+| `default`   |    Yes     |     Yes      |          No          |      No       |
+| `private`   |    Yes     |      No      |          No          |      No       |
+
 
 ---
 
@@ -757,7 +953,63 @@ AWS is the world's most comprehensive and broadly adopted cloud platform. For Ja
 
 ---
 
-## Chapter 19: Tricky Questions
+## Chapter 19: Nested and Inner Classes
+
+Java allows you to define a class within another class. Such a class is called a nested class. They are used to group classes that belong together, which increases encapsulation and readability.
+
+### 19.1. Types of Nested Classes
+
+#### **Q98: What are the different types of nested classes in Java?**
+
+*   **Interviewer's Angle:** Tests your knowledge of a more advanced area of Java's class structure.
+*   **How to Answer:** There are two main types of nested classes:
+    1.  **Static Nested Classes:** These are classes declared with the `static` keyword inside another class. They do **not** have access to the instance members (non-static fields and methods) of the outer class. They are essentially just regular classes that have been namespaced inside another class.
+    2.  **Inner Classes (Non-static Nested Classes):** These are non-static nested classes. An inner class is associated with an instance of the enclosing class and has full access to its members, even private ones. There are three types of inner classes:
+        *   **Member Inner Class:** Declared at the same level as instance variables in a class.
+        *   **Local Inner Class:** Declared inside a method.
+        *   **Anonymous Inner Class:** An inner class without a name, declared and instantiated at the same time. They are often used for event handlers or implementing an interface with a single method.
+
+### 19.2. Static Nested Class vs. Inner Class
+
+#### **Q99: What is the difference between a static nested class and an inner class?**
+
+*   **Interviewer's Angle:** A common follow-up to differentiate between the two main types.
+*   **How to Answer:**
+| Feature | Static Nested Class | Inner Class (Non-static) |
+| :--- | :--- | :--- |
+| **Association** | Not associated with an instance of the outer class. | Associated with an instance of the outer class. |
+| **Access to Outer Members** | Can only access `static` members of the outer class. | Can access all members (`static` and instance) of the outer class, including `private` ones. |
+| **Instantiation** | Can be instantiated without an instance of the outer class: `Outer.StaticNested obj = new Outer.StaticNested();` | Requires an instance of the outer class to be instantiated: `Outer.Inner obj = outerInstance.new Inner();` |
+
+---
+
+## Chapter 20: Java Coding Standards
+
+Following standard coding conventions is a hallmark of a professional developer. It makes the code more readable, maintainable, and easier for others to understand.
+
+### 19.1. Naming Conventions
+
+#### **Q97: What are the Java naming conventions for classes, interfaces, methods, variables, and constants?**
+
+*   **Interviewer's Angle:** This question checks your professionalism and understanding of standard practices. Writing code that adheres to conventions is crucial for teamwork.
+*   **How to Answer:**
+    *   **Classes:** Class names should be nouns, in mixed case with the first letter of each internal word capitalized. This is known as **PascalCase** or **UpperCamelCase**.
+        *   *Examples:* `String`, `ArrayList`, `MyCustomClass`.
+    *   **Interfaces:** Interface names should be capitalized like class names. They are often adjectives.
+        *   *Examples:* `Runnable`, `Serializable`, `Comparable`.
+    *   **Methods:** Methods should be verbs, in mixed case with the first letter lowercase. This is known as **camelCase**.
+        *   *Examples:* `toString()`, `getCarName()`, `calculatePrice()`.
+    *   **Variables:** Variable names should be in camelCase. They should be short yet meaningful.
+        *   *Examples:* `name`, `empSalary`, `myList`.
+    *   **Constants:** Constants (variables marked `static final`) should be in all uppercase letters with words separated by underscores (`_`).
+        *   *Examples:* `MAX_VALUE`, `MIN_PRIORITY`.
+    *   **Packages:** Package names should be all lowercase. They should be unique, typically starting with the reversed domain name of the organization.
+        *   *Example:* `com.mycompany.project.module`.
+
+---
+
+## Chapter 20: Tricky Questions
+
 
 This section includes questions that don't fit neatly into other categories but are common in interviews to test your depth of knowledge and problem-solving skills.
 
@@ -1278,6 +1530,22 @@ Multithreading is a powerful Java feature that allows for the concurrent executi
     *   **`run()`:** This is a normal method call. If you call `run()` directly, no new thread is created. The `run()` method will be executed on the *current* thread, just like any other method call. Your program will remain single-threaded.
     *   **In short:** To achieve multithreading, you **must** call the `start()` method.
 
+
+#### **Q40: Explain the lifecycle of a thread.**
+
+*   **Interviewer's Angle:** A fundamental question to ensure you understand the different states a thread can be in.
+*   **How to Answer:** A thread in Java goes through several states in its lifecycle:
+    1.  **New:** The thread is in this state when an instance of `Thread` has been created but the `start()` method has not yet been called. The thread is not yet alive.
+    2.  **Runnable:** The thread is in this state after the `start()` method has been invoked. It is now considered alive. It's in the runnable threads pool, waiting for the thread scheduler to select it for execution.
+    3.  **Running:** The thread is in this state when the thread scheduler has selected it from the runnable pool, and it is currently executing its `run()` method.
+    4.  **Blocked/Waiting (Non-Runnable):** The thread is in this state when it is still alive but is currently not eligible to run. It can transition to this state for several reasons:
+        *   It's waiting for a monitor lock to be released (to enter a `synchronized` block).
+        *   It has called `Object.wait()`.
+        *   It has called `Thread.sleep()`.
+        *   It has called `Thread.join()` on another thread.
+    5.  **Terminated (Dead):** A thread is in this state when its `run()` method has completed execution. It cannot be restarted.
+
+
 ### 6.2. Synchronization and Thread Safety
 
 #### **Q40: What is synchronization and why is it important?**
@@ -1333,6 +1601,25 @@ Multithreading is a powerful Java feature that allows for the concurrent executi
         4.  **Circular Wait:** A set of threads are waiting for each other in a circular chain.
     *   **Prevention:** The best way to prevent deadlock is to break one of the four conditions. The most common strategy is to break the **circular wait** condition.
         *   **Lock Ordering:** Enforce a strict order in which locks are acquired. For example, if you have Lock 1 and Lock 2, every thread must acquire Lock 1 *before* acquiring Lock 2. This makes a circular wait impossible.
+
+#### **Q44: What is a `ThreadLocal` variable?**
+
+*   **Interviewer's Angle:** An advanced concurrency question to see if you know about alternatives to synchronization for achieving thread safety.
+*   **How to Answer:**
+    *   `ThreadLocal` is a class that provides thread-local variables. Each thread that accesses a `ThreadLocal` variable has its own, independently initialized copy of the variable.
+    *   **Purpose:** It's used when you want to have a variable that is global to a thread, but not to the whole application. For example, storing user-specific information like a user ID or a transaction ID for the duration of a request in a web application.
+    *   **`ThreadLocal` vs. Synchronization:** `ThreadLocal` provides an alternative way to achieve thread safety. Instead of sharing a variable and using synchronization to protect it, you give each thread its own private copy of the variable. This can be more efficient than synchronization if there is no need for the threads to share the state of the variable.
+
+#### **Q45: What is a daemon thread?**
+
+*   **Interviewer's Angle:** Checks your knowledge of a special type of thread used for background tasks.
+*   **How to Answer:**
+    *   A daemon thread is a low-priority thread that runs in the background to provide services to user threads.
+    *   **Key Characteristic:** The JVM does **not** wait for daemon threads to finish before it exits. When all user (non-daemon) threads have finished their execution, the JVM will shut down, terminating any daemon threads that are still running.
+    *   **Examples:** The Garbage Collector (GC) is a classic example of a daemon thread.
+    *   **Usage:** They are used for background tasks that should not prevent the application from closing, like monitoring, logging, or caching.
+    *   You can set a thread to be a daemon by calling `thread.setDaemon(true)` **before** calling `start()`.
+
 
 ---
 
@@ -1485,6 +1772,17 @@ This final chapter on Core Java covers some of the "behind-the-scenes" magic tha
         *   **Sensitive information:** Passwords or security credentials that should not be written to a file or sent over the network.
         *   **Derived fields:** Fields whose values can be calculated from other fields. There's no need to save them, as they can be recalculated after deserialization.
         *   **Non-serializable fields:** Fields that refer to objects that do not implement the `Serializable` interface (like a database connection).
+
+
+#### **Q55: What is `serialVersionUID` and why is it important?**
+
+*   **Interviewer's Angle:** An advanced serialization question that tests your understanding of versioning and compatibility.
+*   **How to Answer:**
+    *   `serialVersionUID` is a unique ID that is associated with a `Serializable` class. It's a `private static final long` field.
+    *   **Purpose:** It is used during deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible with respect to serialization.
+    *   **How it works:** When an object is serialized, the `serialVersionUID` is stored with it. When it's deserialized, the JVM compares the `serialVersionUID` of the serialized object with the `serialVersionUID` of the corresponding class on the receiver's end. If they don't match, an `InvalidClassException` is thrown.
+    *   **Why it's important:** If you don't explicitly declare a `serialVersionUID`, the JVM will generate one based on the class's structure (fields, methods, etc.). If you then change the class (e.g., add a new field), the JVM will generate a new, different `serialVersionUID`. This will break deserialization of any old objects that were serialized with the previous version of the class. By explicitly declaring a `serialVersionUID`, you are telling the JVM that the new version of the class is compatible with the old version, and you are taking responsibility for handling the compatibility yourself. This gives you control over the versioning of your serialized classes.
+
 
 ---
 
