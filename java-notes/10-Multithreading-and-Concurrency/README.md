@@ -45,217 +45,53 @@ This would allow us to process up to 10 orders at the same time, making our appl
 
 ## Interview Deep Dives
 
-### Q44 & Q82: How can we ensure that a resource isn't used by multiple threads simultaneously?
+### Q33: How can you prevent multiple threads from accessing a resource at the same time?
 
-To understand this, let's look at an example of a simple counter that is accessed by multiple threads.
+*   **Simple Answer:** Use the `synchronized` keyword.
+*   **Detailed Explanation:**
+    *   When multiple threads access and modify the same data, you can get a **race condition** (lost updates, inconsistent reads).
+    *   To prevent this, you can make a method `synchronized`. When a thread enters a `synchronized` method on an object, it acquires a "lock". No other thread can enter any `synchronized` method on the *same object* until the first thread is done and releases the lock.
+*   **Best Practice:** `synchronized` is a basic tool. For more complex scenarios, you should use the more flexible locking mechanisms in the `java.util.concurrent` package, like `ReentrantLock`.
 
-**The Code Example:**
-```java
-public class Counter {
-    private int count = 0;
+### Q34: What is the difference between a synchronized method and a synchronized block?
 
-    // This method is not thread-safe.
-    public void increment() {
-        count++;
-    }
-
-    // This method is thread-safe because of the 'synchronized' keyword.
-    public synchronized void incrementAndMakeSafe() {
-        count++;
-    }
-}
-```
-
-**Detailed Explanation:**
-The `increment()` method is not thread-safe. The operation `count++` is not atomic; it's actually three separate operations: read the value of `count`, increment it, and write the new value back. If two threads execute this method at the same time, they might both read the same value, increment it, and then write back the same result, leading to a lost update. This is called a **race condition**.
-
-To solve this, we use the `synchronized` keyword.
-*   When a method is declared `synchronized`, a thread must acquire the **intrinsic lock** (also called a "monitor lock") of the object before it can execute the method.
-*   Only one thread can hold the lock at a time. Any other thread that tries to call a `synchronized` method on the *same object* will be blocked until the lock is released.
-*   The lock is automatically released when the thread exits the method.
-
-**The Principal's Take:**
-*   **System Design:** `synchronized` is the most basic mechanism for enforcing mutual exclusion in Java. However, it's a blunt instrument. It's easy to use for simple cases, but it can lead to performance bottlenecks and deadlocks in complex systems.
-*   **Best Practice:** For anything non-trivial, you should prefer the higher-level concurrency utilities in the `java.util.concurrent.locks` package, such as `ReentrantLock`. A `ReentrantLock` provides the same mutual exclusion guarantees as `synchronized`, but it's more flexible. It can be interrupted, you can try to acquire it with a timeout, and it provides more visibility into its state.
-
----
-
-### Q: What is the difference between a synchronized method and a synchronized block?
-
-This question tests your understanding of how to use the `synchronized` keyword effectively.
-
-**The Principal's Take:** Synchronized blocks are more flexible and are often preferred over synchronized methods because they allow you to lock on any object and to scope the synchronization to the smallest possible block of code.
-
+*   **Simple Answer:** A synchronized method locks the entire object. A synchronized block lets you lock only a small part of the code and can lock on a different object.
+*   **Detailed Explanation:**
 | Feature | Synchronized Method | Synchronized Block |
-|---|---|---|
-| **Lock Object** | The lock is on the `this` object (for instance methods) or the `Class` object (for static methods). | You can explicitly specify the object to lock on. |
-| **Scope** | The entire method is synchronized. | Only the code within the block is synchronized. |
-| **Flexibility** | Less flexible. | More flexible. Allows for finer-grained locking. |
+| :--- | :--- | :--- |
+| **Lock Object** | The `this` object. | Any object you specify. |
+| **Scope** | The entire method. | Only the code inside the block. |
+*   **Key Takeaway:** Synchronized blocks are generally better because you should always try to hold a lock for the shortest possible time. It's also a best practice to use a private lock object (`private final Object lock = new Object();`) instead of locking on `this` to avoid other code from interfering with your locks.
 
-**The Code Example:**
-```java
-public class SynchronizationComparison {
+### Q35: What is a deadlock and how do you prevent it?
 
-    // Synchronized method: locks on 'this'
-    public synchronized void synchronizedMethod() {
-        // ...
-    }
+*   **Simple Answer:** A deadlock is when two or more threads are stuck forever, each waiting for a lock that the other thread holds.
+*   **Classic Example:**
+    1.  Thread 1 locks A and tries to lock B.
+    2.  Thread 2 locks B and tries to lock A.
+    3.  Both threads are now stuck.
+*   **How to Prevent It:** The easiest way is to enforce a **strict lock ordering**. For example, all threads must agree to always lock A before they lock B. This makes a circular wait impossible.
 
-    // Synchronized block: locks on 'this'
-    public void synchronizedBlockOnThis() {
-        synchronized (this) {
-            // ...
-        }
-    }
+### Q36: What are the different states of a thread?
 
-    private final Object lock = new Object();
+*   **Simple Answer:** A thread can be in one of six states: `NEW`, `RUNNABLE`, `BLOCKED`, `WAITING`, `TIMED_WAITING`, or `TERMINATED`.
+*   **Detailed Explanation:**
+    *   `NEW`: Created, but `start()` has not been called.
+    *   `RUNNABLE`: The thread is running or ready to run.
+    *   `BLOCKED`: Waiting to acquire a `synchronized` lock.
+    *   `WAITING`: Waiting indefinitely for another thread (e.g., after calling `object.wait()` or `thread.join()`).
+    *   `TIMED_WAITING`: Waiting for a specific amount of time (e.g., after calling `Thread.sleep()`).
+    *   `TERMINATED`: The thread has finished its work.
+*   **Why it's important:** Understanding these states is crucial for debugging concurrency issues with a thread dump.
 
-    // Synchronized block: locks on a private lock object
-    public void synchronizedBlockOnPrivateLock() {
-        synchronized (lock) {
-            // ...
-        }
-    }
-}
-```
+### Q37: How do you create a thread, and can you restart it?
 
-**System Design Insight:**
-*   **Minimize the scope of synchronization:** You should only synchronize the critical section of your code that accesses shared data. Synchronizing entire methods can lead to performance bottlenecks, as it holds the lock for longer than necessary. This is a strong argument for preferring synchronized blocks.
-*   **Avoid locking on `this`:** Locking on `this` (which is what a synchronized method does implicitly) can be risky because it exposes the lock to external code. Another class could acquire a lock on your object and cause a deadlock. It is a best practice to use a `private final Object` as your lock object. This encapsulates the lock within your class and prevents external interference.
-
----
-
-### Q: What is a deadlock and how can you prevent it?
-
-A deadlock is a situation where two or more threads are blocked forever, waiting for each other.
-
-**The Principal's Take:** Deadlocks are one of the most feared concurrency issues. They can be very hard to debug because they often depend on timing and are not easily reproducible. The best way to deal with deadlocks is to design your code to prevent them from happening in the first place.
-
-**A Classic Deadlock Scenario:**
-Imagine two threads, Thread 1 and Thread 2, and two resources, Lock A and Lock B.
-1.  Thread 1 acquires Lock A.
-2.  Thread 2 acquires Lock B.
-3.  Thread 1 tries to acquire Lock B, but it's held by Thread 2, so Thread 1 blocks.
-4.  Thread 2 tries to acquire Lock A, but it's held by Thread 1, so Thread 2 blocks.
-
-Now, both threads are blocked, waiting for a lock held by the other thread. They will wait forever.
-
-**How to Prevent Deadlocks:**
-The most common way to prevent deadlocks is to ensure that all threads acquire locks in the same order.
-
-**The Code Example:**
-```java
-public class DeadlockExample {
-    private final Object lockA = new Object();
-    private final Object lockB = new Object();
-
-    public void method1() {
-        synchronized (lockA) {
-            // ...
-            synchronized (lockB) {
-                // ...
-            }
-        }
-    }
-
-    public void method2() {
-        // This can cause a deadlock if called concurrently with method1
-        // synchronized (lockB) {
-        //     // ...
-        //     synchronized (lockA) {
-        //         // ...
-        //     }
-        // }
-
-        // This is the correct way: acquire locks in the same order as method1
-        synchronized (lockA) {
-            // ...
-            synchronized (lockB) {
-                // ...
-            }
-        }
-    }
-}
-```
-
-**System Design Insight:**
-*   **Lock Ordering:** Enforcing a strict order for acquiring locks is the simplest and most effective way to prevent deadlocks.
-*   **Timeouts:** Using `tryLock` with a timeout (from the `java.util.concurrent.locks.Lock` interface) can be another way to mitigate deadlocks. If a thread can't acquire a lock within a certain amount of time, it can back off and try again later.
-*   **Deadlock Detection:** The JVM is not able to prevent deadlocks, but it can detect them. You can use a tool like `jstack` or a profiler to get a thread dump, which will show you if any threads are in a deadlock state.
-
----
-
-### Q58: Describe the different states of a thread.
-
-A thread can be in one of six states, which are defined in the `Thread.State` enum.
-
-**The States:**
-
-1.  **`NEW`**: The thread has been created but has not yet started (i.e., `start()` has not been called).
-2.  **`RUNNABLE`**: The thread is either currently running on the CPU, or it's ready to run and is waiting for the OS scheduler to assign it a time slice.
-3.  **`BLOCKED`**: The thread is waiting to acquire an intrinsic lock (i.e., it's waiting to enter a `synchronized` block).
-4.  **`WAITING`**: The thread is waiting indefinitely for another thread to perform a particular action. This happens when you call `Object.wait()`, `Thread.join()`, or `LockSupport.park()`.
-5.  **`TIMED_WAITING`**: The thread is waiting for a specified amount of time for another thread to perform an action. This happens when you call methods with a timeout, like `Thread.sleep()`, `Object.wait(timeout)`, or `Thread.join(timeout)`.
-6.  **`TERMINATED`**: The thread has completed its execution.
-
-**The Principal's Take:**
-*   **Debugging & Profiling:** Understanding these states is crucial for debugging concurrency issues. When you take a **thread dump** (using `jstack` or a profiler), each thread will be listed with its current state. If you have a performance issue, you might find many threads in the `BLOCKED` state, which indicates lock contention. If your application seems stuck, you might find threads in a `WAITING` state, which could indicate a deadlock or a missed `notify()` call.
-
----
-
-### Q36, Q37, Q69, Q81: How do you create a thread? Can you restart a dead thread?
-
-To understand this, let's look at the two traditional ways to create a thread and its lifecycle.
-
-**The Code Example:**
-```java
-// Option 1: Implement the Runnable interface (Preferred)
-class MyTask implements Runnable {
-    @Override
-    public void run() { // This method is the entry point for the new thread.
-        System.out.println("Hello from a Runnable!");
-    }
-}
-
-// Option 2: Extend the Thread class
-class MyThread extends Thread {
-    @Override
-    public void run() {
-        System.out.println("Hello from a Thread!");
-    }
-}
-
-public class ThreadCreationExample {
-    public static void main(String[] args) throws InterruptedException {
-        // Create and start a thread using a Runnable
-        Thread t1 = new Thread(new MyTask());
-        t1.start(); // This moves the thread from NEW to RUNNABLE state
-
-        // Create and start a thread by extending Thread
-        Thread t2 = new MyThread();
-        t2.start();
-
-        // Wait for the threads to finish
-        t1.join();
-        t2.join();
-
-        // Q69: Can a dead thread be started again?
-        System.out.println("t1 state after completion: " + t1.getState()); // TERMINATED
-        // t1.start(); // This would throw an IllegalThreadStateException
-    }
-}
-```
-
-**Detailed Explanation:**
-There are two ways to define the work that a thread will do:
-1.  **Implement `Runnable`:** You create a class that implements the `Runnable` interface. This interface has a single method, `run()`. This is the preferred approach because it separates the task (the `Runnable`) from the execution mechanism (the `Thread` object).
-2.  **Extend `Thread`:** You create a class that extends `Thread` and overrides its `run()` method. This is less flexible, as your class cannot extend any other class.
-
-In both cases, you **must** call the `start()` method to create a new OS-level thread and have it execute the `run()` method. You should never call `run()` directly.
-
-**The Principal's Take:**
-*   **Lifecycle:** A thread can only be started once. After it completes its work and its `run()` method returns, it enters the `TERMINATED` state. You **cannot** restart a dead thread. Attempting to call `start()` on a terminated thread will result in an `IllegalThreadStateException`.
-*   **Best Practice:** As we discussed earlier in this guide, in modern applications, you should **almost never** manage threads directly by creating `Thread` objects. You should always use an `ExecutorService` to manage a pool of threads for you. This is more efficient, more robust, and provides better control over your application's resources. The `Runnable` task you create, however, is still the same.
+*   **Simple Answer:** You create a thread by implementing `Runnable` (preferred) or extending `Thread`, and you call the `start()` method. You can **never** restart a thread.
+*   **Detailed Explanation:**
+    *   **Creating:** The best way is to put your task in a class that implements the `Runnable` interface and pass it to a `Thread`'s constructor.
+    *   **Starting:** You must call the `start()` method. This creates a new OS thread and executes the `run()` method. Calling `run()` directly does not create a new thread.
+    *   **Restarting:** Once a thread has finished and is in the `TERMINATED` state, it cannot be started again. Calling `start()` a second time will throw an `IllegalThreadStateException`.
+*   **Best Practice:** Don't manage threads yourself. Use the **Executor Framework** to manage a thread pool for you.
 
 ---
 

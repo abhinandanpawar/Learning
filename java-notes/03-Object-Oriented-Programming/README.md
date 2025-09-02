@@ -92,221 +92,49 @@ Abstraction is about hiding the implementation details and showing only the esse
 
 ## Interview Deep Dives
 
-### Q1: What is the difference between an Inner Class and a Sub-Class?
+### Q10: What is the difference between an Inner Class and a Sub-Class?
 
-To understand this, let's check this example.
+*   **Simple Answer:** A sub-class inherits from a parent class (an "is-a" relationship). An inner class is a helper class defined inside another class.
+*   **Detailed Explanation:**
+    *   **Sub-class (e.g., `class EBook extends Product`):** This is standard inheritance. `EBook` *is a* `Product` and inherits its public/protected members. It's used for code reuse and polymorphism.
+    *   **Inner Class (e.g., `class OrderLine` inside `class Order`):** This is a class defined within another class. It's used for helper classes that are tightly coupled to the outer class. The key feature is that an inner class object has access to the private fields of its outer class object.
 
-**The Code Example:**
-```java
-// A Sub-Class uses inheritance (the "is-a" relationship)
-class EBook extends Product {
-    public EBook(String name, double price) {
-        super(name, price);
-    }
-    // ... EBook specific methods
-}
+### Q11: What is a singleton class?
 
-public class Order {
-    private long orderId;
-    private List<Product> items;
+*   **Simple Answer:** A class that is designed to have only one instance.
+*   **How it works:**
+    1.  Make the constructor `private`.
+    2.  Create a `private static final` instance of the class.
+    3.  Provide a `public static` method (`getInstance()`) to return that single instance.
+*   **When to use it:** For global resources like a database connection manager or a configuration loader.
+*   **Caution:** Singletons can make code hard to test because they introduce global state. Modern frameworks like Spring often provide better ways to manage single instances using dependency injection.
 
-    // An Inner Class has a special relationship with the outer class
-    // (the "has-a" relationship, but with special access)
-    public class OrderLine {
-        private Product product;
-        private int quantity;
+### Q12: What is a constructor and can it be overloaded?
 
-        public double getLineTotal() {
-            // The inner class can access private fields of the outer class!
-            System.out.println("Calculating total for order: " + orderId);
-            return product.getPrice() * quantity;
-        }
-    }
-}
-```
+*   **Simple Answer:** A constructor is a special method used to create an object. And yes, it can be overloaded.
+*   **Detailed Explanation:**
+    *   A constructor must have the same name as the class and has no return type.
+    *   Its job is to initialize the object's fields.
+    *   **Overloading:** You can have multiple constructors in the same class, as long as they have different parameters. This gives you flexible ways to create objects.
 
-**Detailed Explanation:**
+### Q13: What is the difference between Method Overloading and Method Overriding?
 
-*   **Sub-class (Inheritance):** A sub-class `EBook` **is a** `Product`. It inherits the public and protected members of its parent. This is a fundamental concept for code reuse and polymorphism.
-*   **Inner Class:** An inner class `OrderLine` is a class that is nested inside another class, `Order`. It is used as a helper class that is tightly coupled to its outer class. The key feature is that the inner class instance has a special, hidden reference to an instance of the outer class, which allows it to access the outer class's private members (like `orderId`).
+*   **Simple Answer:** Overloading is having multiple methods with the same name but different parameters in the *same class*. Overriding is when a *child class* provides a new implementation for a method from its parent class.
+*   **Detailed Explanation:**
+| Feature | Method Overloading | Method Overriding |
+| :--- | :--- | :--- |
+| **Location** | Same class | Parent and Child class |
+| **Parameters**| Must be different | Must be the same |
+| **Purpose** | Convenience (multiple ways to call a method) | Polymorphism (changing behavior in a child class) |
 
-**The Principal's Take:**
-*   **System Design:** Use **inheritance** when you have a true "is-a" relationship and want to model a hierarchy of types. Use an **inner class** when you have a helper class that only makes sense in the context of its outer class and needs close access to its state. A common use case for inner classes is for implementing event listeners or iterators.
+### Q14: Why doesn't Java support multiple inheritance for classes?
 
----
-
-### Q5: What is a singleton class? Give a practical example of its usage.
-
-**The Code Example:**
-The Singleton pattern ensures that a class has only one instance and provides a global point of access to it.
-
-```java
-public class DatabaseConnectionManager {
-
-    // 1. The single instance, created at class loading time.
-    private static final DatabaseConnectionManager INSTANCE = new DatabaseConnectionManager();
-
-    // 2. A private constructor to prevent anyone else from creating an instance.
-    private DatabaseConnectionManager() {
-        // Initialize the database connection here
-        System.out.println("Database connection manager initialized.");
-    }
-
-    // 3. A public static method to get the single instance.
-    public static DatabaseConnectionManager getInstance() {
-        return INSTANCE;
-    }
-
-    public void connect() {
-        System.out.println("Connected to the database.");
-    }
-}
-
-// Usage:
-// DatabaseConnectionManager manager = new DatabaseConnectionManager(); // This will give a compile error!
-// DatabaseConnectionManager manager = DatabaseConnectionManager.getInstance();
-// manager.connect();
-```
-
-**Detailed Explanation:**
-The key to the Singleton pattern is a `private` constructor and a `public static` method that returns the single instance. The instance itself is stored in a `private static final` field. This implementation is simple and thread-safe.
-
-**The Principal's Take:**
-*   **System Design:** The Singleton pattern should be used with **extreme caution**. While it's useful for managing a truly global resource like a database connection pool or a logging configuration, it can also be an anti-pattern. It introduces global state into your application, which can make code hard to test and reason about.
-*   **Trade-offs:** Singletons can make dependency injection and testing difficult. Before you create a singleton, ask yourself: "Can I achieve the same result by creating a regular object and passing it as a dependency to the objects that need it?". In modern frameworks like Spring, the framework manages the lifecycle of your beans as singletons by default, which is a much cleaner approach.
-
----
-
-### Q: What is a Constructor? Can it be overloaded?
-
-**The Code Example:**
-```java
-public class Product {
-    private String name;
-    private double price;
-
-    // Default constructor (no arguments)
-    public Product() {
-        this.name = "Default Product";
-        this.price = 0.0;
-    }
-
-    // Parameterized constructor
-    public Product(String name, double price) {
-        this.name = name;
-        this.price = price;
-    }
-
-    // Copy constructor
-    public Product(Product other) {
-        this.name = other.name;
-        this.price = other.price;
-    }
-}
-```
-
-**Detailed Explanation:**
-A **constructor** is a special method that is called when an object is created (`new`). Its primary purpose is to initialize the object's state.
-
-*   **Rules for constructors:**
-    *   A constructor's name must be the same as the class name.
-    *   A constructor cannot have an explicit return type.
-*   **Default Constructor:** If you don't define any constructor in a class, the Java compiler will create a default, no-argument constructor for you.
-*   **Constructor Overloading:** Just like methods, constructors can be overloaded. This means you can have multiple constructors in a class, as long as they have different parameter lists. This provides different ways to create and initialize an object.
-*   **Copy Constructor:** A copy constructor is a constructor that takes another object of the same class as an argument and initializes the new object with the values from the existing object. While Java doesn't provide an automatic copy constructor like C++, you can write one yourself, as shown in the example.
-
-**The Principal's Take:**
-Constructors are fundamental to OOP in Java. They ensure that an object is in a valid state as soon as it's created. Using constructor overloading is a clean way to provide flexible object creation. While copy constructors are less common in idiomatic Java (people often use `clone()` or factory methods instead), understanding the pattern is important.
-
----
-
-### Q: What is the difference between Method Overloading and Method Overriding?
-
-This is a fundamental question about polymorphism in Java.
-
-**The Principal's Take:** Overloading is about having multiple methods with the same name but different signatures in the same class. Overriding is about a subclass providing a specific implementation for a method that is already defined in its superclass.
-
-| Feature | Method Overloading (Compile-time Polymorphism) | Method Overriding (Runtime Polymorphism) |
-|---|---|---|
-| **Purpose** | To provide different ways to call a method with different arguments. | To provide a specific implementation of a method in a subclass. |
-| **Scope** | Occurs within the same class. | Occurs between a superclass and a subclass. |
-| **Signature** | Methods must have different signatures (different number or type of parameters). | Methods must have the same signature (same name, number, and type of parameters). |
-| **Return Type** | Can be different. | Must be the same or a covariant type. |
-| **`static` methods** | Can be overloaded. | Cannot be overridden (this is called method hiding). |
-
-**The Code Example:**
-```java
-class Shape {
-    // Overloaded method
-    public void draw() {
-        System.out.println("Drawing a generic shape.");
-    }
-
-    public void draw(String color) {
-        System.out.println("Drawing a " + color + " shape.");
-    }
-
-    public double getArea() {
-        return 0.0;
-    }
-}
-
-class Circle extends Shape {
-    private double radius;
-
-    public Circle(double radius) { this.radius = radius; }
-
-    // Overriding the getArea method
-    @Override
-    public double getArea() {
-        return Math.PI * radius * radius;
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   **Overloading:** In the `Shape` class, the `draw()` method is overloaded. We have two versions: one with no arguments and one that takes a `String`. The compiler decides which one to call based on the arguments you provide at compile time.
-*   **Overriding:** The `Circle` class `extends` `Shape` and provides its own version of the `getArea()` method. When you call `getArea()` on a `Circle` object, the JVM uses the object's actual type at runtime to decide which version of the method to execute (the one in `Circle`). The `@Override` annotation is not required, but it's a best practice as it tells the compiler to check that you are actually overriding a method from the superclass.
-
-**System Design Insight:**
-*   **Overloading** is a form of "syntactic sugar" that makes an API more convenient to use.
-*   **Overriding** is the mechanism that enables runtime polymorphism, which is a cornerstone of flexible and extensible object-oriented design. It allows you to write code that operates on a general type (like `Shape`) while correctly executing the specific behavior of a concrete type (like `Circle`).
-
----
-
-### Q: What are the different types of inheritance? Why doesn't Java support multiple inheritance?
-
-Inheritance is a fundamental pillar of OOP, but it's important to understand its different forms and limitations.
-
-**The Principal's Take:** We made a conscious design decision to exclude multiple inheritance of classes from Java. This was to avoid the complexity and ambiguity of the "Diamond Problem". We provided interfaces as a cleaner way to achieve a similar goal.
-
-**Types of Inheritance:**
-
-*   **Single Inheritance:** A class can inherit from only one superclass. This is the model that Java follows.
-*   **Multilevel Inheritance:** A class can inherit from a class that itself inherits from another class (e.g., `C` extends `B`, and `B` extends `A`). This is supported in Java.
-*   **Hierarchical Inheritance:** Multiple classes can inherit from a single superclass (e.g., `B` extends `A`, and `C` extends `A`). This is also supported in Java.
-*   **Multiple Inheritance:** A class inherits from multiple superclasses. **Java does not support this for classes.**
-*   **Hybrid Inheritance:** A mix of two or more of the above types of inheritance. Since Java doesn't support multiple inheritance, it doesn't support hybrid inheritance that involves multiple inheritance.
-
-**The "Diamond Problem": Why Multiple Inheritance is Tricky**
-
-Imagine two classes, `B` and `C`, that both inherit from a class `A`. And a class `D` inherits from both `B` and `C`. If `A` has a method `foo()`, and both `B` and `C` override it, which version of `foo()` should `D` inherit? This ambiguity is known as the Diamond Problem.
-
-```
-      A
-     / \
-    B   C
-     \ /
-      D
-```
-
-**Java's Solution: Interfaces**
-We solved this by allowing a class to `implement` multiple interfaces. An interface defines a contract of methods, but it doesn't provide an implementation for instance methods (prior to Java 8's default methods). This means there is no ambiguity about which implementation to inherit. A class can promise to fulfill multiple contracts (interfaces) while only inheriting the implementation from one superclass.
-
-**System Design Insight:**
-*   **Favor Composition over Inheritance:** This is a common design principle. Instead of inheriting from a class to get its functionality, you can hold an instance of that class as a field. This is often more flexible and less coupled.
-*   **Use Interfaces for Contracts:** Use interfaces to define the "what" (the contract), and use classes to define the "how" (the implementation). This leads to a more flexible and testable design.
+*   **Simple Answer:** To avoid the "Diamond Problem".
+*   **The Diamond Problem:**
+    *   Imagine class `A` has a method `foo()`.
+    *   Classes `B` and `C` both inherit from `A` and override `foo()`.
+    *   If class `D` could inherit from both `B` and `C`, which version of `foo()` would it get? It's ambiguous.
+*   **Java's Solution:** A class can only `extend` one parent class. However, a class can `implement` multiple interfaces, which is how Java achieves a safe form of multiple inheritance for behavior.
 
 ---
 

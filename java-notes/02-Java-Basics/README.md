@@ -120,267 +120,72 @@ In the next chapter, we'll explore the core of Java's design: Object-Oriented Pr
 
 ## Interview Deep Dives
 
-### Q9: What is the difference between `double` and `float` variables in Java?
+### Q4: What's the difference between `double` and `float`?
 
-To understand this, let's check this example that deals with the price of a product.
+*   **Simple Answer:** They are both for decimal numbers, but `double` has about twice the precision of `float`. You should use `double` for almost everything.
+*   **Detailed Explanation:**
+    *   **Storage:** `float` uses 4 bytes, while `double` uses 8 bytes.
+    *   **Precision:** `double` can accurately store about 15-17 decimal digits, while `float` can only handle about 6-7.
+*   **Key Takeaway:** Always use `double` for calculations unless you are working with huge arrays of numbers where memory is a critical concern (e.g., graphics programming). For money, use the `BigDecimal` class to avoid rounding errors.
 
-**The Code Example:**
-```java
-public class PrecisionExample {
-    public static void main(String[] args) {
-        // float is a single-precision 32-bit floating point number
-        float itemPrice = 25.99f; // Note the 'f' suffix
+### Q5: What does the `final` keyword do?
 
-        // double is a double-precision 64-bit floating point number
-        double orderTotal = 129.95;
+*   **Simple Answer:** It makes something unchangeable.
+*   **Detailed Explanation:**
+    1.  **`final` variable:** A constant. Its value cannot be changed after it's assigned.
+    2.  **`final` method:** Cannot be overridden by a child class.
+    3.  **`final` class:** Cannot be extended or inherited from. The `String` class is a good example.
 
-        System.out.println("Item price (float): " + itemPrice);
-        System.out.println("Order total (double): " + orderTotal);
-    }
-}
-```
+### Q6: What is autoboxing and unboxing?
 
-**Detailed Explanation:**
-The primary difference between `double` and `float` is their **precision** and **storage size**.
+*   **Simple Answer:** It's the automatic conversion between primitive types (like `int`) and their wrapper classes (like `Integer`).
+*   **Detailed Explanation:**
+    *   **Autoboxing:** Primitive -> Wrapper. `Integer iWrapper = 10;` (the compiler does the `new Integer(10)` part for you).
+    *   **Unboxing:** Wrapper -> Primitive. `int i = iWrapper;` (the compiler does the `iWrapper.intValue()` part for you).
+*   **Key Takeaway:** This was added for convenience, but be careful. Creating many wrapper objects in a tight loop can be slow and create work for the garbage collector.
 
-*   **Storage:** A `float` uses 4 bytes (32 bits) of memory, while a `double` uses 8 bytes (64 bits).
-*   **Precision:** This difference in storage size means a `double` can represent a much larger range of numbers with a higher degree of accuracy (about 15-17 decimal digits) compared to a `float` (about 6-7 decimal digits).
+### Q7: Is Java pass-by-value or pass-by-reference?
 
-**The Principal's Take:**
-*   **System Design:** For most applications, especially financial calculations, you should **always default to `double`**. In fact, for handling money, you should use the `BigDecimal` class to get exact control over rounding and precision, as floating-point numbers can introduce small inaccuracies.
-*   **Memory:** The only time to consider `float` is in memory-constrained environments where you are storing a very large array of floating-point numbers, such as in scientific computing or graphics programming, and the loss of precision is acceptable.
+*   **Simple Answer:** Java is **always pass-by-value**.
+*   **Detailed Explanation:**
+    *   When you pass a primitive (like `int`) to a method, a **copy of the value** is passed. Changes inside the method don't affect the original.
+    *   When you pass an object to a method, a **copy of the reference (the memory address)** is passed.
+    *   This is the tricky part: both the original reference and the copy point to the *same object*. So if you use the reference copy to *change the object's internal state* (e.g., `myObject.setName("new name")`), the original object is changed.
+    *   However, if you try to *reassign the reference copy* to a new object, it does not affect the original reference.
 
----
+### Q8: Why is `String` immutable? What's the difference between `String`, `StringBuilder`, and `StringBuffer`?
 
-### Q10: What is the `final` keyword in Java?
+*   **Simple Answer:** `String` is immutable (cannot be changed) for security and performance reasons. For building strings, use `StringBuilder`.
+*   **Detailed Explanation:**
+| Class | Mutability | Thread-Safety | When to Use |
+| :--- | :--- | :--- | :--- |
+| `String` | Immutable | Yes | Default choice for text that won't change. |
+| `StringBuilder` | Mutable | No | Best for building strings in a single thread (e.g., in a loop). Fastest option. |
+| `StringBuffer` | Mutable | Yes | Old, slow version. Use only if you need to modify a string from multiple threads. |
 
-To understand this, let's check this example of setting a sales tax rate.
+*   **Why immutable?**
+    1.  **String Pool:** Java saves memory by reusing strings. This is only safe if they can't be changed.
+    2.  **Security:** Prevents malicious code from changing a string after a security check.
+    3.  **Concurrency:** Immutable objects are automatically thread-safe.
 
-**The Code Example:**
-```java
-public class FinalExample {
+### Q9: How do you reverse an integer without converting it to a string?
 
-    // 1. A final variable is a constant.
-    public static final double SALES_TAX_RATE = 0.08;
-
-    // 2. A final method cannot be overridden by subclasses.
-    public final void displayWelcomeMessage() {
-        System.out.println("Welcome to our store!");
-    }
-
-    // 3. A final class cannot be extended (inherited from).
-    // public final class MyFinalClass {}
-}
-```
-
-**Detailed Explanation:**
-The `final` keyword is a modifier that can be applied to variables, methods, and classes. It has a slightly different meaning in each context, but the core idea is the same: **it makes something unchangeable.**
-
-1.  **`final` variables:** A `final` variable is a **constant**. Its value cannot be changed after it has been initialized. This is useful for defining things like mathematical constants (`PI`) or application-wide configuration values (like our `SALES_TAX_RATE`).
-    *   **Memory/JVM Insight:** `public static final` variables are true constants that are resolved at compile time. The JVM may perform optimizations like inlining their values directly into the code that uses them.
-
-2.  **`final` methods:** A `final` method **cannot be overridden** by a subclass.
-    *   **System Design:** You would use this when you have a method in a superclass that has an implementation that should not be changed by any subclass. This is a way to enforce a part of an algorithm or a contract.
-
-3.  **`final` classes:** A `final` class **cannot be subclassed** (inherited from).
-    *   **System Design:** This is used for classes that are "perfect" and should not be tampered with. A great example is the `String` class in Java. We made it `final` to ensure that its behavior is always consistent and predictable, which is crucial for security and reliability. When you pass a `String` to a method, you can be sure that the method can't change the string's content by casting it to a malicious subclass.
-
----
-
-### Q: What are the primitive data types in Java? What is Autoboxing?
-
-**The Code Example:**
-```java
-public class PrimitivesExample {
-    public static void main(String[] args) {
-        // Primitive types
-        int i = 10;
-        double d = 3.14;
-        char c = 'A';
-        boolean b = true;
-
-        // Autoboxing: The compiler automatically converts the primitive 'int' to an 'Integer' object.
-        Integer iWrapper = i;
-
-        // Unboxing: The compiler automatically converts the 'Integer' object back to a primitive 'int'.
-        int unboxedInt = iWrapper;
-
-        System.out.println("Primitive int: " + i);
-        System.out.println("Boxed Integer: " + iWrapper);
-        System.out.println("Unboxed int: " + unboxedInt);
-    }
-}
-```
-
-**Detailed Explanation:**
-Java has eight primitive data types: `byte`, `short`, `int`, `long`, `float`, `double`, `boolean`, and `char`. These are not objects; they are the most basic data types available in the language.
-
-*   **Autoboxing** is the automatic conversion that the Java compiler makes between the primitive types and their corresponding object wrapper classes (e.g., `int` to `Integer`).
-*   **Unboxing** is the reverse: converting an object of a wrapper type to its corresponding primitive value.
-
-**The Principal's Take:**
-*   **Why does Java have primitive types?** This was a performance-driven design decision. We knew that for simple, frequently used data like numbers, the overhead of creating an object for each one would be too high. By having primitive types that are stored directly on the stack, we made basic arithmetic operations much faster. This is also why Java is sometimes not considered a "pure" object-oriented language.
-*   **When does it matter?** While autoboxing is convenient, be aware of it in performance-critical code, especially in loops. Creating a large number of wrapper objects can put pressure on the garbage collector.
-
+*   **Simple Answer:** Use the modulo (`%`) and division (`/`) operators in a loop to pick off and place digits one by one.
+*   **The Code:**
     ```java
-    // This can create millions of Integer objects, which can be slow.
-    Integer sum = 0;
-    for (int i = 0; i < 1_000_000; i++) {
-        sum += i; // Unboxing of 'sum', then boxing of the result in each iteration.
+    public int reverse(int x) {
+        int reversed = 0;
+        while (x != 0) {
+            // Check for overflow before it happens
+            if (reversed > Integer.MAX_VALUE / 10 || reversed < Integer.MIN_VALUE / 10) {
+                return 0; // Overflow
+            }
+            reversed = reversed * 10 + x % 10; // Add the last digit of x to reversed
+            x = x / 10; // Remove the last digit from x
+        }
+        return reversed;
     }
     ```
-    In such cases, using the primitive `int` for the sum would be much more efficient.
-
----
-
-### Q: Is Java "pass-by-value" or "pass-by-reference"?
-
-This is a classic and often misunderstood topic in Java.
-
-**The Principal's Take:** Java is always **pass-by-value**. There is no "pass-by-reference" in Java. However, the confusion arises because Java passes a *copy of the reference* to an object.
-
-Let's break this down with an example.
-
-**The Code Example:**
-```java
-public class PassByValueExample {
-
-    static class Product {
-        String name;
-        Product(String name) { this.name = name; }
-    }
-
-    public static void main(String[] args) {
-        // 1. Primitives are passed by value (a copy of the value).
-        int price = 100;
-        modifyPrice(price);
-        System.out.println("Price after method call: " + price); // Prints 100
-
-        // 2. Objects are also passed by value (a copy of the reference).
-        Product laptop = new Product("Laptop");
-        modifyProduct(laptop);
-        System.out.println("Product name after method call: " + laptop.name); // Prints "MacBook"
-    }
-
-    public static void modifyPrice(int p) {
-        p = 200; // Modifies the copy, not the original.
-    }
-
-    public static void modifyProduct(Product prod) {
-        // 'prod' is a copy of the reference. Both the original 'laptop'
-        // reference and the 'prod' reference point to the same object on the heap.
-        prod.name = "MacBook"; // This modifies the original object.
-
-        // However, if we reassign the reference, it doesn't affect the original.
-        // prod = new Product("Desktop");
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   **Passing Primitives:** When you pass a primitive type like `int` to a method, a copy of the value is made. The method receives the copy, and any changes to it do not affect the original variable.
-*   **Passing Objects:** When you pass an object to a method, you are also passing a value. But the value is a **reference** to the object on the heap. The method receives a **copy of this reference**.
-    *   Since both the original reference and the copied reference point to the *same object* on the heap, if you use the copied reference to modify the object's state (e.g., `prod.name = "MacBook"`), the change is reflected in the original object.
-    *   However, if you reassign the copied reference to a new object (e.g., `prod = new Product("Desktop")`), you are only changing the copy. The original reference still points to the original object.
-
-This is the key distinction. You are passing the reference by value, not the object by reference.
-
----
-
-### Q: Why are Strings immutable in Java? What's the difference between String, StringBuffer, and StringBuilder?
-
-This is a very common and important set of questions.
-
-**The Principal's Take:** String immutability is a core design decision in Java with significant benefits for security, performance, and concurrency.
-
-**Detailed Explanation:**
-
-*   **Immutability:** An immutable object is one whose state cannot be changed after it is created. When you "modify" a `String` (e.g., by concatenating another string), you are actually creating a new `String` object.
-*   **Why?**
-    1.  **Security:** String is widely used as a parameter for many Java classes (e.g., for network connections, opening files). If `String` were mutable, a malicious user could change the value of the string after a security check, potentially gaining unauthorized access.
-    2.  **Performance (String Pool):** The JVM maintains a "String pool" in the heap. When you create a string literal (e.g., `String s = "hello";`), the JVM checks if that string already exists in the pool. If it does, it returns a reference to the existing string. If not, it creates a new one. This saves memory, and it's only possible because strings are immutable.
-    3.  **Concurrency:** Because strings are immutable, they are inherently thread-safe. You can share them between multiple threads without any need for synchronization.
-    4.  **`hashCode()` Caching:** The `hashCode()` of a `String` is calculated once and cached. Since the string is immutable, its hash code will never change. This makes it very fast as a key in a `HashMap`.
-
-*   **`String` vs. `StringBuffer` vs. `StringBuilder`:**
-
-| Feature | `String` | `StringBuffer` | `StringBuilder` |
-|---|---|---|
-| **Mutability** | Immutable | Mutable | Mutable |
-| **Thread Safety**| Thread-safe | Thread-safe (synchronized) | Not thread-safe |
-| **Performance** | Slow for frequent modifications | Slower (due to synchronization) | Fastest for modifications |
-
-**The Principal's Take on Usage:**
-*   Use **`String`** for any string value that will not change. This is the vast majority of cases.
-*   Use **`StringBuilder`** when you need to build a string in a loop or through multiple modifications in a single-threaded context. It's the most efficient way to do this.
-*   Use **`StringBuffer`** only in the rare case that you need to share a mutable string between multiple threads. In most cases, you should use other concurrency mechanisms.
-
-**Bonus: Why use `char[]` for passwords?**
-Because `String` objects are immutable and go into the String pool, a password stored as a `String` can remain in memory for a long time, even after you are done with it. This is a security risk, as a hacker with access to a memory dump could find the password in plain text. A `char[]`, on the other hand, is a mutable array. You can (and should) explicitly wipe the array (e.g., by filling it with zeros) after you have used it, minimizing the time the password is in memory.
-
----
-
-### Q: How would you solve common numeric problems like reversing an integer or checking for a palindrome?
-
-These are classic interview questions that test your ability to manipulate numbers without converting them to strings.
-
-**The Principal's Take:** The key to these problems is to use the modulo (`%`) and division (`/`) operators to work with digits individually.
-
-**1. Reverse Integer**
-The goal is to reverse the digits of an integer (e.g., 123 -> 321).
-
-```java
-public int reverse(int x) {
-    int rev = 0;
-    while (x != 0) {
-        // This check is important to prevent overflow
-        if (rev > Integer.MAX_VALUE / 10 || rev < Integer.MIN_VALUE / 10) {
-            return 0; // Or throw an exception
-        }
-        rev = rev * 10 + x % 10;
-        x = x / 10;
-    }
-    return rev;
-}
-```
-
-**2. Palindrome Number**
-The goal is to check if an integer is a palindrome (e.g., 121 is, 123 is not). This can be done by reversing the number and checking if it's equal to the original.
-
-```java
-public boolean isPalindrome(int x) {
-    // Negative numbers are not palindromes
-    if (x < 0) return false;
-
-    int original = x;
-    int reversed = 0;
-    while (x != 0) {
-        reversed = reversed * 10 + x % 10;
-        x = x / 10;
-    }
-    return original == reversed;
-}
-```
-
-**3. Pow(x, n)**
-The goal is to calculate `x` to the power of `n`. The naive approach of multiplying `x` `n` times is too slow (O(n)). A better approach is to use recursion (O(log n)).
-
-```java
-public double myPow(double x, int n) {
-    if (n == 0) return 1;
-    if (n < 0) {
-        x = 1 / x;
-        // Handle the edge case of Integer.MIN_VALUE
-        if (n == Integer.MIN_VALUE) {
-            return x * myPow(x, Integer.MAX_VALUE);
-        }
-        n = -n;
-    }
-    return (n % 2 == 0) ? myPow(x * x, n / 2) : x * myPow(x * x, n / 2);
-}
-```
-This recursive solution is much more efficient as it halves the problem in each step.
 
 ---
 

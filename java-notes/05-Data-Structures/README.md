@@ -88,137 +88,30 @@ for (Integer quantity : cartQuantities.values()) {
 
 ## Interview Deep Dives
 
-### Q34 & Q91: What's the difference between an Array and a `Vector`? How do you increase an array's size?
+### Q19: What's the difference between an Array, a Vector, and an ArrayList?
 
-To understand this, let's look at the evolution of dynamic arrays in Java.
+*   **Simple Answer:** An `Array` has a fixed size. An `ArrayList` is a resizable array and is the one you should almost always use. A `Vector` is an old, slow, thread-safe version of `ArrayList` that you should avoid.
+*   **Detailed Explanation:**
+    *   **Array:** The most basic data structure. Its size is fixed when it's created. To "increase" the size, you have to create a new, larger array and copy the elements over.
+    *   **Vector:** A legacy class from Java 1.0. It's a resizable array, but all its methods are `synchronized`, making it thread-safe but slow.
+    *   **ArrayList:** The modern replacement for `Vector`. It's also a resizable array, but it's not synchronized, making it much faster.
+*   **Key Takeaway:** Use `ArrayList` for your list needs. If you need thread-safety, use `Collections.synchronizedList(new ArrayList<>())` or a dedicated concurrent collection.
 
-**The Code Example:**
-```java
-import java.util.Arrays;
-import java.util.Vector;
-import java.util.ArrayList;
+### Q20: What's the difference between a Stack and a Queue?
 
-public class ArrayEvolution {
-    public static void main(String[] args) {
-        // 1. Plain Array: Fixed size.
-        String[] plainArray = new String[2];
-        plainArray[0] = "A";
-        plainArray[1] = "B";
-        // plainArray[2] = "C"; // This would throw an ArrayIndexOutOfBoundsException
+*   **Simple Answer:** A `Stack` is **LIFO** (Last-In, First-Out), like a stack of plates. A `Queue` is **FIFO** (First-In, First-Out), like a line at a store.
+*   **Detailed Explanation:**
+    *   **Stack:** The last item you `push` (add) is the first item you `pop` (remove). Used for things like reversing a word or implementing undo functionality.
+    *   **Queue:** The first item you `add` is the first item you `poll` (remove). Used for processing tasks in the order they were received, like a print queue.
+*   **Implementation Note:** Don't use the old `java.util.Stack` class. It's a legacy class. Use an `ArrayDeque` instead to represent a stack. For a queue, `LinkedList` or `ArrayDeque` are good choices.
 
-        // 2. Vector: The "old way". Synchronized and slow.
-        Vector<String> vector = new Vector<>();
-        vector.add("A");
-        vector.add("B");
+### Q21: How would you sort an array containing only 0s, 1s, and 2s?
 
-        // 3. ArrayList: The "new way". Not synchronized and fast.
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("A");
-        arrayList.add("B");
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   **Array:** An array is a fixed-size data structure. Once you create it, you **cannot change its size**. If you need a larger array, you must create a new one and copy the elements from the old one.
-    *   **Inline Initialization:** You can initialize an array with a set of values when you declare it: `String[] names = {"Alice", "Bob", "Charlie"};`
-    *   **Multi-dimensional Arrays:** You can create arrays of arrays, which are useful for representing grids or matrices: `int[][] matrix = new int[3][3];`
-*   **`Vector`:** `Vector` was one of the original collection classes in Java 1.0. It's essentially a resizable array. Its key characteristic is that all of its public methods are `synchronized`. This means it is thread-safe, but it also means it's slow, as every operation requires acquiring a lock.
-*   **`ArrayList`:** `ArrayList` was introduced in Java 1.2 as a replacement for `Vector`. It is also a resizable array, but its methods are **not synchronized**.
-
-**The Principal's Take:**
-*   **System Design:** **You should almost never use `Vector` in new code.** It's considered a legacy class. If you need thread safety, you should use a modern alternative like `ConcurrentHashMap` or wrap a collection using `Collections.synchronizedList()`. For single-threaded access, `ArrayList` is the clear winner due to its better performance. The "dynamic" or "resizable" nature of `ArrayList` and `Vector` is a perfect answer to "How can we increase the size of an array?". You don't. You use a better data structure.
-
----
-
-### Q54: What's the difference between a Stack and a Queue?
-
-To understand this, let's look at how they handle data.
-
-**The Code Example:**
-```java
-import java.util.Stack; // Legacy class, avoid!
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.Deque;
-import java.util.ArrayDeque;
-
-public class StackVsQueue {
-    public static void main(String[] args) {
-        // Stack: LIFO (Last-In, First-Out)
-        // Principal's take: Don't use Stack. Use a Deque instead.
-        Deque<String> stack = new ArrayDeque<>();
-        stack.push("A"); // A
-        stack.push("B"); // B, A
-        stack.push("C"); // C, B, A
-        System.out.println("Stack pop: " + stack.pop()); // C
-        System.out.println("Stack pop: " + stack.pop()); // B
-
-        // Queue: FIFO (First-In, First-Out)
-        Queue<String> queue = new LinkedList<>();
-        queue.add("A"); // A
-        queue.add("B"); // A, B
-        queue.add("C"); // A, B, C
-        System.out.println("Queue poll: " + queue.poll()); // A
-        System.out.println("Queue poll: " + queue.poll()); // B
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   **Stack (LIFO):** A stack follows the "Last-In, First-Out" principle. The last item you add (`push`) is the first item you remove (`pop`). Think of a stack of plates.
-    *   **Common Methods:** `push(item)`, `pop()`, `peek()`, `isEmpty()`.
-*   **Queue (FIFO):** A queue follows the "First-In, First-Out" principle. The first item you add is the first item you remove. Think of a line at a ticket counter.
-    *   **Common Methods:** `add(item)`, `poll()`, `peek()`, `isEmpty()`.
-
-**The Principal's Take:**
-*   **System Design:** Stacks are useful for problems involving recursion, parsing expressions, or maintaining a history (like the "back" button in a browser). Queues are fundamental in system design for handling tasks in the order they were received, such as in message queues (like RabbitMQ or SQS) or for managing requests in a web server.
-*   **Implementation:** The original `java.util.Stack` class is a legacy class that extends `Vector`, so it's synchronized and slow. **Do not use it.** The modern way to implement a stack is to use any class that implements the `Deque` (Double-Ended Queue) interface, such as `ArrayDeque`. For a queue, `LinkedList` or `ArrayDeque` are both good choices.
-
----
-
-### Q: How would you sort an array of 0s, 1s, and 2s?
-
-This is a classic interview question that tests your understanding of sorting algorithms beyond the standard library `sort()` methods. It's a stand-in for any situation where you have a small, fixed number of unique values.
-
-**The Principal's Take:** The key here is to realize that a general-purpose comparison-based sort (like quicksort or mergesort, which are O(n log n)) is overkill. Because we have a small, fixed number of values, we can use a more efficient, linear-time algorithm like Counting Sort.
-
-**The Code Example (Counting Sort):**
-```java
-public class SortColors {
-    public void sortColors(int[] nums) {
-        if (nums == null || nums.length < 2) {
-            return;
-        }
-
-        // 1. Count the occurrences of each color.
-        int[] countArray = new int[3];
-        for (int num : nums) {
-            countArray[num]++;
-        }
-
-        // 2. Overwrite the original array with the sorted values.
-        int index = 0;
-        for (int i = 0; i < countArray.length; i++) {
-            for (int j = 0; j < countArray[i]; j++) {
-                nums[index++] = i;
-            }
-        }
-    }
-}
-```
-
-**Detailed Explanation:**
-The Counting Sort algorithm works in two passes:
-1.  **Counting Pass:** We iterate through the input array and count the number of times each value (0, 1, or 2) appears.
-2.  **Overwrite Pass:** We then iterate through our counts, and for each value, we overwrite the original array with that value the number of times it appeared.
-
-This approach has a time complexity of O(n) because we iterate through the array a constant number of times. It's much more efficient than a general-purpose sorting algorithm for this specific problem.
-
-**System Design Insight:**
-This problem illustrates an important principle: **always consider the constraints of your data.** When you know more about your data (e.g., the range of values is small), you can often use a specialized algorithm that is much more efficient than a general-purpose one. This is a key aspect of performance optimization.
+*   **Simple Answer:** Use a "counting sort" algorithm. It's much faster than a general-purpose sort for this specific problem.
+*   **The Algorithm (Counting Sort):**
+    1.  **Count:** Make a single pass through the array to count the number of 0s, 1s, and 2s.
+    2.  **Overwrite:** Make a second pass through the array, filling it up with the number of 0s you counted, then the number of 1s, and finally the number of 2s.
+*   **Why it's better:** This algorithm has a time complexity of O(n), because you only pass through the array a constant number of times. A general-purpose sort like `Arrays.sort()` is typically O(n log n), which is slower. This problem shows the importance of using specialized algorithms when you know the constraints of your data.
 
 ---
 

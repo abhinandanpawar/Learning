@@ -41,262 +41,50 @@ We also provided a utility class called `Collections` with a set of static metho
 
 ## Interview Deep Dives
 
-### What is the difference between `HashMap` and `Hashtable`?
+### Q26: What is the difference between `HashMap` and `Hashtable`?
 
-This is a classic Java interview question. To understand this, let's look at their history and design.
-
-**The Code Example:**
-```java
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-public class MapComparison {
-    public static void main(String[] args) {
-        // Hashtable: Legacy, synchronized, slow. Does not allow null keys or values.
-        Map<String, String> hashtable = new Hashtable<>();
-        // hashtable.put("key1", null); // This would throw a NullPointerException
-
-        // HashMap: Modern, not synchronized, fast. Allows one null key and multiple null values.
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put(null, "value1");
-        hashMap.put("key1", null);
-    }
-}
-```
-
-**Detailed Explanation & Trade-offs:**
-
+*   **Simple Answer:** `Hashtable` is an old, slow, thread-safe class from Java 1.0 that you should never use. `HashMap` is the modern, fast, non-thread-safe replacement.
+*   **Detailed Explanation:**
 | Feature | `Hashtable` | `HashMap` |
-|---|---|---|
-| **Introduced** | Java 1.0 | Java 1.2 (as part of the Collections Framework) |
-| **Thread Safety**| **Synchronized**. All public methods are synchronized. | **Not Synchronized**. Must be synchronized externally. |
-| **Performance** | Slow due to synchronization overhead on every operation. | Fast. |
-| **Nulls** | Does **not** allow `null` keys or values. | Allows **one** `null` key and multiple `null` values. |
-| **Inheritance** | Extends `Dictionary` (a legacy class). | Extends `AbstractMap`. |
+| :--- | :--- | :--- |
+| **Thread Safety**| Yes (synchronized) | No |
+| **Performance** | Slow due to locking | Fast |
+| **Nulls** | Does not allow `null` keys or values. | Allows one `null` key and multiple `null` values. |
+*   **Key Takeaway:** Always use `HashMap`. If you need a thread-safe map, use `ConcurrentHashMap`.
 
-**The Principal's Take:**
-*   **System Design:** **Never use `Hashtable` in new code.** It is a legacy class that has been completely replaced by `HashMap` and `ConcurrentHashMap`. The only reason it still exists is for backward compatibility. If you are asked this question in an interview, the expected answer is that you would always choose `HashMap` for single-threaded scenarios and `ConcurrentHashMap` for multi-threaded scenarios. Mentioning that `Hashtable` is a legacy, synchronized, and slow collection shows that you understand the history and evolution of the Java Collections Framework.
+### Q27: How does a `PriorityQueue` work?
 
----
+*   **Simple Answer:** It's a queue that orders elements by priority instead of insertion order. By default, the smallest element has the highest priority (this is called a "min-heap").
+*   **How it works:** It uses a data structure called a heap to efficiently keep the elements sorted by priority. Adding and removing elements is very fast (O(log n)).
+*   **When to use it:** For any problem where you need to repeatedly process the highest-priority item, such as in Dijkstra's shortest path algorithm or finding the "top K" items in a large dataset.
 
-### Q: How does a `PriorityQueue` work?
+### Q28: What is the difference between `HashSet` and `TreeSet`?
 
-A `PriorityQueue` is a special type of queue where elements are ordered based on their natural ordering or by a `Comparator` provided at construction time.
-
-**The Principal's Take:** `PriorityQueue` is an essential tool for problems that involve processing elements based on their priority, not just their insertion order. It's implemented as a priority heap, which provides efficient O(log n) time for enqueuing and dequeuing operations.
-
-**The Code Example:**
-```java
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
-public class PriorityQueueExample {
-    public static void main(String[] args) {
-        // A min-heap by default (natural ordering)
-        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-        minHeap.add(5);
-        minHeap.add(1);
-        minHeap.add(3);
-        System.out.println("Min-heap poll: " + minHeap.poll()); // 1
-
-        // A max-heap using a custom Comparator
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());
-        maxHeap.add(5);
-        maxHeap.add(1);
-        maxHeap.add(3);
-        System.out.println("Max-heap poll: " + maxHeap.poll()); // 5
-    }
-}
-```
-
-**Detailed Explanation:**
-*   By default, a `PriorityQueue` orders its elements according to their natural ordering (if they implement `Comparable`). For numbers, this means it acts as a **min-heap**, where the smallest element has the highest priority.
-*   You can provide a custom `Comparator` to change the ordering. For example, `Comparator.reverseOrder()` creates a **max-heap**, where the largest element has the highest priority.
-*   `PriorityQueue` does not permit `null` elements.
-
-**System Design Insight:**
-`PriorityQueue` is useful in many algorithms, such as:
-*   **Dijkstra's algorithm** for finding the shortest path in a graph.
-*   **Prim's algorithm** for finding a minimum spanning tree.
-*   Any problem where you need to efficiently retrieve the smallest or largest element from a collection, such as finding the "top K" elements from a stream of data.
-
----
-
-### Q: What is the difference between `HashSet` and `TreeSet`?
-
-Both `HashSet` and `TreeSet` are implementations of the `Set` interface, which means they do not allow duplicate elements. However, they have different underlying data structures and performance characteristics.
-
-**The Principal's Take:** Choose `HashSet` when you need fast access and don't care about the order of elements. Choose `TreeSet` when you need to maintain a sorted order.
-
+*   **Simple Answer:** Both store unique elements. `HashSet` is faster but unordered. `TreeSet` is slower but keeps the elements sorted.
+*   **Detailed Explanation:**
 | Feature | `HashSet` | `TreeSet` |
-|---|---|---|
-| **Underlying Data Structure** | Hash Table | Red-Black Tree |
-| **Ordering** | Unordered | Sorted (natural order or by `Comparator`) |
-| **Performance** | O(1) for `add`, `remove`, `contains` (amortized) | O(log n) for `add`, `remove`, `contains` |
-| **Null Elements** | Allows one `null` element | Does not allow `null` elements (throws `NullPointerException`) |
-| **Comparison** | Uses `hashCode()` and `equals()` | Uses `compareTo()` or `compare()` |
+| :--- | :--- | :--- |
+| **Ordering** | Unordered | Sorted |
+| **Performance** | Fast (O(1)) | Slower (O(log n)) |
+| **Internal Structure** | Hash Table | Red-Black Tree |
+| **Nulls** | Allows one `null` | Does not allow `null`s |
+*   **Key Takeaway:** Use `HashSet` when you just need to store unique items and don't care about the order. Use `TreeSet` when you need the items to always be in sorted order.
 
-**The Code Example:**
-```java
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+### Q29: What is the difference between `Comparable` and `Comparator`?
 
-public class SetComparison {
-    public static void main(String[] args) {
-        // HashSet: Unordered, fast.
-        Set<String> hashSet = new HashSet<>();
-        hashSet.add("Charlie");
-        hashSet.add("Alice");
-        hashSet.add("Bob");
-        System.out.println("HashSet: " + hashSet); // Order is not guaranteed
+*   **Simple Answer:** `Comparable` defines the single, *natural* order for a class. `Comparator` is used to define *custom* or external orderings.
+*   **Detailed Explanation:**
+    *   **`Comparable`:** You implement this interface *inside* the class you want to sort (e.g., a `Student` class could be naturally sorted by ID). You only get one `compareTo` method.
+    *   **`Comparator`:** You create a *separate class* that implements this interface. This lets you define many different ways to sort the same object (e.g., sort `Student`s by name, or by GPA, or by age).
+*   **Key Takeaway:** In Java 8+, it's very common to create `Comparator`s on the fly using lambda expressions, which is very flexible.
 
-        // TreeSet: Sorted, slightly slower.
-        Set<String> treeSet = new TreeSet<>();
-        treeSet.add("Charlie");
-        treeSet.add("Alice");
-        treeSet.add("Bob");
-        System.out.println("TreeSet: " + treeSet); // [Alice, Bob, Charlie]
-    }
-}
-```
+### Q30: What is the difference between fail-fast and fail-safe iterators?
 
-**System Design Insight:**
-*   `HashSet` is the go-to implementation of `Set` for most use cases due to its excellent performance. It's ideal for quickly checking for the presence of an element in a collection.
-*   `TreeSet` is useful when you need to iterate over the elements in a sorted order. For example, if you were building a leaderboard, you could use a `TreeSet` to keep the scores sorted.
-
----
-
-### Q: What is the difference between `Comparable` and `Comparator`?
-
-Both `Comparable` and `Comparator` are interfaces that are used for sorting objects in Java.
-
-**The Principal's Take:** Use `Comparable` to define the *natural* or *default* order for a class. Use `Comparator` to define *alternative* orderings or to sort objects of a class that you cannot modify.
-
-| Feature | `Comparable` | `Comparator` |
-|---|---|---|
-| **Package** | `java.lang` | `java.util` |
-| **Method** | `int compareTo(T o)` | `int compare(T o1, T o2)` |
-| **Implementation** | The class whose objects are to be sorted must implement this interface. | A separate class implements this interface. |
-| **Usage** | Defines a single, natural ordering for a class. | Can define multiple, different orderings for a class. |
-
-**The Code Example:**
-```java
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-// 1. Using Comparable for natural ordering (by name)
-class Product implements Comparable<Product> {
-    String name;
-    double price;
-
-    Product(String name, double price) {
-        this.name = name;
-        this.price = price;
-    }
-
-    @Override
-    public int compareTo(Product other) {
-        return this.name.compareTo(other.name);
-    }
-
-    @Override
-    public String toString() { return name + ": $" + price; }
-}
-
-// 2. Using Comparator for an alternative ordering (by price)
-class ProductPriceComparator implements Comparator<Product> {
-    @Override
-    public int compare(Product p1, Product p2) {
-        return Double.compare(p1.price, p2.price);
-    }
-}
-
-public class SortingExample {
-    public static void main(String[] args) {
-        List<Product> products = new ArrayList<>();
-        products.add(new Product("Laptop", 1200.00));
-        products.add(new Product("Mouse", 25.00));
-        products.add(new Product("Keyboard", 75.00));
-
-        // Sort by natural order (name)
-        Collections.sort(products);
-        System.out.println("Sorted by name: " + products);
-
-        // Sort by alternative order (price)
-        products.sort(new ProductPriceComparator());
-        System.out.println("Sorted by price: " + products);
-    }
-}
-```
-
-**System Design Insight:**
-*   Implementing `Comparable` is a good practice for your domain objects to give them a natural, default sort order.
-*   `Comparator` is more flexible. You can provide multiple `Comparator` implementations to sort your objects in different ways. With Java 8, you can also create comparators on the fly using lambda expressions and the `Comparator` factory methods (e.g., `Comparator.comparing(Product::getPrice)`). This is the modern, preferred way to handle custom sorting.
-
----
-
-### Q: What is the difference between fail-fast and fail-safe iterators?
-
-This question tests your understanding of how iterators handle concurrent modification of the underlying collection.
-
-**The Principal's Take:** Fail-fast iterators are a mechanism to detect and signal that a collection has been modified during iteration, which can prevent subtle and hard-to-debug issues. Fail-safe iterators provide a way to iterate over a collection that might be modified by other threads.
-
-**The Code Example:**
-```java
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class IteratorBehavior {
-    public static void main(String[] args) {
-        // 1. Fail-Fast Iterator (e.g., from ArrayList)
-        List<String> list = new ArrayList<>();
-        list.add("A");
-        list.add("B");
-        try {
-            Iterator<String> iterator = list.iterator();
-            while (iterator.hasNext()) {
-                System.out.println(iterator.next());
-                list.add("C"); // This will throw ConcurrentModificationException
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        // 2. Fail-Safe Iterator (e.g., from CopyOnWriteArrayList)
-        List<String> safeList = new CopyOnWriteArrayList<>();
-        safeList.add("A");
-        safeList.add("B");
-        Iterator<String> safeIterator = safeList.iterator();
-        while (safeIterator.hasNext()) {
-            System.out.println(safeIterator.next());
-            safeList.add("C"); // This will not throw an exception.
-        }
-        System.out.println("Final safe list: " + safeList);
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   **Fail-Fast Iterators:**
-    *   These iterators throw a `ConcurrentModificationException` if the collection is structurally modified (i.e., an element is added or removed) at any time after the iterator is created, in any way except through the iterator's own `remove()` method.
-    *   They work by keeping an internal counter (`modCount`) that is incremented every time the collection is modified. The iterator checks this counter at the beginning of each `next()` call.
-    *   Most collections in the `java.util` package have fail-fast iterators (e.g., `ArrayList`, `HashMap`, `HashSet`).
-
-*   **Fail-Safe Iterators:**
-    *   These iterators do not throw any exception if the collection is modified during iteration.
-    *   They typically work on a clone of the collection, so they don't see the modifications made after the iterator was created.
-    *   The collections in the `java.util.concurrent` package have fail-safe iterators (e.g., `CopyOnWriteArrayList`, `ConcurrentHashMap`).
-
-**System Design Insight:**
-*   The fail-fast behavior is not a guarantee; it's a best-effort mechanism to detect bugs. You should not write code that relies on this exception being thrown for its correctness.
-*   Fail-safe collections like `CopyOnWriteArrayList` are useful in multi-threaded scenarios where you have a collection that is read much more often than it is written to. Every write operation creates a new copy of the underlying array, which is expensive, but read operations are fast and do not require locking.
+*   **Simple Answer:** This is about what happens when a collection is modified while you are iterating over it.
+*   **Detailed Explanation:**
+    *   **Fail-Fast (`ArrayList`, `HashMap`):** Throws a `ConcurrentModificationException` if the collection is changed during iteration. This is a safety mechanism to alert you to potential bugs.
+    *   **Fail-Safe (`CopyOnWriteArrayList`, `ConcurrentHashMap`):** Does not throw an exception. The iterator works on a snapshot or a copy of the collection, so it doesn't see the changes.
+*   **Key Takeaway:** Fail-fast is the default for standard collections. Fail-safe is used for special concurrent collections where modifications during iteration are expected.
 
 ---
 
