@@ -120,70 +120,72 @@ In the next chapter, we'll explore the core of Java's design: Object-Oriented Pr
 
 ## Interview Deep Dives
 
-### Q9: What is the difference between `double` and `float` variables in Java?
+### Q4: What's the difference between `double` and `float`?
 
-To understand this, let's check this example that deals with the price of a product.
+*   **Simple Answer:** They are both for decimal numbers, but `double` has about twice the precision of `float`. You should use `double` for almost everything.
+*   **Detailed Explanation:**
+    *   **Storage:** `float` uses 4 bytes, while `double` uses 8 bytes.
+    *   **Precision:** `double` can accurately store about 15-17 decimal digits, while `float` can only handle about 6-7.
+*   **Key Takeaway:** Always use `double` for calculations unless you are working with huge arrays of numbers where memory is a critical concern (e.g., graphics programming). For money, use the `BigDecimal` class to avoid rounding errors.
 
-**The Code Example:**
-```java
-public class PrecisionExample {
-    public static void main(String[] args) {
-        // float is a single-precision 32-bit floating point number
-        float itemPrice = 25.99f; // Note the 'f' suffix
+### Q5: What does the `final` keyword do?
 
-        // double is a double-precision 64-bit floating point number
-        double orderTotal = 129.95;
+*   **Simple Answer:** It makes something unchangeable.
+*   **Detailed Explanation:**
+    1.  **`final` variable:** A constant. Its value cannot be changed after it's assigned.
+    2.  **`final` method:** Cannot be overridden by a child class.
+    3.  **`final` class:** Cannot be extended or inherited from. The `String` class is a good example.
 
-        System.out.println("Item price (float): " + itemPrice);
-        System.out.println("Order total (double): " + orderTotal);
+### Q6: What is autoboxing and unboxing?
+
+*   **Simple Answer:** It's the automatic conversion between primitive types (like `int`) and their wrapper classes (like `Integer`).
+*   **Detailed Explanation:**
+    *   **Autoboxing:** Primitive -> Wrapper. `Integer iWrapper = 10;` (the compiler does the `new Integer(10)` part for you).
+    *   **Unboxing:** Wrapper -> Primitive. `int i = iWrapper;` (the compiler does the `iWrapper.intValue()` part for you).
+*   **Key Takeaway:** This was added for convenience, but be careful. Creating many wrapper objects in a tight loop can be slow and create work for the garbage collector.
+
+### Q7: Is Java pass-by-value or pass-by-reference?
+
+*   **Simple Answer:** Java is **always pass-by-value**.
+*   **Detailed Explanation:**
+    *   When you pass a primitive (like `int`) to a method, a **copy of the value** is passed. Changes inside the method don't affect the original.
+    *   When you pass an object to a method, a **copy of the reference (the memory address)** is passed.
+    *   This is the tricky part: both the original reference and the copy point to the *same object*. So if you use the reference copy to *change the object's internal state* (e.g., `myObject.setName("new name")`), the original object is changed.
+    *   However, if you try to *reassign the reference copy* to a new object, it does not affect the original reference.
+
+### Q8: Why is `String` immutable? What's the difference between `String`, `StringBuilder`, and `StringBuffer`?
+
+*   **Simple Answer:** `String` is immutable (cannot be changed) for security and performance reasons. For building strings, use `StringBuilder`.
+*   **Detailed Explanation:**
+| Class | Mutability | Thread-Safety | When to Use |
+| :--- | :--- | :--- | :--- |
+| `String` | Immutable | Yes | Default choice for text that won't change. |
+| `StringBuilder` | Mutable | No | Best for building strings in a single thread (e.g., in a loop). Fastest option. |
+| `StringBuffer` | Mutable | Yes | Old, slow version. Use only if you need to modify a string from multiple threads. |
+
+*   **Why immutable?**
+    1.  **String Pool:** Java saves memory by reusing strings. This is only safe if they can't be changed.
+    2.  **Security:** Prevents malicious code from changing a string after a security check.
+    3.  **Concurrency:** Immutable objects are automatically thread-safe.
+
+### Q9: How do you reverse an integer without converting it to a string?
+
+*   **Simple Answer:** Use the modulo (`%`) and division (`/`) operators in a loop to pick off and place digits one by one.
+*   **The Code:**
+    ```java
+    public int reverse(int x) {
+        int reversed = 0;
+        while (x != 0) {
+            // Check for overflow before it happens
+            if (reversed > Integer.MAX_VALUE / 10 || reversed < Integer.MIN_VALUE / 10) {
+                return 0; // Overflow
+            }
+            reversed = reversed * 10 + x % 10; // Add the last digit of x to reversed
+            x = x / 10; // Remove the last digit from x
+        }
+        return reversed;
     }
-}
-```
-
-**Detailed Explanation:**
-The primary difference between `double` and `float` is their **precision** and **storage size**.
-
-*   **Storage:** A `float` uses 4 bytes (32 bits) of memory, while a `double` uses 8 bytes (64 bits).
-*   **Precision:** This difference in storage size means a `double` can represent a much larger range of numbers with a higher degree of accuracy (about 15-17 decimal digits) compared to a `float` (about 6-7 decimal digits).
-
-**The Principal's Take:**
-*   **System Design:** For most applications, especially financial calculations, you should **always default to `double`**. In fact, for handling money, you should use the `BigDecimal` class to get exact control over rounding and precision, as floating-point numbers can introduce small inaccuracies.
-*   **Memory:** The only time to consider `float` is in memory-constrained environments where you are storing a very large array of floating-point numbers, such as in scientific computing or graphics programming, and the loss of precision is acceptable.
-
----
-
-### Q10: What is the `final` keyword in Java?
-
-To understand this, let's check this example of setting a sales tax rate.
-
-**The Code Example:**
-```java
-public class FinalExample {
-
-    // 1. A final variable is a constant.
-    public static final double SALES_TAX_RATE = 0.08;
-
-    // 2. A final method cannot be overridden by subclasses.
-    public final void displayWelcomeMessage() {
-        System.out.println("Welcome to our store!");
-    }
-
-    // 3. A final class cannot be extended (inherited from).
-    // public final class MyFinalClass {}
-}
-```
-
-**Detailed Explanation:**
-The `final` keyword is a modifier that can be applied to variables, methods, and classes. It has a slightly different meaning in each context, but the core idea is the same: **it makes something unchangeable.**
-
-1.  **`final` variables:** A `final` variable is a **constant**. Its value cannot be changed after it has been initialized. This is useful for defining things like mathematical constants (`PI`) or application-wide configuration values (like our `SALES_TAX_RATE`).
-    *   **Memory/JVM Insight:** `public static final` variables are true constants that are resolved at compile time. The JVM may perform optimizations like inlining their values directly into the code that uses them.
-
-2.  **`final` methods:** A `final` method **cannot be overridden** by a subclass.
-    *   **System Design:** You would use this when you have a method in a superclass that has an implementation that should not be changed by any subclass. This is a way to enforce a part of an algorithm or a contract.
-
-3.  **`final` classes:** A `final` class **cannot be subclassed** (inherited from).
-    *   **System Design:** This is used for classes that are "perfect" and should not be tampered with. A great example is the `String` class in Java. We made it `final` to ensure that its behavior is always consistent and predictable, which is crucial for security and reliability. When you pass a `String` to a method, you can be sure that the method can't change the string's content by casting it to a malicious subclass.
+    ```
 
 ---
 

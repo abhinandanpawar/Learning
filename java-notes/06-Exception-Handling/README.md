@@ -78,79 +78,47 @@ try {
 
 ## Interview Deep Dives
 
-### Q25 & Q26: Is a `catch` block always required after a `try` block? How can you skip a `finally` block?
+### Q22: Is a `catch` block always required after a `try` block?
 
-To understand this, let's check this example of resource cleanup.
+*   **Simple Answer:** No. A `try` block must be followed by either a `catch` block, a `finally` block, or both.
+*   **Detailed Explanation:**
+    *   `try-catch`: Use this when you want to handle a specific exception.
+    *   `try-finally`: Use this when you want to ensure cleanup code runs, regardless of whether an exception occurs.
+    *   `try-catch-finally`: Use this when you want to do both.
+*   **Modern Best Practice:** For resource cleanup (like files or database connections), you should use the `try-with-resources` statement, which is cleaner and safer than using a `finally` block.
 
-**The Code Example:**
-```java
-import java.io.FileInputStream;
-import java.io.IOException;
+### Q23: How do you manually throw an exception?
 
-public class FinallyExample {
-
-    public void readFile(String path) {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(path);
-            // ... process the file
-            // System.exit(0); // This is the ONLY way to skip the finally block.
-        } catch (IOException e) {
-            System.out.println("File not found or cannot be read.");
-        } finally {
-            // This block is (almost) always executed.
-            System.out.println("Finally block executed.");
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-}
-```
-
-**Detailed Explanation:**
-
-*   A `try` block does **not** always need a `catch` block, but it must be followed by **either a `catch` block or a `finally` block (or both)**.
-*   The `finally` block is designed to contain cleanup code that must be executed no matter what happens in the `try` block (e.g., closing files, database connections, or network sockets).
-*   The `finally` block is always executed, with one major exception: if the JVM exits while the `try` or `catch` code is being executed. The only way to programmatically cause this is to call `System.exit()`.
-
-**The Principal's Take:**
-*   **System Design:** The `try-finally` construct is the cornerstone of safe resource management in pre-Java 7 code. However, it's verbose and easy to get wrong (e.g., what if `fis.close()` also throws an exception?).
-*   **Best Practice:** In modern Java (7+), you should **always prefer using the `try-with-resources` statement** for resource management. It's more concise and less error-prone, as it automatically handles the closing of resources.
-
+*   **Simple Answer:** You use the `throw` keyword, followed by a new instance of an exception object.
+*   **The Code:**
     ```java
-    // Modern, preferred way
-    public void readFileModern(String path) {
-        try (FileInputStream fis = new FileInputStream(path)) {
-            // ... process the file
-        } catch (IOException e) {
-            System.out.println("File not found or cannot be read.");
+    public void setAge(int age) {
+        if (age < 0) {
+            throw new IllegalArgumentException("Age cannot be negative.");
         }
+        this.age = age;
     }
     ```
+*   **Why do this?** To enforce rules and preconditions in your code. If a method is called with invalid arguments or if a business rule is violated, you throw an exception to stop the operation and signal that something is wrong.
 
----
+### Q24: What is the difference between an `Exception` and an `Error`?
 
-### Q83: How can an exception be thrown manually by a programmer?
+*   **Simple Answer:** You should handle `Exception`s, but you should never try to handle `Error`s.
+*   **Detailed Explanation:**
+    *   Both inherit from a common parent class called `Throwable`.
+    *   **`Exception`:** Represents conditions that a program might want to recover from (e.g., `IOException`, `SQLException`). These are generally predictable problems.
+    *   **`Error`:** Represents serious problems that are usually unrecoverable and external to the application (e.g., `OutOfMemoryError`, `StackOverflowError`). Your program has likely entered a state from which it cannot recover.
 
-To understand this, let's check the example from the "Creating Your Own Exceptions" section above.
+### Q25: What is the difference between `throw` and `throws`?
 
-**Detailed Explanation:**
-You can throw an exception manually using the `throw` keyword, followed by a new exception object.
+*   **Simple Answer:** `throw` is an action that throws an exception. `throws` is a declaration in a method signature that says which exceptions the method might throw.
+*   **Detailed Explanation:**
+| Keyword | What it is | Example |
+| :--- | :--- | :--- |
+| `throw` | An action inside a method. | `throw new IOException("File not found");` |
+| `throws` | A declaration in a method's signature. | `public void readFile() throws IOException;` |
 
-```java
-if (product.getStock() < quantity) {
-    throw new InsufficientStockException("Not enough stock for " + product.getName());
-}
-```
-
-**The Principal's Take:**
-*   **System Design:** Throwing exceptions manually is essential for enforcing business rules and maintaining the integrity of your application's state. When a method's preconditions are not met (e.g., an invalid argument is passed) or a business rule is violated (e.g., attempting to withdraw more money than is in an account), you should throw an exception to signal that the operation cannot proceed.
-*   **Best Practice:** Prefer specific, custom exceptions (like `InsufficientStockException`) over generic ones (like `RuntimeException`). This makes your code more self-documenting and allows callers to handle specific error conditions more effectively.
+*   **Key Takeaway:** You use `throw` to make an exception happen. You use `throws` to warn other methods that this exception might happen.
 
 ---
 

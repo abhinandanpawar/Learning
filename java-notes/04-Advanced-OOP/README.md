@@ -68,88 +68,43 @@ This ensures that an order's status can only be one of these four values, which 
 
 ## Interview Deep Dives
 
-### Q18: What's the difference between an Abstract Class and an Interface in Java?
+### Q15: What's the difference between an Abstract Class and an Interface?
 
-To understand this, let's check this example.
-
-**The Code Example:**
-```java
-// An interface defines a pure contract of "what" a class can do.
-// It cannot have instance variables.
-interface Shippable {
-    // Methods are public and abstract by default.
-    double getWeight();
-    String getShippingAddress();
-
-    // Since Java 8, you can have default methods with implementation.
-    default String getShippingLabel() {
-        return "Ship to: " + getShippingAddress();
-    }
-}
-
-// An abstract class provides a partial implementation and can have state.
-abstract class BaseProduct {
-    protected String sku; // Can have instance variables (state)
-
-    public BaseProduct(String sku) { // Can have constructors
-        this.sku = sku;
-    }
-
-    public String getSku() { // Can have concrete methods
-        return sku;
-    }
-
-    public abstract double getPrice(); // Can have abstract methods
-}
-
-// A concrete class can extend one abstract class and implement many interfaces.
-class Book extends BaseProduct implements Shippable {
-    // ... implementation
-}
-```
-
-**Detailed Explanation & Trade-offs:**
-This is a classic interview question that tests your understanding of core OOP design principles.
-
+*   **Simple Answer:** An abstract class is for creating a base class with some shared code for related classes (an "is-a" relationship). An interface is for defining a contract of what a class can do, without any implementation (a "has-a-capability" relationship).
+*   **Detailed Explanation:**
 | Feature | Abstract Class | Interface |
-|---|---|---|
-| **Purpose** | To provide a common base with some shared implementation and state. | To define a contract that a class must adhere to. |
-| **State** | Can have instance variables. | Cannot have instance variables. |
-| **Constructors** | Can have constructors. | Cannot have constructors. |
-| **Methods** | Can have a mix of abstract and concrete methods. | All methods are `public` by default. Can have `abstract`, `default`, and `static` methods. |
-| **Inheritance** | A class can `extend` only **one** abstract class. | A class can `implement` **multiple** interfaces. |
+| :--- | :--- | :--- |
+| **Inheritance** | A class can `extend` only **one**. | A class can `implement` **many**. |
+| **State** | Can have instance variables (fields). | Cannot have instance variables. |
+| **Methods** | Can have a mix of abstract and regular methods. | All methods are `public` by default. Can have `abstract`, `default`, and `static` methods. |
+| **Constructors**| Can have constructors. | Cannot have constructors. |
 
-**The Principal's Take:**
-*   **System Design:** **"Favor composition over inheritance"** is a good design principle. This often means you should **favor interfaces**. When you program to an interface, you are decoupling your code from the implementation, which makes it more flexible.
-*   Use an **abstract class** when you have a group of related classes that share a significant amount of common code and state. A good example is `AbstractList` in the Java Collections Framework, which provides a skeletal implementation of the `List` interface.
-*   Use an **interface** when you want to define a capability that can be implemented by unrelated classes. `Shippable`, `Serializable`, and `Comparable` are great examples of this.
+*   **Key Takeaway:** Prefer interfaces for defining contracts. Use an abstract class only when you need to share code among closely related classes.
 
----
+### Q16: Can you have an abstract class with no abstract methods?
 
-### Q17: Can we declare a class as Abstract without having any abstract method?
+*   **Simple Answer:** Yes.
+*   **Detailed Explanation:** Declaring a class `abstract` has only one effect: **it cannot be instantiated**. You can't do `new MyAbstractClass()`.
+*   **Why do this?** You do this to create a base class that is only meant to be extended. It signals to other developers that this class is a template and should not be used on its own.
 
-Yes. To understand why, let's check this example.
+### Q17: When and how do you use the `super` keyword?
 
-**The Code Example:**
-```java
-// This is a valid abstract class, even with no abstract methods.
-public abstract class BaseController {
-    protected void logRequest() {
-        // common logging logic
-    }
+*   **Simple Answer:** `super` is used to refer to the immediate parent class.
+*   **Common Uses:**
+    1.  **`super()`:** To call a parent class's constructor. This is the most important use. It must be the first line in a child's constructor.
+    2.  **`super.method()`:** To call a parent's method, especially if the child has overridden it.
+    3.  **`super.field`:** To access a field from the parent class if the child has a field with the same name.
 
-    // Other common helper methods can go here...
-}
+### Q18: What is Object Cloning?
 
-// You cannot do this:
-// BaseController controller = new BaseController(); // Compile error!
-```
-
-**Detailed Explanation:**
-Declaring a class `abstract` means one thing: **it cannot be instantiated**. You cannot create an object of that class using the `new` keyword.
-
-**The Principal's Take:**
-*   **System Design:** Why would you do this? This is a design choice to signal that a class is incomplete and is only intended to be used as a **base class for other classes to extend**. It prevents other developers from using your base class directly. For example, you might have a `BaseController` in a web framework that provides common helper methods, but it doesn't make sense to create an instance of the `BaseController` itself. Only concrete controllers like `UserController` or `ProductController` should be instantiated.
+*   **Simple Answer:** It's the process of creating an exact copy of an object.
+*   **How it works:**
+    1.  Your class must implement the `Cloneable` marker interface.
+    2.  You override the `clone()` method.
+*   **Shallow vs. Deep Copy:**
+    *   **Shallow Copy (the default):** Copies all fields. If a field is a reference to another object, only the reference is copied, not the object it points to. Both the original and the clone will share the same referenced objects.
+    *   **Deep Copy:** Copies everything. If a field is a reference, it recursively clones the referenced object as well.
+*   **Caution:** Java's `Cloneable` is considered a bit flawed and tricky to use correctly. Often, it's better to create copies using a **copy constructor** or a **factory method**.
 
 ---
 

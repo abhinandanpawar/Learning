@@ -92,88 +92,49 @@ Abstraction is about hiding the implementation details and showing only the esse
 
 ## Interview Deep Dives
 
-### Q1: What is the difference between an Inner Class and a Sub-Class?
+### Q10: What is the difference between an Inner Class and a Sub-Class?
 
-To understand this, let's check this example.
+*   **Simple Answer:** A sub-class inherits from a parent class (an "is-a" relationship). An inner class is a helper class defined inside another class.
+*   **Detailed Explanation:**
+    *   **Sub-class (e.g., `class EBook extends Product`):** This is standard inheritance. `EBook` *is a* `Product` and inherits its public/protected members. It's used for code reuse and polymorphism.
+    *   **Inner Class (e.g., `class OrderLine` inside `class Order`):** This is a class defined within another class. It's used for helper classes that are tightly coupled to the outer class. The key feature is that an inner class object has access to the private fields of its outer class object.
 
-**The Code Example:**
-```java
-// A Sub-Class uses inheritance (the "is-a" relationship)
-class EBook extends Product {
-    public EBook(String name, double price) {
-        super(name, price);
-    }
-    // ... EBook specific methods
-}
+### Q11: What is a singleton class?
 
-public class Order {
-    private long orderId;
-    private List<Product> items;
+*   **Simple Answer:** A class that is designed to have only one instance.
+*   **How it works:**
+    1.  Make the constructor `private`.
+    2.  Create a `private static final` instance of the class.
+    3.  Provide a `public static` method (`getInstance()`) to return that single instance.
+*   **When to use it:** For global resources like a database connection manager or a configuration loader.
+*   **Caution:** Singletons can make code hard to test because they introduce global state. Modern frameworks like Spring often provide better ways to manage single instances using dependency injection.
 
-    // An Inner Class has a special relationship with the outer class
-    // (the "has-a" relationship, but with special access)
-    public class OrderLine {
-        private Product product;
-        private int quantity;
+### Q12: What is a constructor and can it be overloaded?
 
-        public double getLineTotal() {
-            // The inner class can access private fields of the outer class!
-            System.out.println("Calculating total for order: " + orderId);
-            return product.getPrice() * quantity;
-        }
-    }
-}
-```
+*   **Simple Answer:** A constructor is a special method used to create an object. And yes, it can be overloaded.
+*   **Detailed Explanation:**
+    *   A constructor must have the same name as the class and has no return type.
+    *   Its job is to initialize the object's fields.
+    *   **Overloading:** You can have multiple constructors in the same class, as long as they have different parameters. This gives you flexible ways to create objects.
 
-**Detailed Explanation:**
+### Q13: What is the difference between Method Overloading and Method Overriding?
 
-*   **Sub-class (Inheritance):** A sub-class `EBook` **is a** `Product`. It inherits the public and protected members of its parent. This is a fundamental concept for code reuse and polymorphism.
-*   **Inner Class:** An inner class `OrderLine` is a class that is nested inside another class, `Order`. It is used as a helper class that is tightly coupled to its outer class. The key feature is that the inner class instance has a special, hidden reference to an instance of the outer class, which allows it to access the outer class's private members (like `orderId`).
+*   **Simple Answer:** Overloading is having multiple methods with the same name but different parameters in the *same class*. Overriding is when a *child class* provides a new implementation for a method from its parent class.
+*   **Detailed Explanation:**
+| Feature | Method Overloading | Method Overriding |
+| :--- | :--- | :--- |
+| **Location** | Same class | Parent and Child class |
+| **Parameters**| Must be different | Must be the same |
+| **Purpose** | Convenience (multiple ways to call a method) | Polymorphism (changing behavior in a child class) |
 
-**The Principal's Take:**
-*   **System Design:** Use **inheritance** when you have a true "is-a" relationship and want to model a hierarchy of types. Use an **inner class** when you have a helper class that only makes sense in the context of its outer class and needs close access to its state. A common use case for inner classes is for implementing event listeners or iterators.
+### Q14: Why doesn't Java support multiple inheritance for classes?
 
----
-
-### Q5: What is a singleton class? Give a practical example of its usage.
-
-**The Code Example:**
-The Singleton pattern ensures that a class has only one instance and provides a global point of access to it.
-
-```java
-public class DatabaseConnectionManager {
-
-    // 1. The single instance, created at class loading time.
-    private static final DatabaseConnectionManager INSTANCE = new DatabaseConnectionManager();
-
-    // 2. A private constructor to prevent anyone else from creating an instance.
-    private DatabaseConnectionManager() {
-        // Initialize the database connection here
-        System.out.println("Database connection manager initialized.");
-    }
-
-    // 3. A public static method to get the single instance.
-    public static DatabaseConnectionManager getInstance() {
-        return INSTANCE;
-    }
-
-    public void connect() {
-        System.out.println("Connected to the database.");
-    }
-}
-
-// Usage:
-// DatabaseConnectionManager manager = new DatabaseConnectionManager(); // This will give a compile error!
-// DatabaseConnectionManager manager = DatabaseConnectionManager.getInstance();
-// manager.connect();
-```
-
-**Detailed Explanation:**
-The key to the Singleton pattern is a `private` constructor and a `public static` method that returns the single instance. The instance itself is stored in a `private static final` field. This implementation is simple and thread-safe.
-
-**The Principal's Take:**
-*   **System Design:** The Singleton pattern should be used with **extreme caution**. While it's useful for managing a truly global resource like a database connection pool or a logging configuration, it can also be an anti-pattern. It introduces global state into your application, which can make code hard to test and reason about.
-*   **Trade-offs:** Singletons can make dependency injection and testing difficult. Before you create a singleton, ask yourself: "Can I achieve the same result by creating a regular object and passing it as a dependency to the objects that need it?". In modern frameworks like Spring, the framework manages the lifecycle of your beans as singletons by default, which is a much cleaner approach.
+*   **Simple Answer:** To avoid the "Diamond Problem".
+*   **The Diamond Problem:**
+    *   Imagine class `A` has a method `foo()`.
+    *   Classes `B` and `C` both inherit from `A` and override `foo()`.
+    *   If class `D` could inherit from both `B` and `C`, which version of `foo()` would it get? It's ambiguous.
+*   **Java's Solution:** A class can only `extend` one parent class. However, a class can `implement` multiple interfaces, which is how Java achieves a safe form of multiple inheritance for behavior.
 
 ---
 

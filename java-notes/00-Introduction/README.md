@@ -32,4 +32,21 @@ Let's begin.
 
 ---
 
+## Interview Deep Dives
+
+### Q1: Where does Java fit among programming paradigms?
+
+*   **Simple Answer:** Java is primarily an **Object-Oriented Programming (OOP)** language. However, modern Java has also adopted many features from **Functional Programming**.
+
+*   **Detailed Explanation:**
+    *   **Programming Paradigms** are just different styles of writing programs.
+    *   **Imperative Programming:** This style tells the computer *how* to do something, step-by-step.
+        *   **Object-Oriented Programming (OOP)** is a type of imperative programming where code is organized around objects. This is Java's core paradigm. It helps manage complexity by modeling real-world things as objects.
+    *   **Declarative Programming:** This style tells the computer *what* you want, not how to do it.
+        *   **Functional Programming** is a type of declarative programming. Modern Java includes functional features like Lambda expressions and the Stream API, which allow for a more declarative style.
+
+*   **The Key Takeaway:** Java was designed as an OOP language to build large, reliable systems. It has since evolved to include powerful functional features, giving developers the best of both worlds.
+
+---
+
 [Next: 01 - Getting Started: Your First Conversation with the JVM](../01-Getting-Started/README.md)

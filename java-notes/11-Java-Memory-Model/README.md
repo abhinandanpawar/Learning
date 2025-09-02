@@ -41,31 +41,38 @@ The JMM is what makes `synchronized` and `volatile` work. It's a contract betwee
 
 ## Interview Deep Dives
 
-### Q40, Q78, Q80, Q85, Q86: All About Garbage Collection and Object Memory
+### Q38: How does Garbage Collection (GC) work? Can I control it?
 
-This group of questions revolves around how Java manages memory, a critical topic for any senior developer.
+*   **Simple Answer:** The GC is an automatic process that cleans up objects from the heap when they are no longer used. You cannot force it to run, and you shouldn't try.
+*   **Detailed Explanation:** The GC runs automatically when the JVM decides it's necessary. While you can suggest it runs with `System.gc()`, this is strongly discouraged as it can hurt performance. The best approach is to trust the JVM to manage memory for you.
 
-**To understand this, let's recap the core concepts:**
-*   Objects are stored on the **Heap**.
-*   When an object is no longer referenced by any running part of the application (i.e., it's unreachable from a **GC Root** like a running thread's stack), it becomes eligible for garbage collection.
-*   The Garbage Collector (GC) is an automatic process that finds these unreferenced objects and frees up the memory they were using.
+### Q39: Does Garbage Collection prevent `OutOfMemoryError`?
 
-**Detailed Explanation & Principal's Take:**
+*   **Simple Answer:** No.
+*   **Detailed Explanation:** If you have a **memory leak** (i.e., you are holding onto references to objects that you no longer need), the GC cannot collect them. If your program creates objects faster than the GC can clear them, you will eventually run out of heap space and the JVM will throw an `OutOfMemoryError`.
 
-*   **Q: How is garbage collection done? Can I control it?**
-    *   **A:** The GC runs automatically. The JVM decides when to run it based on heap usage. While you can *suggest* a GC run with `System.gc()`, you **cannot force it**.
-    *   **Principal's Take:** You should **never** call `System.gc()` in production code. It's at best a hint, and at worst it can cause performance problems by triggering a full GC at an inopportune time. Trust the JVM to do its job.
+### Q40: Can you re-use an object after it has been garbage collected?
 
-*   **Q: Does GC prevent `OutOfMemoryError`?**
-    *   **A:** No. If your application creates objects faster than the GC can collect them, or if you have a memory leak (objects that are still referenced but no longer needed), you will eventually run out of heap space and get an `OutOfMemoryError`.
-    *   **Principal's Take:** `OutOfMemoryError` is a common production issue. Your job as a senior developer is to know how to diagnose it using heap dumps and profilers (as discussed in the Memory Management chapter).
+*   **Simple Answer:** No.
+*   **Detailed Explanation:** Once an object has been garbage collected, it is gone forever. Its memory is reclaimed and may be used for new objects.
 
-*   **Q: Can I re-use an object after it has been garbage collected?**
-    *   **A:** No. Once an object is collected, it's gone forever. The memory is reclaimed and may be used for new objects.
+### Q41: How can you find the size of a Java object?
 
-*   **Q: How can I find the actual size of an object on the heap?**
-    *   **A:** There is no simple, direct way to get the exact size of a single object in your Java code. The actual size is implementation-dependent and includes the object header in addition to the fields.
-    *   **Principal's Take:** This is a bit of a trick question. While you can't get the size programmatically, you can use profiling tools like **JFR** or **VisualVM** to analyze the memory usage of your application and see how much space different types of objects are taking up on the heap. This is the practical way to answer the underlying question, which is usually about diagnosing memory usage problems.
+*   **Simple Answer:** You can't do it directly in your code. You need to use a profiling tool.
+*   **Detailed Explanation:** There is no `sizeof()` operator in Java. The exact size of an object on the heap is complex and depends on the JVM implementation. The practical way to analyze memory usage is to use a profiling tool like **VisualVM** or **Java Flight Recorder (JFR)** to inspect the heap.
+
+### Q42: What is the purpose of the `finalize()` method?
+
+*   **Simple Answer:** It's a method that the GC calls on an object just before it's deleted. It should not be used in modern code.
+*   **Detailed Explanation:** `finalize()` was intended for cleaning up non-Java resources, but it's unreliable and has performance issues. There is no guarantee when or even if it will be called.
+*   **Modern Best Practice:** For cleaning up resources like files or database connections, **always** use a `try-with-resources` block.
+
+### Q43: What is the difference between PermGen and Metaspace?
+
+*   **Simple Answer:** They are both areas in memory used to store class metadata. Metaspace replaced PermGen in Java 8.
+*   **Detailed Explanation:**
+    *   **PermGen (Permanent Generation):** Used in Java 7 and earlier. It was part of the Java heap and had a fixed maximum size, which often caused `OutOfMemoryError: PermGen space`.
+    *   **Metaspace:** Used in Java 8 and later. It is allocated from **native memory** (not the Java heap) and can auto-grow by default. This makes it much more flexible and reduces the frequency of this specific type of `OutOfMemoryError`.
 
 ---
 

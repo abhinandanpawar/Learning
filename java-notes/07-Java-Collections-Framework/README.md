@@ -41,42 +41,50 @@ We also provided a utility class called `Collections` with a set of static metho
 
 ## Interview Deep Dives
 
-### What is the difference between `HashMap` and `Hashtable`?
+### Q26: What is the difference between `HashMap` and `Hashtable`?
 
-This is a classic Java interview question. To understand this, let's look at their history and design.
-
-**The Code Example:**
-```java
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-public class MapComparison {
-    public static void main(String[] args) {
-        // Hashtable: Legacy, synchronized, slow. Does not allow null keys or values.
-        Map<String, String> hashtable = new Hashtable<>();
-        // hashtable.put("key1", null); // This would throw a NullPointerException
-
-        // HashMap: Modern, not synchronized, fast. Allows one null key and multiple null values.
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put(null, "value1");
-        hashMap.put("key1", null);
-    }
-}
-```
-
-**Detailed Explanation & Trade-offs:**
-
+*   **Simple Answer:** `Hashtable` is an old, slow, thread-safe class from Java 1.0 that you should never use. `HashMap` is the modern, fast, non-thread-safe replacement.
+*   **Detailed Explanation:**
 | Feature | `Hashtable` | `HashMap` |
-|---|---|---|
-| **Introduced** | Java 1.0 | Java 1.2 (as part of the Collections Framework) |
-| **Thread Safety**| **Synchronized**. All public methods are synchronized. | **Not Synchronized**. Must be synchronized externally. |
-| **Performance** | Slow due to synchronization overhead on every operation. | Fast. |
-| **Nulls** | Does **not** allow `null` keys or values. | Allows **one** `null` key and multiple `null` values. |
-| **Inheritance** | Extends `Dictionary` (a legacy class). | Extends `AbstractMap`. |
+| :--- | :--- | :--- |
+| **Thread Safety**| Yes (synchronized) | No |
+| **Performance** | Slow due to locking | Fast |
+| **Nulls** | Does not allow `null` keys or values. | Allows one `null` key and multiple `null` values. |
+*   **Key Takeaway:** Always use `HashMap`. If you need a thread-safe map, use `ConcurrentHashMap`.
 
-**The Principal's Take:**
-*   **System Design:** **Never use `Hashtable` in new code.** It is a legacy class that has been completely replaced by `HashMap` and `ConcurrentHashMap`. The only reason it still exists is for backward compatibility. If you are asked this question in an interview, the expected answer is that you would always choose `HashMap` for single-threaded scenarios and `ConcurrentHashMap` for multi-threaded scenarios. Mentioning that `Hashtable` is a legacy, synchronized, and slow collection shows that you understand the history and evolution of the Java Collections Framework.
+### Q27: How does a `PriorityQueue` work?
+
+*   **Simple Answer:** It's a queue that orders elements by priority instead of insertion order. By default, the smallest element has the highest priority (this is called a "min-heap").
+*   **How it works:** It uses a data structure called a heap to efficiently keep the elements sorted by priority. Adding and removing elements is very fast (O(log n)).
+*   **When to use it:** For any problem where you need to repeatedly process the highest-priority item, such as in Dijkstra's shortest path algorithm or finding the "top K" items in a large dataset.
+
+### Q28: What is the difference between `HashSet` and `TreeSet`?
+
+*   **Simple Answer:** Both store unique elements. `HashSet` is faster but unordered. `TreeSet` is slower but keeps the elements sorted.
+*   **Detailed Explanation:**
+| Feature | `HashSet` | `TreeSet` |
+| :--- | :--- | :--- |
+| **Ordering** | Unordered | Sorted |
+| **Performance** | Fast (O(1)) | Slower (O(log n)) |
+| **Internal Structure** | Hash Table | Red-Black Tree |
+| **Nulls** | Allows one `null` | Does not allow `null`s |
+*   **Key Takeaway:** Use `HashSet` when you just need to store unique items and don't care about the order. Use `TreeSet` when you need the items to always be in sorted order.
+
+### Q29: What is the difference between `Comparable` and `Comparator`?
+
+*   **Simple Answer:** `Comparable` defines the single, *natural* order for a class. `Comparator` is used to define *custom* or external orderings.
+*   **Detailed Explanation:**
+    *   **`Comparable`:** You implement this interface *inside* the class you want to sort (e.g., a `Student` class could be naturally sorted by ID). You only get one `compareTo` method.
+    *   **`Comparator`:** You create a *separate class* that implements this interface. This lets you define many different ways to sort the same object (e.g., sort `Student`s by name, or by GPA, or by age).
+*   **Key Takeaway:** In Java 8+, it's very common to create `Comparator`s on the fly using lambda expressions, which is very flexible.
+
+### Q30: What is the difference between fail-fast and fail-safe iterators?
+
+*   **Simple Answer:** This is about what happens when a collection is modified while you are iterating over it.
+*   **Detailed Explanation:**
+    *   **Fail-Fast (`ArrayList`, `HashMap`):** Throws a `ConcurrentModificationException` if the collection is changed during iteration. This is a safety mechanism to alert you to potential bugs.
+    *   **Fail-Safe (`CopyOnWriteArrayList`, `ConcurrentHashMap`):** Does not throw an exception. The iterator works on a snapshot or a copy of the collection, so it doesn't see the changes.
+*   **Key Takeaway:** Fail-fast is the default for standard collections. Fail-safe is used for special concurrent collections where modifications during iteration are expected.
 
 ---
 
