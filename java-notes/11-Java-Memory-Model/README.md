@@ -39,4 +39,34 @@ The JMM is what makes `synchronized` and `volatile` work. It's a contract betwee
 
 ---
 
+## Interview Deep Dives
+
+### Q40, Q78, Q80, Q85, Q86: All About Garbage Collection and Object Memory
+
+This group of questions revolves around how Java manages memory, a critical topic for any senior developer.
+
+**To understand this, let's recap the core concepts:**
+*   Objects are stored on the **Heap**.
+*   When an object is no longer referenced by any running part of the application (i.e., it's unreachable from a **GC Root** like a running thread's stack), it becomes eligible for garbage collection.
+*   The Garbage Collector (GC) is an automatic process that finds these unreferenced objects and frees up the memory they were using.
+
+**Detailed Explanation & Principal's Take:**
+
+*   **Q: How is garbage collection done? Can I control it?**
+    *   **A:** The GC runs automatically. The JVM decides when to run it based on heap usage. While you can *suggest* a GC run with `System.gc()`, you **cannot force it**.
+    *   **Principal's Take:** You should **never** call `System.gc()` in production code. It's at best a hint, and at worst it can cause performance problems by triggering a full GC at an inopportune time. Trust the JVM to do its job.
+
+*   **Q: Does GC prevent `OutOfMemoryError`?**
+    *   **A:** No. If your application creates objects faster than the GC can collect them, or if you have a memory leak (objects that are still referenced but no longer needed), you will eventually run out of heap space and get an `OutOfMemoryError`.
+    *   **Principal's Take:** `OutOfMemoryError` is a common production issue. Your job as a senior developer is to know how to diagnose it using heap dumps and profilers (as discussed in the Memory Management chapter).
+
+*   **Q: Can I re-use an object after it has been garbage collected?**
+    *   **A:** No. Once an object is collected, it's gone forever. The memory is reclaimed and may be used for new objects.
+
+*   **Q: How can I find the actual size of an object on the heap?**
+    *   **A:** There is no simple, direct way to get the exact size of a single object in your Java code. The actual size is implementation-dependent and includes the object header in addition to the fields.
+    *   **Principal's Take:** This is a bit of a trick question. While you can't get the size programmatically, you can use profiling tools like **JFR** or **VisualVM** to analyze the memory usage of your application and see how much space different types of objects are taking up on the heap. This is the practical way to answer the underlying question, which is usually about diagnosing memory usage problems.
+
+---
+
 [Previous: 10 - Multithreading and Concurrency: Juggling Multiple Tasks](../10-Multithreading-and-Concurrency/README.md) | [Next: 12 - System Design with Java: Building Large-Scale Systems](../12-System-Design-with-Java/README.md)

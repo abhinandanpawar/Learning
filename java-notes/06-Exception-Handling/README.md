@@ -76,4 +76,82 @@ try {
 
 ---
 
+## Interview Deep Dives
+
+### Q25 & Q26: Is a `catch` block always required after a `try` block? How can you skip a `finally` block?
+
+To understand this, let's check this example of resource cleanup.
+
+**The Code Example:**
+```java
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class FinallyExample {
+
+    public void readFile(String path) {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(path);
+            // ... process the file
+            // System.exit(0); // This is the ONLY way to skip the finally block.
+        } catch (IOException e) {
+            System.out.println("File not found or cannot be read.");
+        } finally {
+            // This block is (almost) always executed.
+            System.out.println("Finally block executed.");
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+```
+
+**Detailed Explanation:**
+
+*   A `try` block does **not** always need a `catch` block, but it must be followed by **either a `catch` block or a `finally` block (or both)**.
+*   The `finally` block is designed to contain cleanup code that must be executed no matter what happens in the `try` block (e.g., closing files, database connections, or network sockets).
+*   The `finally` block is always executed, with one major exception: if the JVM exits while the `try` or `catch` code is being executed. The only way to programmatically cause this is to call `System.exit()`.
+
+**The Principal's Take:**
+*   **System Design:** The `try-finally` construct is the cornerstone of safe resource management in pre-Java 7 code. However, it's verbose and easy to get wrong (e.g., what if `fis.close()` also throws an exception?).
+*   **Best Practice:** In modern Java (7+), you should **always prefer using the `try-with-resources` statement** for resource management. It's more concise and less error-prone, as it automatically handles the closing of resources.
+
+    ```java
+    // Modern, preferred way
+    public void readFileModern(String path) {
+        try (FileInputStream fis = new FileInputStream(path)) {
+            // ... process the file
+        } catch (IOException e) {
+            System.out.println("File not found or cannot be read.");
+        }
+    }
+    ```
+
+---
+
+### Q83: How can an exception be thrown manually by a programmer?
+
+To understand this, let's check the example from the "Creating Your Own Exceptions" section above.
+
+**Detailed Explanation:**
+You can throw an exception manually using the `throw` keyword, followed by a new exception object.
+
+```java
+if (product.getStock() < quantity) {
+    throw new InsufficientStockException("Not enough stock for " + product.getName());
+}
+```
+
+**The Principal's Take:**
+*   **System Design:** Throwing exceptions manually is essential for enforcing business rules and maintaining the integrity of your application's state. When a method's preconditions are not met (e.g., an invalid argument is passed) or a business rule is violated (e.g., attempting to withdraw more money than is in an account), you should throw an exception to signal that the operation cannot proceed.
+*   **Best Practice:** Prefer specific, custom exceptions (like `InsufficientStockException`) over generic ones (like `RuntimeException`). This makes your code more self-documenting and allows callers to handle specific error conditions more effectively.
+
+---
+
 [Previous: 05 - Data Structures: Organizing Your Data](../05-Data-Structures/README.md) | [Next: 07 - Java Collections Framework: A Deeper Look](../07-Java-Collections-Framework/README.md)

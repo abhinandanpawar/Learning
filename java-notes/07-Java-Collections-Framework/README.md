@@ -39,4 +39,45 @@ We also provided a utility class called `Collections` with a set of static metho
 
 ---
 
+## Interview Deep Dives
+
+### What is the difference between `HashMap` and `Hashtable`?
+
+This is a classic Java interview question. To understand this, let's look at their history and design.
+
+**The Code Example:**
+```java
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+public class MapComparison {
+    public static void main(String[] args) {
+        // Hashtable: Legacy, synchronized, slow. Does not allow null keys or values.
+        Map<String, String> hashtable = new Hashtable<>();
+        // hashtable.put("key1", null); // This would throw a NullPointerException
+
+        // HashMap: Modern, not synchronized, fast. Allows one null key and multiple null values.
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.put(null, "value1");
+        hashMap.put("key1", null);
+    }
+}
+```
+
+**Detailed Explanation & Trade-offs:**
+
+| Feature | `Hashtable` | `HashMap` |
+|---|---|---|
+| **Introduced** | Java 1.0 | Java 1.2 (as part of the Collections Framework) |
+| **Thread Safety**| **Synchronized**. All public methods are synchronized. | **Not Synchronized**. Must be synchronized externally. |
+| **Performance** | Slow due to synchronization overhead on every operation. | Fast. |
+| **Nulls** | Does **not** allow `null` keys or values. | Allows **one** `null` key and multiple `null` values. |
+| **Inheritance** | Extends `Dictionary` (a legacy class). | Extends `AbstractMap`. |
+
+**The Principal's Take:**
+*   **System Design:** **Never use `Hashtable` in new code.** It is a legacy class that has been completely replaced by `HashMap` and `ConcurrentHashMap`. The only reason it still exists is for backward compatibility. If you are asked this question in an interview, the expected answer is that you would always choose `HashMap` for single-threaded scenarios and `ConcurrentHashMap` for multi-threaded scenarios. Mentioning that `Hashtable` is a legacy, synchronized, and slow collection shows that you understand the history and evolution of the Java Collections Framework.
+
+---
+
 [Previous: 06 - Exception Handling: Dealing with the Unexpected](../06-Exception-Handling/README.md) | [Next: 08 - Generics: Writing Type-Safe Code](../08-Generics/README.md)
