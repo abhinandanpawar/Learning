@@ -64,6 +64,271 @@ public class DemoApplication {
 }
 ```
 
+## Reactive Programming with Spring WebFlux
+
+Spring WebFlux is a fully non-blocking, reactive web framework for building modern, scalable applications in Spring. It is an alternative to the traditional Spring Web MVC framework.
+
+### Why Reactive?
+
+In a traditional blocking (imperative) programming model, a thread is blocked until a long-running operation (like a database query or a network call) is completed. This can lead to performance bottlenecks, as the thread cannot do any other work while it is waiting.
+
+Reactive programming is a paradigm that is built around asynchronous data streams. Instead of blocking, it uses an event-driven, non-blocking model, which allows a small number of threads to handle a large number of concurrent requests. This leads to better resource utilization and improved scalability.
+
+### Project Reactor: `Mono` and `Flux`
+
+Spring WebFlux uses [Project Reactor](https://projectreactor.io/) as its reactive library. Reactor provides two main types:
+
+-   **`Mono`**: A publisher that emits 0 or 1 element. It is used for operations that return a single or no result (e.g., finding a single user by ID).
+-   **`Flux`**: A publisher that emits 0 to N elements. It is used for operations that return multiple results (e.g., finding all users).
+
+### 1. Add WebFlux Dependency
+
+To use Spring WebFlux, you need to add the `spring-boot-starter-webflux` dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+```
+
+When you add this dependency, Spring Boot auto-configures Netty as the default embedded server, which is a non-blocking server.
+
+### 2. Creating a Reactive REST Controller
+
+You can create reactive REST controllers in a similar way to traditional Spring MVC controllers, but instead of returning plain objects, you return `Mono` or `Flux`.
+
+Here is an example of a simple reactive controller:
+
+```java
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+public class ReactiveTaskController {
+
+    private final TaskRepository taskRepository;
+
+    public ReactiveTaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    @GetMapping("/reactive/tasks")
+    public Flux<Task> getAllTasks() {
+        return Flux.fromIterable(taskRepository.findAll());
+    }
+
+    @GetMapping("/reactive/tasks/{id}")
+    public Mono<Task> getTaskById(@PathVariable Long id) {
+        return Mono.justOrEmpty(taskRepository.findById(id));
+    }
+}
+```
+
+**Note:** To use reactive programming with data access, you would typically use a reactive database driver and a reactive data repository, like Spring Data R2DBC. The example above uses a traditional blocking `TaskRepository` for simplicity, but in a real-world reactive application, the entire stack should be non-blocking.
+
+## Asynchronous Messaging with RabbitMQ
+
+RabbitMQ is a popular open-source message broker that implements the Advanced Message Queuing Protocol (AMQP). It is a powerful tool for building decoupled, distributed systems.
+
+### Why Use a Message Broker?
+
+In a distributed system, different services often need to communicate with each other. A message broker allows services to communicate asynchronously by sending messages to each other through a central intermediary. This has several advantages:
+-   **Decoupling:** Services do not need to know about each other; they only need to know about the message broker.
+-   **Scalability:** You can add more consumers to a queue to handle a higher load.
+-   **Resilience:** If a consumer is down, messages can be stored in the queue until it is back up.
+
+### 1. Add RabbitMQ Dependency
+
+To use RabbitMQ with Spring Boot, you need to add the `spring-boot-starter-amqp` dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+
+### 2. Configure RabbitMQ Connection
+
+You can configure the connection to your RabbitMQ server in the `application.properties` file:
+
+```properties
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+```
+
+### 3. Sending Messages (Producer)
+
+You can use the `RabbitTemplate` to send messages to a RabbitMQ exchange.
+
+```java
+package com.example.demo;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MessageProducer {
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    public void sendMessage(String message) {
+        rabbitTemplate.convertAndSend("my-exchange", "my-routing-key", message);
+    }
+}
+```
+
+### 4. Receiving Messages (Consumer)
+
+You can create a message consumer by using the `@RabbitListener` annotation on a method.
+
+```java
+package com.example.demo;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MessageConsumer {
+
+    @RabbitListener(queues = "my-queue")
+    public void receiveMessage(String message) {
+        System.out.println("Received message: " + message);
+    }
+}
+```
+
+You also need to declare the queue, exchange, and binding as Spring beans.
+
+```java
+package com.example.demo;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RabbitMQConfig {
+
+    @Bean
+    public Queue myQueue() {
+        return new Queue("my-queue", false);
+    }
+
+    @Bean
+    public TopicExchange myExchange() {
+        return new TopicExchange("my-exchange");
+    }
+
+    @Bean
+    public Binding myBinding(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with("my-routing-key");
+    }
+}
+```
+
+## Caching
+
+Caching is a technique used to improve the performance of an application by storing the results of expensive operations and reusing them for subsequent requests. Spring Boot provides a powerful and flexible caching abstraction that allows you to easily add caching to your application.
+
+### Why Use Caching?
+
+-   **Performance:** Caching can significantly reduce the latency of your application by avoiding expensive operations like database queries or network calls.
+-   **Reduced Load:** By serving data from the cache, you can reduce the load on your backend systems, such as databases.
+
+### 1. Add Caching Dependency
+
+To get started with caching in Spring Boot, you need to add the `spring-boot-starter-cache` dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+```
+
+### 2. Enable Caching
+
+To enable caching in your Spring Boot application, you need to add the `@EnableCaching` annotation to one of your configuration classes.
+
+```java
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+
+@SpringBootApplication
+@EnableCaching
+public class DemoApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}
+```
+
+### 3. Using Caching Annotations
+
+Spring's caching abstraction provides several annotations that you can use to manage the cache.
+
+-   **`@Cacheable`**: This annotation is used on a method to indicate that the result of the method should be cached. If the method is called again with the same arguments, the result will be returned from the cache instead of executing the method.
+
+```java
+@Service
+public class BookService {
+
+    @Cacheable("books")
+    public Book getBookByIsbn(String isbn) {
+        // This method will only be executed if the result is not in the cache.
+        return findBookInDatabase(isbn);
+    }
+}
+```
+
+-   **`@CachePut`**: This annotation is used to update the cache with the result of a method, without interfering with the method execution. This is useful when you want to update an entry in the cache.
+
+```java
+@Service
+public class BookService {
+
+    @CachePut(value = "books", key = "#book.isbn")
+    public Book updateBook(Book book) {
+        // This method will always be executed, and the result will be placed in the cache.
+        return updateBookInDatabase(book);
+    }
+}
+```
+
+-   **`@CacheEvict`**: This annotation is used to remove an entry from the cache. This is useful when you want to remove stale or invalid data from the cache.
+
+```java
+@Service
+public class BookService {
+
+    @CacheEvict(value = "books", key = "#isbn")
+    public void deleteBook(String isbn) {
+        // This method will remove the book with the given ISBN from the cache.
+        deleteBookFromDatabase(isbn);
+    }
+}
+```
+
+By default, Spring Boot uses a simple in-memory cache based on `ConcurrentHashMap`. For production use, you would typically use a more robust cache provider like EhCache, Caffeine, or a distributed cache like Redis.
+
 The `@SpringBootApplication` annotation is a convenience annotation that adds all of the following:
 
 - **`@Configuration`**: Tags the class as a source of bean definitions for the application context.
