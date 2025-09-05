@@ -169,3 +169,26 @@ class UrlControllerIntegrationTest {
     ENTRYPOINT ["java","-jar","/app.jar"]
     ```
 This playbook provides a template for building robust, production-ready applications with modern Java.
+
+### Final Application Architecture
+
+Here is a high-level view of the final application architecture, showing how the different layers interact.
+
+```mermaid
+graph TD
+    subgraph "Browser/Client"
+        A(User)
+    end
+
+    subgraph "Application"
+        B(UrlController) -- uses --> C(UrlShortenerService)
+        C -- uses --> D(UrlMappingRepository)
+    end
+
+    subgraph "Database"
+        E(H2 Database)
+    end
+
+    A -- "HTTP Request" --> B
+    D -- "JPA/JDBC" --> E
+```

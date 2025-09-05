@@ -39,6 +39,23 @@ Swing was created to solve the problems of AWT.
 *   **The Benefit:** This allowed for a consistent look-and-feel across all platforms. It also provided a much richer set of components.
 *   **The Downside:** Swing applications could sometimes feel "sluggish" or "not quite native." Over time, its API became complex and dated compared to modern UI toolkits.
 
+```mermaid
+graph TD
+    subgraph "AWT (Heavyweight)"
+        direction LR
+        AWTButton("AWT Button") --> NativeButton("Native OS Button Peer")
+    end
+    subgraph "Swing (Lightweight)"
+        direction LR
+        SwingButton("Swing JButton") -- "paints itself on" --> Canvas("Java2D Canvas")
+    end
+
+    subgraph OS
+        NativeButton
+        Canvas
+    end
+```
+
 **Key Swing Concept: The Event Dispatch Thread (EDT)**
 Swing is **not thread-safe**. All interactions with Swing components (creating them, updating them) must happen on a single thread called the Event Dispatch Thread (EDT). Forgetting this rule is a common source of bugs in Swing applications.
 

@@ -82,6 +82,23 @@ Externalize configuration in `application.yml` and use `@ConfigurationProperties
     ```
 
 #### d. A Balanced Testing Strategy
+A healthy and sustainable testing strategy can be visualized as a pyramid. You should have a large base of fast unit tests, a smaller number of slower integration tests, and very few end-to-end tests.
+
+```mermaid
+graph TD
+    subgraph The Testing Pyramid
+        direction TB
+        T(E2E Tests) --> M(Integration Tests) --> B(Unit Tests)
+    end
+
+    subgraph Characteristics
+        direction TB
+        T_Char("Few, Slow, Brittle")
+        M_Char("More, Slower, More Stable")
+        B_Char("Many, Fast, Isolated")
+    end
+```
+
 *   **Unit Tests:** Use `@Test` and `@ExtendWith(MockitoExtension.class)` to test a single class in isolation. Mock all dependencies.
 *   **Integration Tests:** Use `@SpringBootTest` to test the interaction between several components (e.g., service and repository). Use **Testcontainers** to spin up a real Docker container for your database.
     ```java
