@@ -4,6 +4,8 @@ Welcome to the Comprehensive Java Notes! This repository is designed to be a one
 
 These notes are structured to be easy to follow, with clear explanations and practical examples. Whether you are a beginner just starting your programming journey or an experienced developer looking to brush up on your Java skills, you will find something useful here.
 
+**Note on Diagrams:** Some of the notes in this section use Mermaid to render diagrams. If you are not seeing diagrams, you may need to use a markdown viewer or browser extension that supports Mermaid.
+
 ## Table of Contents
 
 *   [00 - Introduction](./00-Introduction/README.md)
@@ -21,35 +23,15 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [12 - System Design with Java](./12-System-Design-with-Java/README.md)
 *   [13 - Java Ecosystem](./13-Java-Ecosystem/README.md)
 *   [14 - New Java Features](./14-New-Java-Features/README.md)
-*   [15 - JDBC and Database Connectivity](./15-JDBC/README.md)
-*   [16 - GUI Development with Swing and JavaFX](./16-GUI/README.md)
-*   [17 - Unit Testing with JUnit](./17-Unit-Testing/README.md)
-*   [18 - Java Best Practices and Code Quality](./18-Best-Practices/README.md)
-*   [19 - Project Development and Real-World Applications](./19-Project-Development/README.md)
+*   [15 - JDBC](./15-JDBC/README.md)
+*   [16 - GUI](./16-GUI/README.md)
+*   [17 - Unit Testing](./17-Unit-Testing/README.md)
+*   [18 - Best Practices](./18-Best-Practices/README.md)
+*   [19 - Project Development](./19-Project-Development/README.md)
 *   [20 - Trees](./20-Trees/README.md)
 *   [21 - Graphs](./21-Graphs/README.md)
 *   [22 - Dynamic Programming](./22-Dynamic-Programming/README.md)
 *   [23 - Bit Manipulation](./23-Bit-Manipulation/README.md)
 *   [24 - Recursion and Backtracking](./24-Recursion-and-Backtracking/README.md)
-*   [25 - Interview and Growth Prep](./25-Interview-and-Growth-Prep/README.md)
+*   [25 - Interview and Growth Prep](./25-interview-and-growth-prep/README.md)
 *   [26 - Java Networking](./26-Java-Networking/README.md)
-*   [27 - Spring Boot Handbook](./spring_boot_handbook.md)
-
----
-
-## Advanced Topics for the Experienced Developer
-
-This section contains a series of concise, reference-style notes on topics that are relevant for developers with a few years of experience.
-
-*   [15 - Core Language Refresh (Java 17+)](./15-core-language-refresh.md)
-*   [16 - Collections & Streams Cheat-Sheet](./16-collections-and-streams.md)
-*   [17 - Concurrency Essentials](./17-concurrency-essentials.md)
-*   [18 - Modern Memory Management](./18-modern-memory-management.md)
-*   [19 - Spring Boot Mini-Playbook](./19-spring-boot-playbook.md)
-*   [20 - Architectural Patterns](./20-architectural-patterns.md)
-*   [21 - Performance & Observability](./21-performance-and-observability.md)
-*   [22 - Interview & Growth Prep](./22-interview-and-growth-prep.md)
-*   [23 - A Deep Dive into the Stream API](./23-stream-api-deep-dive.md)
-*   [24 - Java Networking: Talking to the Internet](./24-java-networking.md)
-
-Happy learning!

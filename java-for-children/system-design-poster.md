@@ -1,28 +1,33 @@
 # System Design Poster: A Simple Web App
 
-**(Imagine this as a big, colorful poster with arrows connecting the different parts.)**
-
 ## The Big Picture: How a Web App Works
 
-When you visit a website, like our e-commerce store, there are three main parts that work together:
+When you visit a website, like our e-commerce store, there are three main parts that work together. Here's a simple diagram to show how they are connected:
 
-1.  **Your Computer (The Client):** This is the web browser on your computer or phone. It's what you see and interact with.
-    *   **What it does:** Shows you the website, and sends your requests (like "add to cart") to the server.
-    *   **Poster Box:** A picture of a laptop with a web browser open.
+```mermaid
+graph TD
+    A[Client (Your Computer)] -- HTTP Request --> B[Server (Java Application)]
+    B -- HTTP Response --> A
+    B -- SQL Query --> C[Database]
+    C -- SQL Result --> B
 
-    [Click here to learn more about the Client!](#client-deep-dive)
+    subgraph "Your Computer"
+        A
+    end
 
-2.  **The Server:** This is a powerful computer that runs the main logic of our application.
-    *   **What it does:** It receives requests from your computer, processes them, and sends back the results. This is where most of our Java code will live.
-    *   **Poster Box:** A picture of a big computer with the Java logo on it.
+    subgraph "Our Servers"
+        B
+        C
+    end
+```
 
-    [Click here to learn more about the Server!](#server-deep-dive)
+Here's a breakdown of each part:
 
-3.  **The Database:** This is where all the data is stored.
-    *   **What it does:** It stores all the information about our products, users, and orders.
-    *   **Poster Box:** A picture of a giant filing cabinet.
+1.  **The Client:** This is the web browser on your computer or phone. It's what you see and interact with. It shows you the website and sends your requests (like "add to cart") to the server.
 
-    [Click here to learn more about the Database!](#database-deep-dive)
+2.  **The Server:** This is a powerful computer that runs the main logic of our application. It receives requests from your computer, processes them, and sends back the results. This is where most of our Java code will live.
+
+3.  **The Database:** This is where all the data is stored. It stores all the information about our products, users, and orders.
 
 ---
 

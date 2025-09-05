@@ -1,101 +1,108 @@
-# 14 - New Java Features: The Evolution of the Language
+# 14 - Modern Java in Action: A Tour of Recent Features
 
-The world of software development is constantly changing. As the current stewards of the Java language, our job is to ensure that Java continues to evolve to meet the needs of modern developers.
+Java is constantly evolving. Since Java 9, a new version is released every six months, with a **Long-Term Support (LTS)** version released every two years. This chapter highlights the most impactful features from recent LTS releases that you will use in modern, professional Java development.
 
-Since Java 9, we've moved to a new, faster release cadence: a new version of Java every six months. This allows us to get new features into the hands of developers more quickly.
+**What's in this chapter:**
+*   [Java 11 (LTS): Convenience and a New HTTP Client](#1-java-11-lts)
+*   [Java 17 (LTS): Data Modeling and Pattern Matching](#2-java-17-lts)
+*   [Java 21 (LTS): The Concurrency Revolution](#3-java-21-lts)
+*   [Hands-On Lab: A Modern Features Showcase](#4-hands-on-lab-a-modern-features-showcase)
 
-Here are some of the most important features we've added in recent years.
+---
 
-## 1. Records: True Immutable Data Carriers
+## 1. Java 11 (LTS)
 
-**System Design Context:** In distributed systems, you are constantly passing data between services. These Data Transfer Objects (DTOs) should be simple, immutable carriers of data. Before records, this meant writing hundreds of lines of boilerplate `getters`, `equals`, `hashCode`, and `toString`.
+#### `var` for Local Variable Type Inference
+The `var` keyword lets you declare a local variable without explicitly writing its type. The compiler *infers* the type from the right-hand side of the expression. This reduces boilerplate and improves readability.
 
-**The Principal's Take:** `records` are the canonical way to model immutable data aggregates. They are not "just boilerplate reduction". They are a semantic statement: "This object is a simple, transparent holder for its data."
+*   **Before:** `Map<String, List<User>> userMap = new HashMap<>();`
+*   **After:** `var userMap = new HashMap<String, List<User>>();`
 
-### Complete, Runnable Example:
+#### New `String` and `Files` Methods
+A number of quality-of-life methods were added.
+*   `" ".isBlank()`: Checks if a string is empty or contains only white space.
+*   `" line1 \n line2 ".lines()`: Returns a stream of lines.
+*   `Files.writeString(path, content)` and `Files.readString(path)`: Simplified file I/O.
+
+#### Standard `HttpClient`
+Java 11 introduced a new, modern, and fluent API for making HTTP requests, replacing the old `HttpURLConnection`. It supports HTTP/2 and asynchronous operations.
+
+---
+
+## 2. Java 17 (LTS)
+
+#### `records`: Immutable Data Carriers
+Records provide a concise syntax for creating immutable data classes. The compiler automatically generates the constructor, getters, `equals()`, `hashCode()`, and `toString()`.
+
+*   **Before:** A 50-line class with fields, a constructor, getters, etc.
+*   **After:** `public record User(String id, String name) {}`
+
+#### `sealed` Classes and Interfaces
+Sealed classes give you fine-grained control over which other classes can extend or implement them. This is powerful when you want to model a closed set of possibilities (e.g., in a domain model).
+
 ```java
-public class RecordExample {
-
-    // A record is a concise, final, immutable data class.
-    public record UserDto(long id, String email) {
-        // You can add compact constructors for validation.
-        public UserDto {
-            if (id < 0) {
-                throw new IllegalArgumentException("ID cannot be negative");
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        UserDto user = new UserDto(123L, "test@example.com");
-        System.out.println(user); // Prints: UserDto[id=123, email=test@example.com]
-        System.out.println("User ID: " + user.id()); // Accessor method
-    }
-}
+// Only Circle and Square are allowed to implement Shape.
+public sealed interface Shape permits Circle, Square { ... }
 ```
 
-### Memory Flow & JVM Deep Dive:
-A `record` is just a special kind of `class` under the hood. When `new UserDto(...)` is called:
-1.  An object is allocated on the **Heap**.
-2.  The object header points to the `UserDto` class metadata.
-3.  The fields (`id` and `email` reference) are stored in the object. They are `private` and `final` by default.
-4.  The compiler auto-generates the canonical constructor, `equals()`, `hashCode()`, `toString()`, and accessor methods (e.g., `id()`, `email()`).
+#### Pattern Matching for `instanceof`
+Reduces boilerplate by combining a type check and a cast.
 
----
-
-## 2. Pattern Matching: Type-Safe, Boilerplate-Free Logic
-
-**System Design Context:** Polymorphism is great, but sometimes you have to work with a general type (`Object`, or a `sealed` interface) and perform different logic based on the concrete type. Pattern matching cleans up this code dramatically.
-
-**The Principal's Take:** Pattern matching isn't just about saving a few lines of code. It moves type-checking logic from boilerplate `if/else` chains into the language itself, making it more declarative and less error-prone. It's a key enabler for features like `sealed` classes.
-
-### Complete, Runnable Example:
-```java
-public class PatternMatchingExample {
-
-    sealed interface Shape permits Circle, Square {}
-    record Circle(double radius) implements Shape {}
-    record Square(double side) implements Shape {}
-
-    public static double getArea(Shape shape) {
-        return switch (shape) {
-            case Circle c -> Math.PI * c.radius() * c.radius();
-            case Square s -> s.side() * s.side();
-        };
+*   **Before:**
+    ```java
+    if (obj instanceof String) {
+        String s = (String) obj;
+        // ... use s
     }
-
-    public static void main(String[] args) {
-        Shape circle = new Circle(10);
-        System.out.println("Area of circle: " + getArea(circle));
+    ```
+*   **After:**
+    ```java
+    if (obj instanceof String s) {
+        // ... use s directly
     }
-}
-```
+    ```
 
-### Deep Dive into Trade-offs:
-*   **Pattern Matching `switch` vs. Polymorphism:** For a closed set of types (like a `sealed` interface), a pattern matching `switch` is often cleaner and more maintainable than implementing a method on each subclass (the classic visitor or polymorphic pattern). It co-locates the logic. For an open set of types, polymorphism is more extensible.
-*   **Guards:** You can add `when` clauses (guards) to your patterns for more complex logic, e.g., `case Circle c when c.radius() > 100 -> ...`.
+#### Switch Expressions
+Modernized `switch` to be a concise, safe expression that returns a value.
 
----
-## Interview Deep Dives
-
-### Q45: What is the difference between an LTS and a non-LTS version of Java?
-
-*   **Simple Answer:** LTS (Long-Term Support) versions are released every 2 years and are supported with security updates for many years. You should always use an LTS version for production. Non-LTS versions are released every 6 months and are for trying out new features.
-*   **Detailed Explanation:**
-    *   **LTS Releases (e.g., Java 8, 11, 17, 21):** These are the stable, production-ready versions. They receive security patches and bug fixes for a long time.
-    *   **Non-LTS Releases (e.g., Java 12, 13, 14, 15, 16):** These are short-lived feature releases. They are a way for developers to experiment with new language features before they are included in an LTS release.
-*   **Key Takeaway:** Use the latest LTS version for all your production applications. Keep an eye on the non-LTS releases to stay up-to-date with the language's evolution.
-
----
-
-### A Deep Dive into the Stream API
-
-The Stream API is not just a tool for writing less code; it's a paradigm shift from imperative to declarative data processing.
-
-*   **The Stream Pipeline:** Think of a stream pipeline as an assembly line for your data: `source -> intermediate op -> ... -> terminal op`. Streams are **lazy**; no work is done until the terminal operation is called. This allows the JVM to be very efficient.
-*   **Advanced `Collectors`:** The real power of streams comes from the `Collectors` class. You can use collectors like `groupingBy` and `summingDouble` to perform complex aggregations and transformations on your data.
-*   **Parallel Streams:** Be very careful with `parallel()`. It is not a magic performance booster. It uses the common `ForkJoinPool`, and if you submit a task that blocks (e.g., a network call), you can starve the pool and harm your application's performance. Only use it for CPU-intensive tasks on very large datasets.
+*   **Before:**
+    ```java
+    switch(day) {
+        case MONDAY: result = 1; break;
+        // ...
+    }
+    ```
+*   **After:**
+    ```java
+    int result = switch(day) {
+        case MONDAY -> 1;
+        // ...
+    };
+    ```
 
 ---
 
-[Previous: 13 - The Java Ecosystem: Tools of the Trade](../13-Java-Ecosystem/README.md) | [Next: 15 - JDBC and Database Connectivity](../15-JDBC/README.md)
+## 3. Java 21 (LTS)
+
+#### Virtual Threads (Project Loom)
+This is a game-changing feature that dramatically simplifies writing high-throughput concurrent applications. Virtual threads are extremely lightweight threads managed by the JVM, allowing you to have millions of them.
+
+*   **Before:** Use a complex, asynchronous, callback-based style to handle many concurrent I/O operations.
+*   **After:** Write simple, synchronous, "thread-per-request" style code, and let virtual threads handle the scalability.
+
+#### Sequenced Collections
+New interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) were added to provide a unified API for accessing the first and last elements of a collection and for reversing the collection's order.
+
+---
+
+## 4. Hands-On Lab: A Modern Features Showcase
+
+We've created a runnable project in the `code/` directory that demonstrates some of these key features in action, including:
+1.  Using `var` for local variables.
+2.  Defining and using a `record`.
+3.  Using a `switch` expression with pattern matching.
+
+**To run it:**
+1.  Navigate to the `code/` directory.
+2.  Run `mvn compile exec:java`.
+3.  Explore the source code to see how these features make Java code more concise and readable.

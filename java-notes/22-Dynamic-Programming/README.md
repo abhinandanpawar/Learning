@@ -1,162 +1,70 @@
-# 22 - Dynamic Programming
+# 22 - Dynamic Programming: Solving Problems by Remembering the Past
 
-Dynamic Programming (DP) is a powerful technique for solving problems by breaking them down into simpler subproblems. It is typically used for optimization problems where we are looking for the best solution from a set of possible solutions.
+Dynamic Programming (DP) is a powerful algorithmic technique for solving complex problems by breaking them down into simpler, overlapping subproblems. The core idea is simple: **solve each subproblem only once and store its result.** When you encounter the same subproblem again, you just look up the answer instead of re-computing it.
 
-## Introduction to Dynamic Programming
-The core idea of DP is to solve each subproblem only once and store its result. When the same subproblem is encountered again, we can simply look up its result instead of re-computing it. This is known as **memoization**.
+**What's in this chapter:**
+*   [The Core Idea: When Can We Use DP?](#1-the-core-idea-when-can-we-use-dp)
+*   [The Two Approaches: Memoization vs. Tabulation](#2-the-two-approaches-memoization-vs-tabulation)
+*   [A Framework for Solving DP Problems](#3-a-framework-for-solving-dp-problems)
+*   [Hands-On Lab: The Fibonacci Sequence](#4-hands-on-lab-the-fibonacci-sequence)
+*   [Classic DP Problems (Exercises)](#5-classic-dp-problems-exercises)
 
-There are two key properties that a problem must have for DP to be applicable:
-1.  **Overlapping Subproblems:** The problem can be broken down into subproblems that are reused several times.
+---
+
+## 1. The Core Idea: When Can We Use DP?
+
+A problem can be solved with Dynamic Programming if it has two key properties:
+
+1.  **Overlapping Subproblems:** The problem can be broken down into smaller subproblems that are reused multiple times. For example, to calculate `fib(5)`, you need `fib(4)` and `fib(3)`. To calculate `fib(4)`, you need `fib(3)` and `fib(2)`. The `fib(3)` subproblem is overlapping.
 2.  **Optimal Substructure:** The optimal solution to the overall problem can be constructed from the optimal solutions of its subproblems.
 
-## Classic DP Problems
+---
 
-### Maximum Subarray
-The goal is to find the contiguous subarray within an array that has the largest sum.
+## 2. The Two Approaches: Memoization vs. Tabulation
 
-**The Problem:** Given an array `[−2, 1, −3, 4, −1, 2, 1, −5, 4]`, the contiguous subarray `[4, −1, 2, 1]` has the largest sum = 6.
+There are two standard ways to implement a DP solution. We will use the Fibonacci sequence as our running example.
 
-**The DP Approach (Kadane's Algorithm):**
-We can solve this in linear time by iterating through the array and keeping track of the maximum sum of a subarray ending at the current position.
+### a. Top-Down with Memoization
+This approach is essentially a "smarter" version of a recursive solution. You write the logic recursively, but you maintain a cache (like a map or an array) to store the results of subproblems. Before computing, you check the cache. If the result is there, you return it. If not, you compute it, store it in the cache, and then return it.
 
-Let `dp[i]` be the maximum sum of a subarray ending at index `i`. The recurrence relation is:
-`dp[i] = max(nums[i], dp[i-1] + nums[i])`
+**Analogy:** Doing your math homework, but keeping a notebook of solved problems. When you see a problem you've already solved, you just copy the answer from your notebook.
 
-This means the maximum sum ending at `i` is either the element at `i` itself, or the element at `i` plus the maximum sum ending at the previous position.
+### b. Bottom-Up with Tabulation
+This approach solves the problem iteratively, starting from the smallest subproblems and building up to the desired solution. You typically use an array or a 2D table (the "tabulation") to store the results of subproblems.
 
-**The Code Example:**
-```java
-public class MaximumSubarray {
-    public int maxSubArray(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
+**Analogy:** Building a skyscraper. You start with the foundation (the base cases), then build the first floor, then the second, and so on, until you reach the top. Each new floor relies on the one below it being complete.
 
-        int maxSoFar = nums[0];
-        int maxEndingHere = nums[0];
+---
 
-        for (int i = 1; i < nums.length; i++) {
-            maxEndingHere = Math.max(nums[i], maxEndingHere + nums[i]);
-            maxSoFar = Math.max(maxSoFar, maxEndingHere);
-        }
+## 3. A Framework for Solving DP Problems
 
-        return maxSoFar;
-    }
-}
-```
+When you encounter a new DP problem, follow these steps:
+1.  **Identify the State:** What is the minimum set of variables needed to define a subproblem? (e.g., for Fibonacci, the state is just the number `n`). This will define the dimensions of your DP table/cache.
+2.  **Define the Recurrence Relation:** How can you solve a problem of state `S` using the solutions to smaller subproblems? (e.g., `fib(n) = fib(n-1) + fib(n-2)`).
+3.  **Identify the Base Cases:** What are the smallest subproblems that you can solve directly, without recursion? (e.g., `fib(0) = 0`, `fib(1) = 1`).
 
-### Coin Change
-The goal is to find the fewest number of coins that you need to make up a certain amount. You are given coins of different denominations and a total amount.
+---
 
-**The Problem:** Given `coins = [1, 2, 5]` and `amount = 11`, the fewest number of coins is 3 (5 + 5 + 1).
+## 4. Hands-On Lab: The Fibonacci Sequence
 
-**The DP Approach:**
-Let `dp[i]` be the minimum number of coins required to make up amount `i`.
-The recurrence relation is:
-`dp[i] = min(dp[i], dp[i - coin] + 1)` for each coin in `coins`.
+To see the difference between these approaches, we've created a runnable project in the `code/` directory that calculates the Nth Fibonacci number using:
+1.  Naive Recursion (to show the problem)
+2.  Top-Down DP with Memoization
+3.  Bottom-Up DP with Tabulation
+4.  Space-Optimized Bottom-Up DP
 
-**The Code Example:**
-```java
-public class CoinChange {
-    public int coinChange(int[] coins, int amount) {
-        if (amount < 0) return -1;
-        if (amount == 0) return 0;
+**To run it:**
+1.  Navigate to the `code/` directory.
+2.  Run `mvn compile exec:java`.
+3.  Explore the source code to see how the four different approaches are implemented and how their performance compares.
 
-        int[] dp = new int[amount + 1];
-        Arrays.fill(dp, amount + 1); // Fill with a value larger than any possible number of coins
-        dp[0] = 0;
+---
 
-        for (int i = 1; i <= amount; i++) {
-            for (int coin : coins) {
-                if (i >= coin) {
-                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
-                }
-            }
-        }
+## 5. Classic DP Problems (Exercises)
 
-        return dp[amount] > amount ? -1 : dp[amount];
-    }
-}
-```
-This optimized solution uses constant space by only keeping track of the `maxEndingHere` and the overall `maxSoFar`.
+Now that you have a framework, try applying it to these classic problems. The original `README` for this chapter contained solutions; try to solve them on your own first, then compare your approach.
 
-### Longest Increasing Subsequence
-The goal is to find the length of the longest subsequence of a given sequence in which the subsequence's elements are in sorted order, from smallest to largest.
-
-**The Problem:** Given `[10, 9, 2, 5, 3, 7, 101, 18]`, the longest increasing subsequence is `[2, 3, 7, 101]`, so the length is 4.
-
-**The DP Approach:**
-Let `dp[i]` be the length of the longest increasing subsequence ending at index `i`. The recurrence relation is:
-`dp[i] = 1 + max(dp[j])` for all `j < i` where `nums[j] < nums[i]`.
-
-**The Code Example (O(n^2)):**
-```java
-public class LIS {
-    public int lengthOfLIS(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
-
-        int[] dp = new int[nums.length];
-        Arrays.fill(dp, 1);
-
-        int max = 1;
-
-        for (int i = 1; i < nums.length; i++) {
-            for (int j = 0; j < i; j++) {
-                if (nums[i] > nums[j]) {
-                    dp[i] = Math.max(dp[i], dp[j] + 1);
-                }
-            }
-            max = Math.max(max, dp[i]);
-        }
-
-        return max;
-    }
-}
-```
-There is also a more optimized O(n log n) solution that uses a patient sorting approach, but the O(n^2) DP solution is a common starting point in interviews.
-
-### Edit Distance
-The goal is to find the minimum number of operations (insert, delete, replace) required to transform one string into another.
-
-**The Problem:** Find the edit distance between "horse" and "ros".
-
-**The DP Approach:**
-Let `dp[i][j]` be the edit distance between the first `i` characters of `word1` and the first `j` characters of `word2`.
-
-The recurrence relation is:
-*   If `word1[i] == word2[j]`, then `dp[i][j] = dp[i-1][j-1]`.
-*   If `word1[i] != word2[j]`, then `dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])`. The three options correspond to delete, insert, and replace operations.
-
-**The Code Example:**
-```java
-public class EditDistance {
-    public int minDistance(String word1, String word2) {
-        int len1 = word1.length();
-        int len2 = word2.length();
-
-        int[][] dp = new int[len1 + 1][len2 + 1];
-
-        for (int i = 0; i <= len1; i++) {
-            dp[i][0] = i;
-        }
-
-        for (int j = 0; j <= len2; j++) {
-            dp[0][j] = j;
-        }
-
-        for (int i = 1; i <= len1; i++) {
-            for (int j = 1; j <= len2; j++) {
-                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));
-                }
-            }
-        }
-
-        return dp[len1][len2];
-    }
-}
-```
+*   **Maximum Subarray (Kadane's Algorithm):** Find the contiguous subarray within an array that has the largest sum.
+*   **Coin Change:** Find the fewest number of coins needed to make up a certain amount.
+*   **Longest Increasing Subsequence:** Find the length of the longest subsequence where elements are in increasing order.
+*   **Edit Distance:** Find the minimum number of operations (insert, delete, replace) to transform one string into another.

@@ -1,46 +1,107 @@
-# 17 - Unit Testing with JUnit
+# 17 - Unit Testing: Building a Safety Net for Your Code
 
-Unit testing is the process of testing individual units of source code (e.g., methods, classes) to determine if they are fit for use. It's a fundamental practice in modern software development that helps ensure code quality and prevent regressions.
+Writing code is only half the battle. How do you ensure it works correctly today, and more importantly, that it *keeps* working correctly after you or someone else makes changes a year from now? The answer is **unit testing**.
 
-## Why is Unit Testing Important?
-*   **Improves Code Quality:** Writing tests forces you to think about the design of your code and can lead to better, more modular designs.
-*   **Catches Bugs Early:** Unit tests can catch bugs early in the development process, when they are easier and cheaper to fix.
-*   **Provides a Safety Net for Refactoring:** A good suite of unit tests gives you the confidence to refactor and improve your code, knowing that you will be alerted if you break something.
-*   **Serves as Documentation:** Unit tests can serve as a form of executable documentation that shows how a piece of code is intended to be used.
+Unit testing is the practice of testing individual units of code (a method or a class) in isolation to verify they behave as expected. It is a cornerstone of modern, professional software development.
 
-## JUnit: The Standard for Java Unit Testing
-JUnit is the most popular unit testing framework for Java. It provides a simple and powerful way to write and run tests.
+**What's in this chapter:**
+*   [Why Unit Test? The Pillars of Quality](#1-why-unit-test-the-pillars-of-quality)
+*   [The AAA Pattern: Structuring Your Tests](#2-the-aaa-pattern-structuring-your-tests)
+*   [JUnit 5: The Standard Java Testing Framework](#3-junit-5-the-standard-java-testing-framework)
+*   [Mocking: Isolating Your Unit Under Test](#4-mocking-isolating-your-unit-under-test)
+*   [Hands-On Lab: Testing a User Service](#5-hands-on-lab-testing-a-user-service)
 
-### A Simple JUnit Example
-Let's say we have a simple `Calculator` class:
+---
+
+## 1. Why Unit Test? The Pillars of Quality
+*   **Find Bugs Early:** Catch issues during development, when they are cheapest and easiest to fix.
+*   **Act as a Safety Net:** Refactor your code with confidence. If you break something, a well-written test will fail, alerting you immediately.
+*   **Serve as Documentation:** Tests are a form of executable documentation. They show exactly how a piece of code is intended to be used.
+*   **Improve Design:** The act of writing a test often forces you to write more modular, decoupled, and easier-to-maintain code.
+
+---
+
+## 2. The AAA Pattern: Structuring Your Tests
+
+A clean test should be easy to read and understand. The **Arrange-Act-Assert (AAA)** pattern is a standard way to structure your test methods to achieve this clarity.
+
+*   **Arrange:** Set up the test. This is where you create objects, prepare inputs, and set up any mocks or dependencies.
+*   **Act:** Execute the method you are actually testing.
+*   **Assert:** Verify the outcome. Check if the method produced the expected result.
+
 ```java
-public class Calculator {
-    public int add(int a, int b) {
-        return a + b;
-    }
+@Test
+void testAdd() {
+    // Arrange: Create the object to test
+    Calculator calculator = new Calculator();
+
+    // Act: Call the method under test
+    int result = calculator.add(2, 3);
+
+    // Assert: Check the result
+    assertEquals(5, result);
 }
 ```
 
-Here's how you would write a JUnit test for the `add` method:
-```java
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+---
 
-public class CalculatorTest {
+## 3. JUnit 5: The Standard Java Testing Framework
 
-    @Test
-    void testAdd() {
-        Calculator calculator = new Calculator();
-        int result = calculator.add(2, 3);
-        assertEquals(5, result, "2 + 3 should equal 5");
-    }
-}
+JUnit is the de-facto standard for testing in Java. JUnit 5 is the latest generation, with a modular architecture and rich features.
+
+**Common Annotations:**
+*   `@Test`: Marks a method as a test.
+*   `@DisplayName("A custom test name")`: Provides a more readable name for your test that will appear in reports.
+*   `@BeforeEach`: A method with this annotation will run *before* each `@Test` method in the class. Used for common setup code.
+*   `@AfterEach`: Runs *after* each test. Used for cleanup.
+*   `@Disabled`: Temporarily disables a test method.
+
+**Common Assertions:**
+*   `assertEquals(expected, actual)`
+*   `assertTrue(condition)` / `assertFalse(condition)`
+*   `assertNotNull(object)`
+*   `assertThrows(ExpectedException.class, () -> { ... })`: Asserts that a specific exception is thrown by a piece of code.
+
+---
+
+## 4. Mocking: Isolating Your Unit Under Test
+
+A unit test should test a single unit *in isolation*. But what if your `UserService` depends on a `UserRepository` that talks to a real database? You don't want your unit test to depend on a database being available.
+
+This is where **mocking** comes in. A mock is a "fake" object that you control. You can tell the mock exactly what to do when its methods are called. **Mockito** is the most popular mocking framework for Java.
+
+```mermaid
+graph TD
+    A(UserServiceTest) -- tests --> B(UserService)
+    B -- depends on --> C(UserRepository)
+    A -- creates and controls --> D(Mock UserRepository)
+    B -- is given --> D
+
+    subgraph "Real Objects"
+        B
+    end
+    subgraph "Test Objects"
+        A
+        D
+    end
+    subgraph "Real Dependencies (Not Used!)"
+        C
+    end
 ```
 
-**Explanation:**
-*   **`@Test`:** This annotation marks a method as a test method.
-*   **`assertEquals(expected, actual, message)`:** This is an "assertion" method from JUnit. It checks if the `actual` result of the code is equal to the `expected` value. If it's not, the test fails and the `message` is displayed.
+By using a mock, your `UserServiceTest` can verify the behavior of `UserService` without ever touching the real `UserRepository` or the database.
 
-To run this test, you would typically use a build tool like Maven or Gradle, which have built-in support for running JUnit tests.
+---
 
-This is just a very basic introduction. Modern unit testing also involves concepts like mocking (using libraries like Mockito) to isolate the unit of code you are testing from its dependencies.
+## 5. Hands-On Lab: Testing a User Service
+
+We've created a runnable Maven project in the `code/` directory that is correctly configured for JUnit 5 and Mockito. It demonstrates:
+1.  A `UserService` class that has a dependency on a `UserRepository` interface.
+2.  A unit test for the `UserService`.
+3.  How to use Mockito to create a mock `UserRepository`.
+4.  How to use the AAA pattern and JUnit 5 assertions to write clean, effective tests.
+
+**To run it:**
+1.  Navigate to the `code/` directory.
+2.  Run the tests using Maven: `mvn test`.
+3.  Explore the source code in `src/main/java` and the tests in `src/test/java`.
