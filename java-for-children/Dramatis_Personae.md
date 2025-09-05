@@ -8,7 +8,21 @@ Welcome, young adventurer, to the World of Java! This is a land where you can bu
 
 *   **Java the Wizard:** A wise old wizard who will teach you the ancient language of Java. He's been around for a long time and knows all the secrets.
 
-*   **The JVM House:** This is where all the magic happens. It's a special house that can understand your Java spells and make them work on any computer in the world.
+*   **The JVM House:** This is where all the magic happens. It's a special house that can understand your Java spells and make them work on any computer in the world. Here's a picture of the inside of the house:
+
+    ```mermaid
+    graph TD
+        subgraph "JVM House"
+            direction LR
+            subgraph "Upstairs"
+                Stack[Method Stack (Workshop)]
+            end
+            subgraph "Downstairs"
+                Heap[Heap (Toy Box)]
+            end
+            GC(Garbage Collector Robot) -- Cleans --> Heap
+        end
+    ```
 
 *   **The Method Stack (The Upstairs Room):** This is the "workshop" inside the JVM House. It's where you do your work, one task at a time.
 

@@ -1,96 +1,104 @@
-# 21 - Graphs
+# 21 - Graphs: Modeling a Connected World
 
-A graph is a data structure that consists of a set of vertices (or nodes) and a set of edges that connect these vertices. Graphs are used to model relationships between objects and are one of the most versatile data structures in computer science.
+If trees represent hierarchies, graphs represent networks. A graph is a data structure used to model relationships between objects. Social networks, road maps, the internet itself—these are all graphs. They are arguably the most versatile and powerful data structure in computer science.
 
-## Introduction to Graphs
-*   **Vertex:** A node in the graph.
+**What's in this chapter:**
+*   [Graph Terminology](#1-graph-terminology)
+*   [How to Represent a Graph](#2-how-to-represent-a-graph)
+*   [Graph Traversal: BFS and DFS](#3-graph-traversal-bfs-and-dfs)
+*   [Advanced Topic: Topological Sort](#4-advanced-topic-topological-sort)
+*   [Hands-On Lab: Building and Traversing a Graph](#5-hands-on-lab-building-and-traversing-a-graph)
+*   [Interview Deep Dives](#interview-deep-dives)
+
+---
+
+## 1. Graph Terminology
+*   **Vertex (or Node):** A point or object in the graph.
 *   **Edge:** A connection between two vertices.
-*   **Directed vs. Undirected:** In a directed graph, edges have a direction (e.g., a one-way street). In an undirected graph, edges have no direction.
-*   **Weighted vs. Unweighted:** In a weighted graph, each edge has a weight or cost associated with it.
+*   **Undirected Graph:** Edges have no direction (e.g., a Facebook friendship).
+*   **Directed Graph (Digraph):** Edges have a direction (e.g., a Twitter follow).
+*   **Weighted Graph:** Each edge has a cost or weight associated with it (e.g., a map with distances between cities).
 
-## Graph Representation
-There are two common ways to represent a graph:
-1.  **Adjacency Matrix:** A 2D array where `adj[i][j] = 1` if there is an edge from vertex `i` to vertex `j`.
-2.  **Adjacency List:** An array of lists, where `adj[i]` contains a list of all vertices that are adjacent to vertex `i`.
+---
 
-## Common Graph Problems
+## 2. How to Represent a Graph
 
-### Cloning a Graph
-The goal is to create a deep copy of a graph. This is a classic graph traversal problem that can be solved with either Breadth-First Search (BFS) or Depth-First Search (DFS).
+There are two common ways to represent a graph in code. Choosing the right one depends on the graph's density (how many edges it has).
 
-**Example (BFS):**
-```java
-class UndirectedGraphNode {
-    int label;
-    List<UndirectedGraphNode> neighbors;
-    UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
-};
+#### a. Adjacency Matrix
+A 2D array where `matrix[i][j] = 1` (or the edge weight) if there is an edge from vertex `i` to `j`.
+*   **Pros:** Fast to check if an edge exists between two nodes (`O(1)`).
+*   **Cons:** Uses a lot of memory (`V²`, where V is the number of vertices), even for graphs with few edges.
 
-public class Solution {
-    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
-        if (node == null) return null;
+#### b. Adjacency List
+An array (or map) of lists, where `adj.get(i)` contains a list of all vertices connected to vertex `i`.
+*   **Pros:** Space-efficient for sparse graphs (graphs with few edges). The space complexity is `O(V + E)`, where E is the number of edges.
+*   **Cons:** Slower to check if a specific edge exists (`O(k)`, where k is the number of neighbors).
+*   **Conclusion:** The Adjacency List is the most common and generally preferred representation.
 
-        Map<UndirectedGraphNode, UndirectedGraphNode> map = new HashMap<>();
-        Queue<UndirectedGraphNode> queue = new LinkedList<>();
-
-        queue.add(node);
-        map.put(node, new UndirectedGraphNode(node.label));
-
-        while (!queue.isEmpty()) {
-            UndirectedGraphNode u = queue.poll();
-
-            for (UndirectedGraphNode neighbor : u.neighbors) {
-                if (!map.containsKey(neighbor)) {
-                    map.put(neighbor, new UndirectedGraphNode(neighbor.label));
-                    queue.add(neighbor);
-                }
-                map.get(u).neighbors.add(map.get(neighbor));
-            }
-        }
-
-        return map.get(node);
-    }
-}
+```mermaid
+graph TD
+    subgraph "Graph"
+        A --- B
+        A --- C
+        B --- C
+    end
+    subgraph "Adjacency List"
+        L1("A: [B, C]")
+        L2("B: [A, C]")
+        L3("C: [A, B]")
+    end
 ```
 
-### Course Schedule (Topological Sort)
-This problem is equivalent to finding if a directed graph has a cycle. If it doesn't, we can find a topological sort of the graph, which is a linear ordering of its vertices such that for every directed edge from vertex `u` to vertex `v`, `u` comes before `v` in the ordering.
+---
 
-This can be solved using Kahn's algorithm (a BFS-based approach) or by using DFS.
+## 3. Graph Traversal: BFS and DFS
 
-**Example (BFS / Kahn's Algorithm):**
-```java
-public boolean canFinish(int numCourses, int[][] prerequisites) {
-    int[] inDegree = new int[numCourses];
-    List<List<Integer>> adj = new ArrayList<>(numCourses);
-    for (int i = 0; i < numCourses; i++) {
-        adj.add(new ArrayList<>());
-    }
+Traversal means visiting every vertex in a graph. The two fundamental algorithms for this are Breadth-First Search (BFS) and Depth-First Search (DFS).
 
-    for (int[] prerequisite : prerequisites) {
-        adj.get(prerequisite[1]).add(prerequisite[0]);
-        inDegree[prerequisite[0]]++;
-    }
+### a. Breadth-First Search (BFS)
+BFS explores the graph layer by layer. It starts at a source vertex, explores all of its immediate neighbors, and then for each of those neighbors, explores their unexplored neighbors, and so on.
 
-    Queue<Integer> queue = new LinkedList<>();
-    for (int i = 0; i < numCourses; i++) {
-        if (inDegree[i] == 0) {
-            queue.add(i);
-        }
-    }
+*   **Implementation:** Uses a `Queue`.
+*   **Use Case:** Perfect for finding the **shortest path** between two nodes in an unweighted graph.
 
-    int count = 0;
-    while (!queue.isEmpty()) {
-        int u = queue.poll();
-        count++;
-        for (int v : adj.get(u)) {
-            if (--inDegree[v] == 0) {
-                queue.add(v);
-            }
-        }
-    }
+### b. Depth-First Search (DFS)
+DFS explores as far as possible along each branch before backtracking. It starts at a source vertex, explores one of its neighbors, then that neighbor's neighbor, and so on, until it hits a dead end. Then it backtracks and explores the next available path.
 
-    return count == numCourses;
-}
-```
-This algorithm works by finding nodes with an in-degree of 0 (no prerequisites), adding them to a queue, and then "removing" them from the graph (and decrementing the in-degree of their neighbors). If we are able to remove all nodes, then there is no cycle and it's possible to finish all courses.
+*   **Implementation:** Uses a `Stack` (iteratively) or the call stack (recursively).
+*   **Use Cases:** Detecting cycles in a graph, checking for connectivity, and as a building block for other algorithms like Topological Sort.
+
+---
+
+## 4. Advanced Topic: Topological Sort
+For a **Directed Acyclic Graph (DAG)**, a topological sort is a linear ordering of its vertices such that for every directed edge from vertex `u` to `v`, `u` comes before `v` in the ordering.
+
+*   **Real-world example:** A university course schedule. If "Calculus II" is a prerequisite for "Linear Algebra", you must take "Calculus II" first. A topological sort gives you a valid sequence of courses to take.
+*   **How it works:** It's an application of DFS. It relies on detecting cycles—if a graph has a cycle, a topological sort is not possible.
+
+---
+
+## 5. Hands-On Lab: Building and Traversing a Graph
+We've created a runnable project in the `code/` directory that:
+1.  Implements a `Graph` class using an adjacency list.
+2.  Builds a sample social network graph.
+3.  Implements both BFS and DFS traversals starting from a given node.
+
+**To run it:**
+1.  Navigate to the `code/` directory.
+2.  Run `mvn compile exec:java`.
+3.  Explore the source code to see how the graph is built and traversed.
+
+---
+
+## Interview Deep Dives
+
+### Q: What is the time and space complexity of BFS and DFS on an adjacency list?
+*   **Answer:** For a graph represented by an adjacency list, both BFS and DFS have a time complexity of **O(V + E)**, where V is the number of vertices and E is the number of edges. This is because you have to visit every vertex and look at every edge once. The space complexity is **O(V)** to store the visited set and the queue/stack.
+
+### Q: How do you detect a cycle in a directed graph?
+*   **Answer:** The most common way is to use DFS. You need to keep track of the nodes you are currently visiting in the *current recursion stack*. If you encounter a node that is already in the current recursion stack, you have found a cycle. This requires three states for each node: unvisited, visiting (in the current stack), and visited (finished with that node and its neighbors).
+
+### Q: What is the difference between a connected graph and a complete graph?
+*   **Connected Graph:** There is a path from any vertex to any other vertex.
+*   **Complete Graph:** Every vertex is connected to every other vertex. A complete graph is always connected, but a connected graph is not always complete.
