@@ -9,6 +9,9 @@ import java.util.Stack;
 
 /**
  * Main application to demonstrate graph traversals (BFS and DFS).
+ *
+ * <p>The traversals are demonstrated on the following social network graph:</p>
+ * <img src="doc-files/social_network_graph.png" alt="Social Network Graph Diagram">
  */
 public class GraphTraversalDemo {
 

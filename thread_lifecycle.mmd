@@ -1,0 +1,25 @@
+stateDiagram-v2
+    direction LR
+
+    [*] --> NEW: Thread created
+    NEW --> RUNNABLE: thread.start()
+
+    subgraph Thread Scheduler
+        RUNNABLE
+        RUNNING
+    end
+
+    RUNNABLE --> RUNNING: CPU time allocated
+    RUNNING --> RUNNABLE: Yield / Time slice end
+
+    RUNNING --> BLOCKED: Enters synchronized block
+    BLOCKED --> RUNNABLE: Exits synchronized block
+
+    RUNNING --> WAITING: object.wait()
+    WAITING --> RUNNABLE: object.notify() / notifyAll()
+
+    RUNNING --> TIMED_WAITING: Thread.sleep(t) / object.wait(t)
+    TIMED_WAITING --> RUNNABLE: Timeout / notify()
+
+    RUNNING --> TERMINATED: run() completes
+    TERMINATED --> [*]

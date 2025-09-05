@@ -1,0 +1,33 @@
+graph TD
+    F5("fib(5)") --> F4("fib(4)")
+    F5 --> F3("fib(3)")
+
+    F4 --> F3_2("fib(3)")
+    F4 --> F2("fib(2)")
+
+    F3 --> F2_2("fib(2)")
+    F3 --> F1("fib(1)")
+
+    F3_2 --> F2_3("fib(2)")
+    F3_2 --> F1_2("fib(1)")
+
+    F2 --> F1_3("fib(1)")
+    F2 --> F0("fib(0)")
+
+    F2_2 --> F1_4("fib(1)")
+    F2_2 --> F0_2("fib(0)")
+
+    F2_3 --> F1_5("fib(1)")
+    F2_3 --> F0_3("fib(0)")
+
+    subgraph "Repeated Computations"
+        style F3_2 fill:#f9f,stroke:#333,stroke-width:2px
+        style F2_2 fill:#f9f,stroke:#333,stroke-width:2px
+        style F2_3 fill:#f9f,stroke:#333,stroke-width:2px
+        style F1_2 fill:#f9f,stroke:#333,stroke-width:2px
+        style F1_3 fill:#f9f,stroke:#333,stroke-width:2px
+        style F1_4 fill:#f9f,stroke:#333,stroke-width:2px
+        style F1_5 fill:#f9f,stroke:#333,stroke-width:2px
+        style F0_2 fill:#f9f,stroke:#333,stroke-width:2px
+        style F0_3 fill:#f9f,stroke:#333,stroke-width:2px
+    end

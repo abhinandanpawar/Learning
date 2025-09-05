@@ -1,0 +1,36 @@
+classDiagram
+    direction TB
+
+    class Iterable {
+        <<Interface>>
+    }
+
+    class Collection {
+        <<Interface>>
+    }
+
+    class List {
+        <<Interface>>
+    }
+
+    class Set {
+        <<Interface>>
+    }
+
+    class Queue {
+        <<Interface>>
+    }
+
+    class Deque {
+        <<Interface>>
+    }
+
+    class Map {
+        <<Interface>>
+    }
+
+    Iterable <|-- Collection
+    Collection <|-- List
+    Collection <|-- Set
+    Collection <|-- Queue
+    Queue <|-- Deque

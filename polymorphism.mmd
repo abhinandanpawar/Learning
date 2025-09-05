@@ -1,0 +1,41 @@
+classDiagram
+    direction RL
+
+    class Product {
+        <<Abstract>>
+        #String name
+        #double price
+        #ProductCategory category
+        +displayDetails()*
+    }
+
+    class Book {
+        -double weight
+        +displayDetails()
+        +calculateShippingCost()
+    }
+
+    class Electronic {
+        -double weight
+        +displayDetails()
+        +calculateShippingCost()
+        +getInsuranceValue()
+        +getShippingInfo()
+    }
+
+    class Shippable {
+        <<Interface>>
+        +calculateShippingCost()
+        +getShippingInfo()
+    }
+
+    class Insurable {
+        <<Interface>>
+        +getInsuranceValue()
+    }
+
+    Product <|-- Book
+    Product <|-- Electronic
+    Shippable <|.. Book
+    Shippable <|.. Electronic
+    Insurable <|.. Electronic

@@ -5,6 +5,11 @@ import java.util.List;
 
 /**
  * The main application class to demonstrate the advanced OOP concepts.
+ *
+ * <p>This example uses a combination of abstract classes and interfaces to model
+ * a product catalog. The following diagram shows the relationships between the
+ * classes and interfaces:</p>
+ * <img src="doc-files/polymorphism.png" alt="Polymorphism Diagram">
  */
 public class Store {
 

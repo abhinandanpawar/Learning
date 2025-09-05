@@ -9,3 +9,6 @@ target/
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore Node.js dependencies
+node_modules/
