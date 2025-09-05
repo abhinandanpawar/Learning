@@ -72,15 +72,52 @@ Here is a simplified visualization:
 
 ```mermaid
 graph TD
-    subgraph Heap Memory
-        A[Product Object] --> B(String Object: "Laptop")
-        subgraph A
-            direction LR
-            A1(Object Header)
-            A2(double price: 1200.0)
-            A3(reference name) --> B
+    subgraph "JVM Memory"
+        direction LR
+
+        subgraph "Stack"
+            sf["main() Stack Frame"]
+            subgraph sf
+                laptop_ref["Product laptop (ref)<br/>@heap_addr_123"]
+            end
+        end
+
+        subgraph "Heap"
+            direction TB
+
+            product_obj["Product Object<br/>@heap_addr_123"]
+            subgraph product_obj
+                direction TB
+                header["Object Header"]
+                subgraph header
+                    direction LR
+                    mark["Mark Word<br/>(sync, GC info)"]
+                    klass["Klass Pointer<br/>(to Product metadata)"]
+                end
+
+                instance_data["Instance Data"]
+                subgraph instance_data
+                    direction TB
+                    price["double price: 1200.0"]
+                    name_ref["String name (ref)<br/>@heap_addr_456"]
+                end
+            end
+
+            string_obj["String Object<br/>@heap_addr_456"]
+            subgraph string_obj
+                direction TB
+                str_header["Object Header"]
+                str_value["char[] value: 'L', 'a', 'p', 't', 'o', 'p'"]
+                str_hash["int hash: ..."]
+            end
         end
     end
+
+    laptop_ref -- "points to" --> product_obj
+    name_ref -- "points to" --> string_obj
+
+    style product_obj fill:#cde4ff,stroke:#666
+    style string_obj fill:#ffcdd2,stroke:#666
 ```
 
 ---
@@ -259,10 +296,26 @@ This is the best way to solidify your understanding of classes, objects, inherit
 
     ```mermaid
     graph TD
-        A(SuperClass) --> B(SubClassB)
-        A --> C(SubClassC)
-        B --> D(ConflictedClass)
-        C --> D
+        subgraph "The Diamond Problem"
+            A["SuperClass<br/>foo()"]
+            B["SubClassB<br/>@Override foo()"]
+            C["SubClassC<br/>@Override foo()"]
+            D["ConflictedClass<br/>Which foo() to inherit?"]
+        end
+
+        A -- "extends" --> B
+        A -- "extends" --> C
+        B -- "extends" --> D
+        C -- "extends" --> D
+
+        subgraph "Ambiguity"
+            direction TD
+            q{D.foo() ?} --> b_impl{B.foo() implementation}
+            q --> c_impl{C.foo() implementation}
+        end
+
+        style D fill:#ffcdd2,stroke:#c62828,stroke-width:2px
+        style q fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     ```
 *   **Java's Solution:** A class can only `extend` one parent class. However, a class can `implement` multiple interfaces, which is how Java achieves a safe form of multiple inheritance for behavior.
 
