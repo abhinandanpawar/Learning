@@ -6,6 +6,9 @@ import java.util.List;
 /**
  * The main class for our OOP showcase application.
  * This class demonstrates polymorphism in action.
+ *
+ * <p>The following diagram illustrates the class hierarchy used in this example:</p>
+ * <img src="doc-files/inheritance.png" alt="Inheritance Diagram">
  */
 public class Store {
     public static void main(String[] args) {

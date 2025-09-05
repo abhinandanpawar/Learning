@@ -8,6 +8,9 @@ import java.util.Stack;
 
 /**
  * Main application to demonstrate tree traversal algorithms.
+ *
+ * <p>The traversals are demonstrated on the following binary search tree:</p>
+ * <img src="doc-files/bst_diagram.png" alt="Binary Search Tree Diagram">
  */
 public class TreeTraversalDemo {
 

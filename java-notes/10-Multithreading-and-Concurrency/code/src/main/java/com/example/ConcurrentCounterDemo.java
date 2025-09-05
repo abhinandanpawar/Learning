@@ -7,6 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Main application to demonstrate concurrency problems and solutions.
+ *
+ * <p>A Java thread can exist in one of several states. The following state diagram
+ * illustrates the lifecycle of a thread:</p>
+ * <img src="doc-files/thread_lifecycle.png" alt="Thread Lifecycle Diagram">
  */
 public class ConcurrentCounterDemo {
 

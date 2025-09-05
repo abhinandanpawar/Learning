@@ -6,6 +6,11 @@ import java.util.Map;
 /**
  * Main application to demonstrate different approaches to solving the Fibonacci sequence.
  * This highlights the core concepts of Dynamic Programming.
+ *
+ * <p>The naive recursive approach is very inefficient because it re-computes the
+ * same subproblems multiple times. The following diagram illustrates the call
+ * graph for `fib(5)`, with the repeated computations highlighted:</p>
+ * <img src="doc-files/fibonacci_recursion.png" alt="Fibonacci Recursion Call Graph">
  */
 public class FibonacciDemo {
 

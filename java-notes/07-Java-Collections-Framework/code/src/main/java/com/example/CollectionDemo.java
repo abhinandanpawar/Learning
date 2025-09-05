@@ -12,6 +12,10 @@ import java.util.Set;
 
 /**
  * Main application to demonstrate the Java Collections Framework.
+ *
+ * <p>The framework is built around a set of standard interfaces. The diagram below
+ * shows the core interface hierarchy:</p>
+ * <img src="doc-files/collections_hierarchy.png" alt="Collections Framework Hierarchy">
  */
 public class CollectionDemo {
 

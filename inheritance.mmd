@@ -1,0 +1,25 @@
+classDiagram
+    class Product {
+        -String name
+        -double price
+        +String getName()
+        +double getPrice()
+        +void display()
+    }
+
+    class Book {
+        -String author
+        +String getAuthor()
+        +void display()
+    }
+
+    class Clothing {
+        -String size
+        -String color
+        +String getSize()
+        +String getColor()
+        +void display()
+    }
+
+    Product <|-- Book
+    Product <|-- Clothing
