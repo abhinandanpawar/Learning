@@ -64,7 +64,6 @@ public class DemoApplication {
 }
 ```
 
-
 ## Reactive Programming with Spring WebFlux
 
 Spring WebFlux is a fully non-blocking, reactive web framework for building modern, scalable applications in Spring. It is an alternative to the traditional Spring Web MVC framework.
@@ -329,7 +328,6 @@ public class BookService {
 ```
 
 By default, Spring Boot uses a simple in-memory cache based on `ConcurrentHashMap`. For production use, you would typically use a more robust cache provider like EhCache, Caffeine, or a distributed cache like Redis.
-
 
 The `@SpringBootApplication` annotation is a convenience annotation that adds all of the following:
 
