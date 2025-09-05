@@ -44,23 +44,40 @@ public void myMethod() {
 
 ```mermaid
 graph TD
-    subgraph Memory
-        subgraph Stack
-            direction LR
-            M[myMethod() Stack Frame]
-            subgraph M
-                P[int price: 100]
-                R[String productName (reference)]
+    subgraph "JVM Memory"
+        direction LR
+
+        subgraph "Stack (LIFO)"
+            direction TB
+            sf["myMethod() Stack Frame"]
+            subgraph sf
+                direction TB
+                p["int price<br/>(primitive)"]
+                pv["100"]
+                ref["String productName<br/>(reference)"]
+                refv["@heap_addr_123"]
+            end
+            p -- contains value --> pv
+            ref -- contains address --> refv
+        end
+
+        subgraph "Heap (Objects)"
+            direction TB
+            obj["String Object<br/>@heap_addr_123"]
+            subgraph obj
+                direction TB
+                obj_val["Value: 'Laptop'"]
             end
         end
-        subgraph Heap
-            O[String Object "Laptop"]
-        end
-    end
-    R -- points to --> O
 
-    style Stack fill:#bbf,stroke:#333
-    style Heap fill:#f9f,stroke:#333
+    end
+
+    refv -- "points to" --> obj
+
+    style Stack fill:#cde4ff,stroke:#666,stroke-width:2px
+    style Heap fill:#ffcdd2,stroke:#666,stroke-width:2px
+    style sf fill:#e1f5fe,stroke:#444
+    style obj fill:#ffe0b2,stroke:#444
 ```
 The `price` variable's value (100) lives directly on the stack. The `productName` variable also lives on the stack, but its value is just a memory address pointing to the actual `String` object on the heap.
 

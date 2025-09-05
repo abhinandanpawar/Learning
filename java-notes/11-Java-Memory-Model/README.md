@@ -20,22 +20,38 @@ In a modern computer, code doesn't just run on a single CPU. There are multiple 
 
 ```mermaid
 graph TD
-    subgraph CPU 1
-        C1[Cache: x=1]
-    end
-    subgraph CPU 2
-        C2[Cache: x=0]
-    end
-    subgraph Main Memory
-        M[x=0]
+    subgraph "Hardware"
+        direction LR
+        subgraph "CPU 1"
+            T1["Thread 1<br/>(executes x = 1)"]
+            C1["L1 Cache<br/>x = 1"]
+        end
+        subgraph "CPU 2"
+            T2["Thread 2<br/>(executes r1 = x)"]
+            C2["L1 Cache<br/>x = 0"]
+        end
+        subgraph "Main Memory (RAM)"
+            M["Shared Variable<br/>x = 0"]
+        end
     end
 
-    T1(Thread 1 on CPU 1) -- writes x=1 --> C1
-    T2(Thread 2 on CPU 2) -- reads x --> C2
-    C1 -.-> M
-    C2 <-.-> M
+    T1 -- "writes to" --> C1
+    T2 -- "reads from" --> C2
+    C1 -- "flush (later, maybe)" --> M
+    C2 -- "load (stale)" --> M
 
-    note for T2 "Reads stale data!"
+    subgraph "Execution Timeline"
+        direction TD
+        step1("1. Thread 1 writes x=1 to its local cache")
+        step2("2. Thread 2 reads x from its local cache (sees stale value 0)")
+        step3("3. Later, CPU 1 flushes its cache to main memory")
+    end
+
+    step1 --> T1
+    step2 --> T2
+
+    style T1 fill:#cde4ff,stroke:#666
+    style T2 fill:#ffcdd2,stroke:#666
 ```
 
 Without the JMM, there would be no guarantee that the `x=1` write from Thread 1 would ever become visible to Thread 2.
@@ -55,9 +71,32 @@ Several things create a happens-before relationship:
 
 ```mermaid
 graph TD
-    A[Thread 1: synchronized(lock){ x=1 }] --> B(Thread 1: releases lock)
-    B -- happens-before --> C(Thread 2: acquires lock)
-    C --> D[Thread 2: reads x (guaranteed to see 1)]
+    subgraph "Shared Resources"
+        direction LR
+        Lock["Monitor Lock (e.g., 'L')"]
+        Var["Shared Variable<br/>int x = 0"]
+    end
+
+    subgraph "Thread 1"
+        direction TD
+        A1("1. Acquires lock 'L'") --> A2("2. Enters synchronized block")
+        A2 --> A3("3. Writes x = 1")
+        A3 --> A4("4. Exits block, releases lock 'L'")
+    end
+
+    subgraph "Thread 2"
+        direction TD
+        B1("5. Acquires lock 'L'") --> B2("6. Enters synchronized block")
+        B2 --> B3("7. Reads x")
+        B3 --> B4("Result: Guaranteed to see 1")
+    end
+
+    A4 -- "happens-before" --> B1
+    A3 -- "memory write" --> Var
+    B3 -- "memory read" --> Var
+
+    style Lock fill:#ffe0b2,stroke:#666
+    style Var fill:#e1f5fe,stroke:#666
 ```
 
 ---
