@@ -37,6 +37,20 @@ Avoid duplicate code. If you find yourself copying and pasting code, extract it 
 #### Favor Composition over Inheritance
 Inheritance is a powerful tool, but it creates a very tight coupling between classes. Composition (having one class contain an instance of another) is often more flexible and leads to more modular designs.
 
+```mermaid
+graph TD
+    subgraph "Inheritance (Less Flexible)"
+        direction LR
+        A(InstrumentedSet) -- extends --> B(HashSet)
+        note for A "Tightly coupled to HashSet's implementation."
+    end
+    subgraph "Composition (More Flexible)"
+        direction LR
+        C(InstrumentedSet) o-- D(Set)
+        note for C "Works with any Set implementation (HashSet, TreeSet, etc.)."
+    end
+```
+
 #### Program to an Interface, Not an Implementation
 This is a core tenet of good design. It decouples your code from specific implementations, making it easier to change and test.
 
@@ -96,6 +110,21 @@ Don't let your classes create their own dependencies (e.g., `new UserRepository(
         }
     }
     ```
+
+```mermaid
+graph TD
+    subgraph "Without DI (Hard to test)"
+        direction LR
+        UserService1["UserService<br>new UserRepository()"]
+    end
+    subgraph "With DI (Easy to test)"
+        direction LR
+        Test["Test Code"] --> MockRepo["Mock<UserRepository>"]
+        Test --> UserService2["UserService"]
+        MockRepo -- "is passed to" --> UserService2
+    end
+```
+
 ---
 
 Finally, remember that these are guidelines, not absolute rules. The goal is always to write code that solves the problem in the clearest, most robust way possible.

@@ -9,6 +9,17 @@ Our project will be a classic system design problem: a **URL Shortener API**.
 ## The Project Lifecycle: From Idea to Deployment
 
 We will follow a standard development lifecycle:
+
+```mermaid
+graph TD
+    A[1. Setup] --> B[2. Domain Modeling]
+    B --> C[3. Persistence Layer]
+    C --> D[4. Service Layer]
+    D --> E[5. API Layer]
+    E --> F[6. Testing]
+    F --> G[7. Package & Deploy]
+```
+
 1.  **Setup:** Initialize the project and its dependencies.
 2.  **Domain Modeling:** Define the core data structures.
 3.  **Persistence:** Define how to store and retrieve the data.
