@@ -9,6 +9,17 @@ Our project will be a classic system design problem: a **URL Shortener API**.
 ## The Project Lifecycle: From Idea to Deployment
 
 We will follow a standard development lifecycle:
+
+```mermaid
+graph TD
+    A[1. Setup] --> B[2. Domain Modeling]
+    B --> C[3. Persistence Layer]
+    C --> D[4. Service Layer]
+    D --> E[5. API Layer]
+    E --> F[6. Testing]
+    F --> G[7. Package & Deploy]
+```
+
 1.  **Setup:** Initialize the project and its dependencies.
 2.  **Domain Modeling:** Define the core data structures.
 3.  **Persistence:** Define how to store and retrieve the data.
@@ -158,3 +169,26 @@ class UrlControllerIntegrationTest {
     ENTRYPOINT ["java","-jar","/app.jar"]
     ```
 This playbook provides a template for building robust, production-ready applications with modern Java.
+
+### Final Application Architecture
+
+Here is a high-level view of the final application architecture, showing how the different layers interact.
+
+```mermaid
+graph TD
+    subgraph "Browser/Client"
+        A(User)
+    end
+
+    subgraph "Application"
+        B(UrlController) -- uses --> C(UrlShortenerService)
+        C -- uses --> D(UrlMappingRepository)
+    end
+
+    subgraph "Database"
+        E(H2 Database)
+    end
+
+    A -- "HTTP Request" --> B
+    D -- "JPA/JDBC" --> E
+```

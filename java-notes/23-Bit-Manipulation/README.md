@@ -28,6 +28,21 @@ These operators work directly on the binary representation of integers. Let's us
 *   `x << y` is equivalent to multiplying by `2^y`.
 *   `x >> y` is equivalent to dividing by `2^y`.
 
+```mermaid
+graph TD
+    subgraph "a = 5 (0101)"
+    end
+    subgraph "b = 3 (0011)"
+    end
+
+    subgraph "Operations"
+        direction LR
+        A["a & b<br>0001 (1)"]
+        B["a | b<br>0111 (7)"]
+        C["a ^ b<br>0110 (6)"]
+    end
+```
+
 ---
 
 ## 2. Common Bitwise "Tricks"

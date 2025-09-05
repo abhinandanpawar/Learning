@@ -45,6 +45,13 @@ Sealed classes give you fine-grained control over which other classes can extend
 public sealed interface Shape permits Circle, Square { ... }
 ```
 
+```mermaid
+graph TD
+    Shape -- permits --> Circle
+    Shape -- permits --> Square
+    Rectangle -- "Compile Error" --> Shape
+```
+
 #### Pattern Matching for `instanceof`
 Reduces boilerplate by combining a type check and a cast.
 
@@ -89,6 +96,35 @@ This is a game-changing feature that dramatically simplifies writing high-throug
 
 *   **Before:** Use a complex, asynchronous, callback-based style to handle many concurrent I/O operations.
 *   **After:** Write simple, synchronous, "thread-per-request" style code, and let virtual threads handle the scalability.
+
+```mermaid
+graph TD
+    subgraph "Traditional Model: Platform Threads"
+        direction LR
+        R1(Request 1) --> PT1(Platform Thread 1)
+        PT1 -- "Blocks on I/O" --> Idle1(Thread is Idle)
+        R2(Request 2) --> PT2(Platform Thread 2)
+        PT2 -- "Blocks on I/O" --> Idle2(Thread is Idle)
+        R3(Request 3) --> Blocked(No available thread)
+    end
+
+    subgraph "Modern Model: Virtual Threads"
+        direction LR
+        subgraph "JVM"
+            VT1(VT 1)
+            VT2(VT 2)
+            VT3(VT 3)
+            VT1 & VT2 & VT3 --> Carrier(Carrier Thread)
+        end
+        Carrier --> OS(OS Thread)
+
+        Req1(Request 1) --> VT1
+        Req2(Request 2) --> VT2
+        Req3(Request 3) --> VT3
+
+        note for Carrier "JVM maps many Virtual Threads onto a few OS threads."
+    end
+```
 
 #### Sequenced Collections
 New interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) were added to provide a unified API for accessing the first and last elements of a collection and for reversing the collection's order.

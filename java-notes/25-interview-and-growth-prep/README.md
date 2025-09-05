@@ -53,6 +53,19 @@ Master these patterns, and you will be well-prepared for a huge range of coding 
 
 A great engineer has T-shaped skills: deep expertise in one area, and broad knowledge across many others.
 
+```mermaid
+graph TD
+    subgraph "T-Shaped Skills"
+        direction TB
+        A[Broad Knowledge: System Design, Databases, Cloud, Testing]
+        subgraph Deep Expertise
+            direction TB
+            B1[Java Language] --> B2[JVM Internals] --> B3[Concurrency]
+        end
+        A -- supports --> B1
+    end
+```
+
 #### Deepen Your Core Java Knowledge
 *   **The Language:** Go beyond the syntax. Read "Effective Java" by Joshua Bloch to understand the *why* behind the language's design.
 *   **The JVM:** You don't need to be a JVM engineer, but you should understand how garbage collection works (G1GC), what the JIT compiler does, and how to read a thread dump.

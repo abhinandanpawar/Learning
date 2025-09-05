@@ -16,6 +16,24 @@ Dynamic Programming (DP) is a powerful algorithmic technique for solving complex
 A problem can be solved with Dynamic Programming if it has two key properties:
 
 1.  **Overlapping Subproblems:** The problem can be broken down into smaller subproblems that are reused multiple times. For example, to calculate `fib(5)`, you need `fib(4)` and `fib(3)`. To calculate `fib(4)`, you need `fib(3)` and `fib(2)`. The `fib(3)` subproblem is overlapping.
+
+```mermaid
+graph TD
+    subgraph "fib(5)"
+        fib5("fib(5)") --> fib4("fib(4)")
+        fib5 --> fib3("fib(3)")
+        fib4 --> fib3_2("fib(3)")
+        fib4 --> fib2("fib(2)")
+        fib3 --> fib2_2("fib(2)")
+        fib3 --> fib1("fib(1)")
+        fib3_2 --> fib2_3("fib(2)")
+        fib3_2 --> fib1_2("fib(1)")
+    end
+    style fib3 fill:#ffcdd2,stroke:#c62828
+    style fib3_2 fill:#ffcdd2,stroke:#c62828
+    note "The fib(3) subproblem is computed twice."
+```
+
 2.  **Optimal Substructure:** The optimal solution to the overall problem can be constructed from the optimal solutions of its subproblems.
 
 ---
