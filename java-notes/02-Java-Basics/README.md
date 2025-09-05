@@ -44,25 +44,122 @@ public void myMethod() {
 
 ```mermaid
 graph TD
-    subgraph Memory
-        subgraph Stack
-            direction LR
-            M[myMethod() Stack Frame]
-            subgraph M
-                P[int price: 100]
-                R[String productName (reference)]
+    subgraph "JVM Memory"
+        direction LR
+
+        subgraph "Stack (LIFO)"
+            direction TB
+            sf["myMethod() Stack Frame"]
+            subgraph sf
+                direction TB
+                p["int price<br/>(primitive)"]
+                pv["100"]
+                ref["String productName<br/>(reference)"]
+                refv["@heap_addr_123"]
+            end
+            p -- contains value --> pv
+            ref -- contains address --> refv
+        end
+
+        subgraph "Heap (Objects)"
+            direction TB
+            obj["String Object<br/>@heap_addr_123"]
+            subgraph obj
+                direction TB
+                obj_val["Value: 'Laptop'"]
             end
         end
-        subgraph Heap
-            O[String Object "Laptop"]
-        end
-    end
-    R -- points to --> O
 
-    style Stack fill:#bbf,stroke:#333
-    style Heap fill:#f9f,stroke:#333
+    end
+
+    refv -- "points to" --> obj
+
+    style Stack fill:#cde4ff,stroke:#666,stroke-width:2px
+    style Heap fill:#ffcdd2,stroke:#666,stroke-width:2px
+    style sf fill:#e1f5fe,stroke:#444
+    style obj fill:#ffe0b2,stroke:#444
 ```
 The `price` variable's value (100) lives directly on the stack. The `productName` variable also lives on the stack, but its value is just a memory address pointing to the actual `String` object on the heap.
+
+### A Deeper Dive: The Lifecycle of an `Integer` Object
+
+As per your request for a more detailed example, let's look at what happens behind the scenes for a simple line of code like `Integer c = a + b;`. This example reveals several advanced concepts that the JVM handles for you automatically.
+
+```java
+public void integerAddition() {
+    Integer a = 2;
+    Integer b = 2;
+    Integer c = a + b;
+}
+```
+
+This seemingly simple operation involves autoboxing, the integer cache, unboxing, and the creation of new objects. Here is a step-by-step visual breakdown:
+
+```mermaid
+graph TD
+    subgraph "JVM Memory"
+        direction LR
+
+        subgraph "Stack"
+            direction TB
+            sf["main() Stack Frame"]
+            subgraph sf
+                direction TB
+                a["Integer a (ref)"]
+                b["Integer b (ref)"]
+                c["Integer c (ref)"]
+            end
+        end
+
+        subgraph "Heap"
+            direction TB
+
+            subgraph "Integer Cache (-128 to 127)"
+                direction LR
+                cached_2["Integer(2)"]
+            end
+
+            subgraph "Other Heap Objects"
+                direction LR
+                new_4["Integer(4)"]
+            end
+        end
+    end
+
+    subgraph "Execution Steps"
+        direction TD
+        S1["1. `Integer a = 2;` (Autoboxing)"]
+        S2["`Integer.valueOf(2)` is called."]
+        S3["The value 2 is in the cache range.<br/>`a` points to the cached `Integer(2)` object."]
+
+        S4["2. `Integer b = 2;` (Autoboxing)"]
+        S5["`Integer.valueOf(2)` is called again."]
+        S6["`b` points to the *same* cached `Integer(2)` object."]
+
+        S7["3. `Integer c = a + b;`"]
+        S8["Unboxing: `a.intValue() + b.intValue()` is executed.<br/>This results in the primitive value `4`."]
+        S9["Autoboxing: `Integer.valueOf(4)` is called."]
+        S10["A new `Integer(4)` object is created on the heap."]
+        S11["`c` points to the new `Integer(4)` object."]
+    end
+
+    S1 --> S2 --> S3
+    S3 --> a
+    a -- points to --> cached_2
+
+    S4 --> S5 --> S6
+    S6 --> b
+    b -- points to --> cached_2
+
+    S7 --> S8 --> S9 --> S10 --> S11
+    S11 --> c
+    c -- points to --> new_4
+
+    style cached_2 fill:#cde4ff,stroke:#666
+    style new_4 fill:#ffcdd2,stroke:#666
+```
+
+This level of detail shows how the JVM optimizes memory for small integers and how it seamlessly moves between primitive types and their object wrappers. When the `integerAddition` method finishes, the stack frame is popped, and the references `a`, `b`, and `c` are destroyed. The `Integer(4)` object on the heap will eventually be removed by the Garbage Collector as it is no longer referenced. The cached `Integer(2)` object will remain.
 
 ---
 
