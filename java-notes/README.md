@@ -17,6 +17,7 @@ These notes are structured to be easy to follow, with clear explanations and pra
 *   [06 - Exception Handling](./06-Exception-Handling/README.md)
 *   [07 - Java Collections Framework](./07-Java-Collections-Framework/README.md)
 *   [08 - Generics](./08-Generics/README.md)
+*   [08a - Java Streams](./08a-Java-Streams/README.md)
 *   [09 - IO Streams](./09-IO-Streams/README.md)
 *   [10 - Multithreading and Concurrency](./10-Multithreading-and-Concurrency/README.md)
 *   [11 - Java Memory Model](./11-Java-Memory-Model/README.md)
