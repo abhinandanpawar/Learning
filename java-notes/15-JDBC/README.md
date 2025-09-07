@@ -3,10 +3,22 @@
 Interacting with a database is a core requirement for most applications. Java Database Connectivity (JDBC) is the standard API that defines how Java applications talk to databases. While the low-level JDBC API is the foundation, modern applications use powerful abstractions built on top of it.
 
 **What's in this chapter:**
+*   [Mental Models for Data Access](#mental-models-for-data-access)
 *   [The Layers of Data Access](#1-the-layers-of-data-access)
 *   [Modern JDBC Essentials](#2-modern-jdbc-essentials)
 *   [High-Level Abstractions: Spring `JdbcTemplate` and JPA](#3-high-level-abstractions-spring-jdbctemplate-and-jpa)
-*   [Hands-On Lab: A Self-Contained Database Test](#4-hands-on-lab-a-self-contained-database-test)
+*   [Check Your Understanding](#check-your-understanding)
+*   [Your Mission: Simplify with `JdbcTemplate`](#4-your-mission-simplify-with-jdbctemplate)
+*   [Key Takeaways](#key-takeaways)
+*   [Interview Deep Dives](#interview-deep-dives)
+
+---
+
+### Mental Models for Data Access
+
+*   **A Connection Pool is a Fleet of Rental Cars:** Creating a new database connection is slow and expensive, just like building a new car for every customer. A connection pool is like a rental car agency at the airport. It keeps a fleet of ready-to-go cars (connections). Your application "borrows" a car when it needs one and "returns" it when it's done, so someone else can use it. This is much more efficient.
+
+*   **An ORM (like JPA/Hibernate) is a Diplomatic Translator:** You, the Java developer, speak Java. The database speaks SQL. An ORM is a professional translator who handles the communication between you. You speak to the translator in your language ("Please get me the `User` object with ID 5"), and the translator converts it to the other language ("`SELECT * FROM users WHERE id = 5`") and gives you back the results in a format you understand (a `User` object). It saves you from having to be fluent in SQL for every single interaction.
 
 ---
 
@@ -95,16 +107,51 @@ User user = userRepository.findByName("Alice").orElse(null);
 
 ---
 
-## 4. Hands-On Lab: A Self-Contained Database Test
-Testing database logic is hard. You shouldn't rely on a real, external database for your automated tests. The modern solution is **Testcontainers**.
+### Check Your Understanding
 
-We've created a runnable project in the `code/` directory that:
-1.  Uses **Testcontainers** to start a real PostgreSQL database in a Docker container just for the test.
-2.  Runs a simple query using raw JDBC to show the process.
-3.  Runs the same query using Spring's `JdbcTemplate` to show the improvement.
+**Question 1:** You are building a simple utility that needs to run a few complex, hand-optimized SQL queries. You don't need to map the results to complex objects. Which data access layer would be the best fit: raw JDBC, `JdbcTemplate`, or a full ORM like JPA/Hibernate?
+<details>
+  <summary>Answer</summary>
+  **`JdbcTemplate`** is the perfect choice here. It removes all the boilerplate and risk of raw JDBC (like forgetting to close a connection) but still gives you full control over the exact SQL you want to run. A full ORM would be overkill.
+</details>
 
-**To run it:**
-1.  You must have Docker installed and running on your machine.
-2.  Navigate to the `code/` directory.
-3.  Run `mvn test`.
-4.  Explore the source code to see modern database testing in action.
+**Question 2:** Why should you always use `PreparedStatement` instead of concatenating user input into a `Statement`?
+<details>
+  <summary>Answer</summary>
+  To prevent **SQL Injection** attacks. `PreparedStatement` treats user input strictly as data, while string concatenation allows a malicious user to inject SQL commands into your query, potentially leading to data theft or destruction.
+</details>
+
+---
+
+### Your Mission: Simplify with `JdbcTemplate`
+
+The code in the `code/` directory contains a test class that fetches data from a database in two ways: once with raw, verbose JDBC, and once with Spring's `JdbcTemplate`. Your mission is to complete the `JdbcTemplate` example to see how much simpler it is.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open `code/src/test/java/com/example/JdbcDemoTest.java`.
+2.  **Locate the Mission:** Find the `jdbcTemplateExample` test method and the `// Your Mission:` comment inside it.
+3.  **Accept the Challenge:** The code to query the database using `JdbcTemplate` has been removed. You need to write a single line of code to perform the query and get the user's name.
+4.  **Run and Verify:** Run the tests from your IDE or by navigating to the `code/` directory and running `mvn test`. If your implementation is correct, the test should pass.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+```java
+// Replace 'String userName = null;' with this line:
+String userName = jdbcTemplate.queryForObject(sql, String.class, 1);
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Work at a High Level of Abstraction:** For most applications, you should use a high-level abstraction like Spring Data JPA. You should only drop down to a lower level like `JdbcTemplate` or raw JDBC when you have a specific need that the higher level can't meet.
+*   **Always Use a Connection Pool:** Directly creating database connections is slow and inefficient. A connection pool (like HikariCP, the default in Spring Boot) is essential for any production application.
+*   **`PreparedStatement` is Non-Negotiable:** Always use `PreparedStatement` to prevent SQL injection vulnerabilities.
+*   **Test with Real Databases:** Use Testcontainers to spin up a real database in a Docker container for your integration tests. This provides a much higher degree of confidence than testing against an in-memory database like H2.
+
+---
+
+## Interview Deep Dives

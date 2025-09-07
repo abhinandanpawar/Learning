@@ -5,10 +5,29 @@ As language designers, we knew that providing powerful, efficient, and easy-to-u
 This chapter provides a high-level overview of the most common data structures available in the **Java Collections Framework**. We will explore the design trade-offs we made for each, so you can learn to choose the right tool for the job. Deeper dives into specific structures and algorithms will follow in later chapters.
 
 **What's in this chapter:**
+*   [Mental Models for Core Data Structures](#mental-models-for-core-data-structures)
 *   [`ArrayList`: The Resizable Array](#1-arraylist-the-resizable-array)
 *   [`LinkedList`: The Sequential Chain](#2-linkedlist-the-sequential-chain)
+*   [Your Mission: Count Word Frequencies](#3-your-mission-count-word-frequencies)
 *   [`HashMap`: The Key-Value Store](#3-hashmap-the-key-value-store)
+*   [Check Your Understanding](#check-your-understanding)
 *   [Performance at a Glance: Big-O Notation](#4-performance-at-a-glance-big-o-notation)
+
+---
+
+### Mental Models for Core Data Structures
+
+To make these abstract structures concrete, let's use some real-world analogies.
+
+*   **`ArrayList` is a Train:** A train has a fixed number of cars, and each car has a number (its index). Getting to car #5 is super fast—you just walk straight to it (`O(1)`). But adding a new car in the middle is a huge pain; you have to disconnect the train and shift everything down (`O(n)`).
+
+*   **`LinkedList` is a Scavenger Hunt:** You start at the first clue, which tells you where to find the next clue, and so on. There's no way to jump to the 5th clue without following the first four (`O(n)`). But adding a new clue in the middle is easy; you just change the location on the previous clue to point to your new one, and your new one points to the one that was originally next.
+
+*   **`HashMap` is a Dictionary:** When you want to find the definition of the word "Polymorphism," you don't read the dictionary from the beginning. You flip directly to the "P" section and find the word. It's an incredibly fast lookup (`O(1)` on average). The word is the **key**, and the definition is the **value**.
+
+*   **`Stack` is a Stack of Plates:** You can only add a new plate to the top, and you can only take a plate from the top. This is called **Last-In, First-Out (LIFO)**.
+
+*   **`Queue` is a Checkout Line:** The first person to get in line is the first person to be served. New people are added to the back of the line. This is called **First-In, First-Out (FIFO)**.
 
 ---
 
@@ -59,6 +78,58 @@ graph LR
 
 ---
 
+## 3. Your Mission: Count Word Frequencies
+
+The best way to understand data structures is to use them. Your mission is to write a program that counts the frequency of each word in a sentence. This is a classic problem that perfectly demonstrates the power of `HashMap`.
+
+We have created a new project for you in the `code/` directory.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open the `code/src/main/java/com/tenx/ds/WordFrequency.java` file.
+2.  **Follow the Instructions:** The file contains comments guiding you through the mission. You will need to:
+    *   Split a sentence into a list of words. An `ArrayList` is a good choice here.
+    *   Create a `HashMap` to store the frequency of each word.
+    *   Loop through the words and update their counts in the `HashMap`.
+3.  **Run Your Code:** Navigate to the `code/` directory in your terminal and run `mvn compile exec:java`.
+4.  **Verify Your Output:** You should see the map of word counts printed to the console.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+```java
+package com.tenx.ds;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+public class WordFrequency {
+    public static void main(String[] args) {
+        String sentence = "The quick brown fox jumps over the lazy dog";
+
+        // 1. Split the sentence into a list of words.
+        List<String> words = Arrays.asList(sentence.toLowerCase().split(" "));
+
+        // 2. Create a HashMap to store word frequencies.
+        Map<String, Integer> wordFrequencies = new HashMap<>();
+
+        // 3. Loop through the list of words and update the count.
+        for (String word : words) {
+            int count = wordFrequencies.getOrDefault(word, 0);
+            wordFrequencies.put(word, count + 1);
+        }
+
+        // 4. Print out the final frequency map.
+        System.out.println("Word Frequencies: " + wordFrequencies);
+    }
+}
+```
+</details>
+
+---
+
 ## 3. `HashMap`: The Key-Value Store
 
 A `HashMap` is a powerful structure that stores key-value pairs. It uses the `hashCode()` of the key to calculate an index, allowing for incredibly fast lookups.
@@ -86,6 +157,22 @@ graph TD
 
 ---
 
+### Check Your Understanding
+
+**Question 1:** You are building a playlist for a music app. Users need to be able to quickly jump to any song in the playlist (e.g., play song #1, then song #20). They will rarely add or remove songs from the middle of the playlist. Which data structure is a better choice: `ArrayList` or `LinkedList`?
+<details>
+  <summary>Answer</summary>
+  An **`ArrayList`** is the better choice. Fast index-based access (`get(i)`) is the most important requirement here, which is where `ArrayList` excels (`O(1)`).
+</details>
+
+**Question 2:** You are creating a system to manage customer support tickets. You need to store each ticket with a unique ticket ID (e.g., "TICKET-001"). Your support agents need to be able to retrieve any ticket instantly if they have the ID. What is the best data structure for this?
+<details>
+  <summary>Answer</summary>
+  A **`HashMap`** is perfect for this. You can use the unique ticket ID as the key and the ticket object as the value. This allows for extremely fast lookups (`O(1)`).
+</details>
+
+---
+
 ## 4. Performance at a Glance: Big-O Notation
 
 Choosing the right data structure requires understanding its performance characteristics. Big-O notation gives us a standardized way to talk about this.
@@ -98,6 +185,8 @@ Choosing the right data structure requires understanding its performance charact
 | **`contains(element)`**| `O(n)` | `O(n)`       | `O(1)`*          | For `HashMap`, this is `containsKey()`, which is extremely fast.   |
 
 **Key Takeaways:**
-*   **Default to `ArrayList`** for general-purpose lists.
-*   Use `LinkedList` only when you have a high number of insertions/deletions at the *ends* of the list and don't need fast index-based access.
-*   Use `HashMap` whenever you need to look up values by a key. Its performance is hard to beat.
+*   **Choose the Right Tool:** The data structure you choose has a huge impact on performance.
+*   **`ArrayList` for Speed:** Default to `ArrayList` when you need fast, index-based access.
+*   **`LinkedList` for Ends:** Use `LinkedList` only when you do a lot of additions/removals from the *ends* of the list.
+*   **`HashMap` for Lookups:** Use `HashMap` whenever you need to look up values by a unique key.
+*   **Big-O Matters:** Big-O notation is the language we use to talk about performance. `O(1)` (constant time) is amazing, `O(n)` (linear time) is okay, and `O(n^2)` (quadratic time) can be very slow for large inputs.

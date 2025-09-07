@@ -5,7 +5,7 @@ Now that you understand the core principles of OOP, let's explore some of the mo
 **What's in this chapter:**
 *   [Abstraction: Abstract Classes vs. Interfaces](#1-abstraction-the-power-of-not-knowing)
 *   [Enums: Type-Safe and Powerful Constants](#2-enums-type-safe-and-powerful-constants)
-*   [Hands-On Lab: Designing a Product Catalog](#3-hands-on-lab-designing-a-product-catalog)
+*   [Your Mission: Make Products Giftable](#3-your-mission-make-products-giftable)
 *   [Interview Deep Dives](#interview-deep-dives)
 
 ---
@@ -13,6 +13,12 @@ Now that you understand the core principles of OOP, let's explore some of the mo
 ## 1. Abstraction: The Power of Not Knowing
 
 Abstraction is the art of hiding implementation details. It allows you to define a *contract* for what a class can do, without worrying about *how* it does it. This is the key to building **loosely coupled** systems, where components can be changed or replaced without breaking everything else. Java provides two primary tools for this: **abstract classes** and **interfaces**.
+
+### Mental Models for Abstraction
+
+*   **Abstract Class is a Recipe with Some Steps Missing:** Imagine a recipe for "Cake". It might have some steps already defined ("1. Preheat oven to 350°F.", "5. Bake for 30 minutes."). But it also has abstract steps like "2. Prepare the batter." and "4. Add the frosting.". You can't make a generic "Cake"; you have to create a specific *kind* of cake, like a `ChocolateCake` or a `CarrotCake`, that fills in those missing steps. An abstract class provides a base of shared implementation but forces subclasses to provide the rest.
+
+*   **Interface is a Wall Socket:** A wall socket is a contract. It guarantees that anything you plug into it will receive electricity in a standard format. The socket doesn't know or care if you plug in a lamp, a phone charger, or a vacuum cleaner. It just provides a standard point of connection. An interface defines a "can-do" capability. Any class can promise to fulfill that contract by `implementing` the interface.
 
 ### a. Abstract Classes: The "is-a" Relationship
 
@@ -108,18 +114,99 @@ public enum OrderStatus {
 
 ---
 
-## 3. Hands-On Lab: Designing a Product Catalog
+### Check Your Understanding
 
-We've created a runnable project in the `code/` directory that brings all these concepts together. It models a product catalog with:
-*   An `abstract Product` base class.
-*   `Shippable` and `Insurable` interfaces.
-*   Concrete classes like `Book` and `Electronic` that extend the base class and implement interfaces.
-*   An `enum` for `ProductCategory`.
+**Question 1:** You are designing a system for a zoo. You have `Lion`, `Tiger`, and `Bear` classes. They all share common behaviors like `eat()` and `sleep()`, so you create a `Mammal` base class for them. Should `Mammal` be an `abstract class` or an `interface`? Why?
+<details>
+  <summary>Answer</summary>
+  It should be an **abstract class**. This is a classic "is-a" relationship (`Lion` is a `Mammal`). An abstract class is perfect here because you can provide shared implementation for `eat()` and `sleep()` that all mammals share, while perhaps leaving a method like `makeSound()` as abstract for each specific animal to implement.
+</details>
 
-**To run it:**
-1.  Navigate to the `code/` directory.
-2.  Run `mvn compile exec:java`.
-3.  Explore the source code to see how these advanced OOP concepts create a flexible and extensible design.
+**Question 2:** You want to add the ability for some of your zoo animals, like a `Parrot` and a `Seal`, to perform tricks. Other animals, like a `Lion`, cannot. Should the "can-perform-tricks" contract be an `abstract class` or an `interface`?
+<details>
+  <summary>Answer</summary>
+  It should be an **interface**, likely named `Performable` or `TrickPerformer`. This is a "can-do" capability that is not shared by all animals. A `Parrot` can `extend Animal` and also `implement Performable`, allowing it to have the "is-a" relationship and the "can-do" capability.
+</details>
+
+---
+
+## 3. Your Mission: Make Products Giftable
+
+The code in the `code/` subdirectory contains the product catalog model we've been discussing. Your mission is to add a new "can-do" capability to this system. We want to allow certain products to be gift-wrapped.
+
+**Part 1: Create the `Giftable` Interface**
+1.  **Find the Code:** Open the `code/src/main/java/com/tenx/adv/oop/` directory.
+2.  **Create a New Interface:** Create a new Java interface file named `Giftable.java`.
+3.  **Define the Contract:** Inside `Giftable`, define two methods:
+    *   `setMessage(String message)`: This method will set a gift message.
+    *   `String getMessage()`: This method will retrieve the gift message.
+
+**Part 2: Implement the Interface**
+1.  **Modify the `Book` class:** Make the `Book` class `implement` the `Giftable` interface.
+2.  **Add a Field:** Add a private `String giftMessage;` field to the `Book` class to store the message.
+3.  **Implement the Methods:** Implement the `setMessage` and `getMessage` methods required by the `Giftable` interface. They will simply set and get the value of the `giftMessage` field.
+
+**Part 3: Test Your Code**
+1.  **Open `Main.java`:** In the `main` method, find the `Book` object.
+2.  **Check and Cast:** Use the `instanceof` operator to check if the `Book` object is `Giftable`.
+3.  **Set a Message:** If it is, cast the object to `Giftable` and use the `setMessage()` method to add a gift message like "Happy Birthday!". Then, print the message out using `getMessage()`.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+**Giftable.java:**
+```java
+package com.tenx.adv.oop;
+
+public interface Giftable {
+    void setMessage(String message);
+    String getMessage();
+}
+```
+
+**Book.java (changes):**
+```java
+// Add 'implements Giftable' to the class definition
+public class Book extends Product implements Shippable, Giftable {
+    // ... existing code ...
+    private String giftMessage;
+
+    // ... existing constructor ...
+
+    @Override
+    public void setMessage(String message) {
+        this.giftMessage = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.giftMessage;
+    }
+}
+```
+
+**Main.java (changes):**
+```java
+// Inside the main method loop
+if (product instanceof Giftable) {
+    System.out.println("This product can be gifted!");
+    Giftable gift = (Giftable) product;
+    gift.setMessage("Happy Reading!");
+    System.out.println("Gift Message: " + gift.getMessage());
+}
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Abstract Class vs. Interface:** This is a classic interview question.
+    *   Use an **abstract class** for an "is-a" relationship when you want to provide shared code and state for a group of related classes (e.g., `Dog` is an `Animal`).
+    *   Use an **interface** for a "can-do" capability that can be applied to many unrelated classes (e.g., a `Car` and a `Box` can both be `Shippable`).
+*   **`default` Methods:** Java 8+ allows interfaces to have `default` methods with implementations. This is a powerful tool for evolving APIs without breaking existing code.
+*   **Enums are Classes:** An `enum` is not just a constant; it's a special kind of class. You can add fields, methods, and constructors to them to create powerful, type-safe constants.
+*   **Object Cloning is Tricky:** Be wary of Java's built-in `Cloneable` interface. A **copy constructor** or **static factory method** is often a safer and clearer way to create copies of your objects.
 
 ---
 

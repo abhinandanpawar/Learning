@@ -100,4 +100,37 @@ class UserServiceTest {
         // Verify that the save method was NOT called.
         verify(mockUserRepository, never()).save(any(User.class));
     }
+
+
+    // --- Your Mission ---
+    // The 'updateUserName' method was added to the UserService.
+    // Your mission is to write the unit tests for it.
+
+    @Test
+    @DisplayName("should update user name when user exists")
+    void updateUserName_whenUserExists_shouldUpdateAndReturnUser() {
+        // Your Mission (Part 1): Test the "happy path".
+        // Arrange:
+        // 1. Tell the mock repository that when findById("1") is called,
+        //    it should return the Optional-wrapped sampleUser.
+        // Act:
+        // 2. Call the userService.updateUserName method with user ID "1" and a new name "Johnathan Doe".
+        // Assert:
+        // 3. Assert that the returned user's name is "Johnathan Doe".
+        // 4. Verify that the repository's save method was called exactly once
+        //    with an argument that has the new name. (Hint: use an ArgumentCaptor).
+
+    }
+
+    @Test
+    @DisplayName("should throw exception when updating a non-existent user")
+    void updateUserName_whenUserDoesNotExist_shouldThrowException() {
+        // Your Mission (Part 2): Test the "sad path".
+        // Arrange:
+        // 1. Tell the mock repository that when findById is called with any string,
+        //    it should return an empty Optional.
+        // Act & Assert:
+        // 2. Assert that calling updateUserName throws a UserNotFoundException.
+
+    }
 }

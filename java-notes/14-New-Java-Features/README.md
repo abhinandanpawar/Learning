@@ -3,10 +3,23 @@
 Java is constantly evolving. Since Java 9, a new version is released every six months, with a **Long-Term Support (LTS)** version released every two years. This chapter highlights the most impactful features from recent LTS releases that you will use in modern, professional Java development.
 
 **What's in this chapter:**
+*   [Mental Models for Modern Features](#mental-models-for-modern-features)
 *   [Java 11 (LTS): Convenience and a New HTTP Client](#1-java-11-lts)
 *   [Java 17 (LTS): Data Modeling and Pattern Matching](#2-java-17-lts)
 *   [Java 21 (LTS): The Concurrency Revolution](#3-java-21-lts)
-*   [Hands-On Lab: A Modern Features Showcase](#4-hands-on-lab-a-modern-features-showcase)
+*   [Check Your Understanding](#check-your-understanding)
+*   [Your Mission: Refactor to Modern Java](#your-mission-refactor-to-modern-java)
+*   [Key Takeaways](#key-takeaways)
+
+---
+
+### Mental Models for Modern Features
+
+*   **`var` is a Smart Shopping List:** Instead of writing "a carton of 12 grade-A large eggs," you just write "eggs." You and the cashier (the compiler) both know exactly what you mean from the context of what you're buying. `var` lets the compiler infer the type, saving you from writing it out explicitly.
+
+*   **A `record` is an ID Card:** An ID card is a simple, immutable carrier for data: your name, date of birth, ID number. You don't have to write a separate "getter" method for your name; it's just your name. A `record` is a formal, concise, and immutable way to declare a class that is just a plain data carrier.
+
+*   **`sealed` Classes are a VIP Guest List:** The host of a party (the `sealed` class) has a strict list of who is allowed in (`permits Circle, Square`). The bouncer (the compiler) will not let anyone else in (`Rectangle` is rejected). It gives you explicit, compile-time control over who can extend or implement your types.
 
 ---
 
@@ -131,14 +144,62 @@ New interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) were adde
 
 ---
 
-## 4. Hands-On Lab: A Modern Features Showcase
+### Check Your Understanding
 
-We've created a runnable project in the `code/` directory that demonstrates some of these key features in action, including:
-1.  Using `var` for local variables.
-2.  Defining and using a `record`.
-3.  Using a `switch` expression with pattern matching.
+**Question 1:** You have a class that is a simple data carrier for an `(x, y)` coordinate. It needs a constructor, getters for `x` and `y`, `equals()`, `hashCode()`, and `toString()`. Which modern Java feature is the perfect fit for this?
+<details>
+  <summary>Answer</summary>
+  A **`record`**. You can declare `public record Point(int x, int y) {}` and the compiler will generate all of that boilerplate code for you.
+</details>
 
-**To run it:**
-1.  Navigate to the `code/` directory.
-2.  Run `mvn compile exec:java`.
-3.  Explore the source code to see how these features make Java code more concise and readable.
+**Question 2:** You have a variable `obj` that could be a `String` or an `Integer`. You want to print its value if it's a `String`. Which new feature makes the code for this check less verbose?
+<details>
+  <summary>Answer</summary>
+  **Pattern Matching for `instanceof`**. You can write `if (obj instanceof String s)` and then use the variable `s` directly inside the `if` block without needing a separate cast.
+</details>
+
+---
+
+### Your Mission: Refactor to Modern Java
+
+The best way to appreciate the new features is to see how they simplify old code. The code in the `code/` directory has been intentionally written in an older style. Your mission is to refactor it.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open `code/src/main/java/com/example/ModernJavaDemo.java`.
+2.  **Part 1: Refactor to a `record`**
+    *   Find the `User` class. It's a classic, verbose Plain Old Java Object (POJO).
+    *   Your challenge is to delete the entire class and replace it with a single line of code using a `record`.
+3.  **Part 2: Refactor to a `switch` expression**
+    *   Find the `getArea` method. It uses a chain of `if-else` statements with `instanceof` and manual casting.
+    *   Your challenge is to refactor this method to use a modern `switch` expression with pattern matching, which is much more concise and safe.
+4.  **Run and Verify:** Run the `main` method (`mvn compile exec:java`). If your refactoring is correct, the program should run exactly as it did before, but your code will be much cleaner.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+**Part 1 Solution:**
+```java
+// Replace the entire User class with this line:
+public record User(String id, String name) {}
+```
+
+**Part 2 Solution:**
+```java
+public static double getArea(Shape shape) {
+    return switch (shape) {
+        case Circle c -> Math.PI * c.radius() * c.radius();
+        case Square s -> s.side() * s.side();
+    };
+}
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Java is Always Improving:** The six-month release cadence means that new, useful features are constantly being added to the language and platform.
+*   **Embrace Modern Syntax:** Features like `var`, `records`, `switch` expressions, and pattern matching are not just syntactic sugar; they reduce boilerplate, improve readability, and eliminate entire classes of bugs. Use them.
+*   **`records` are for Immutable Data:** Use a `record` any time you need a simple, immutable data carrier class.
+*   **Virtual Threads are a Big Deal:** For server-side applications, Virtual Threads (Project Loom) are one of the most significant improvements to the Java platform in years, enabling massive scalability with simple, traditional code.

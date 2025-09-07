@@ -3,11 +3,23 @@
 A program isn't useful if it can't interact with the outside world. We needed a powerful and flexible way for your programs to read and write data. This is the purpose of Java's I/O (Input/Output) libraries, which have evolved significantly over the years.
 
 **What's in this chapter:**
+*   [Mental Models for I/O](#mental-models-for-io)
 *   [Classic I/O: The Decorator Pattern](#1-classic-io-the-decorator-pattern)
 *   [Modern I/O: `java.nio.file`](#2-modern-io-javaniofile)
 *   [High-Performance I/O: `java.nio` Buffers and Channels](#3-high-performance-io-javanio-buffers-and-channels)
-*   [Hands-On Lab: Reading and Writing Files](#4-hands-on-lab-reading-and-writing-files)
+*   [Check Your Understanding](#check-your-understanding)
+*   [Your Mission: Process a File](#4-your-mission-process-a-file)
 *   [Interview Deep Dives](#interview-deep-dives)
+
+---
+
+### Mental Models for I/O
+
+*   **`java.io` Decorators are like Layering Clothes:** You start with a basic `FileInputStream` (the person). This only lets you read raw bytes, which isn't very useful. So, you "decorate" it by wrapping it in a `BufferedInputStream` (a t-shirt for warmth/efficiency). Then you might wrap that in a `DataInputStream` (a jacket with special pockets for reading `int`s and `double`s). Each layer adds a new capability.
+
+*   **`java.nio` Buffers and Channels are a High-Speed Railway:**
+    *   The **Channel** is the train track—a direct, high-speed connection between your program and the file system or network.
+    *   The **Buffer** is the train car. Instead of sending data one byte at a time (like a person walking down the track), you fill an entire train car with data and send it all at once. This is much more efficient for large amounts of data.
 
 ---
 
@@ -77,17 +89,65 @@ This **buffer-oriented** approach can be significantly faster than the stream-or
 
 ---
 
-## 4. Hands-On Lab: Reading and Writing Files
+### Check Your Understanding
 
-We've created a runnable project in the `code/` directory that demonstrates:
-1.  Writing a list of strings to a file using the modern `Files.write()`.
-2.  Reading a file line-by-line using `Files.newBufferedReader()`.
-3.  Copying a file efficiently using `java.nio` Channels and Buffers.
+**Question 1:** You need to read a simple text configuration file that is only a few lines long. Which class would be the most convenient and modern way to read all the lines into a `List<String>`?
+<details>
+  <summary>Answer</summary>
+  The `java.nio.file.Files` utility class, specifically the `Files.readAllLines(path)` method. It's a single, simple line of code for this common task.
+</details>
 
-**To run it:**
-1.  Navigate to the `code/` directory.
-2.  Run `mvn compile exec:java`.
-3.  Explore the source code to see the modern I/O APIs in action.
+**Question 2:** You are writing a high-performance network application that needs to transfer a large 1GB video file from one place to another. To maximize speed and minimize memory overhead, should you use the stream-based `java.io` API or the buffer/channel-based `java.nio` API?
+<details>
+  <summary>Answer</summary>
+  For high-performance, large data transfers, the **`java.nio`** API with `Channel`s and `Buffer`s is the superior choice. It is designed for this kind of efficient, block-based I/O.
+</details>
+
+---
+
+## 4. Your Mission: Process a File
+
+Your mission is to use the modern `java.nio.file` API to read a file, process its contents, and write the results to a new file. This is a very common real-world task.
+
+We have created a new `DataProcessor.java` file and an `input.txt` for you in the `code/` directory.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open `code/src/main/java/com/example/DataProcessor.java`.
+2.  **Locate the Mission:** Find the `// Your Mission:` comment inside the `main` method.
+3.  **Accept the Challenge:** Write the code to perform these three steps inside the `try` block:
+    a. Read all lines from `input.txt` into a `List<String>`.
+    b. Create a new list where every line from the input is converted to uppercase, BUT only include lines that do not contain the letter 'E'. (Hint: a `stream()` pipeline with `map()` and `filter()` is great for this).
+    c. Write the lines from your new list to `output.txt`.
+4.  **Run and Verify:** Run the code (`mvn compile exec:java`). A new `output.txt` file should be created. Check its contents to see if your processing was successful. It should contain "ALPHA" and "BRAVO".
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+```java
+// --- Your code goes here ---
+List<String> lines = Files.readAllLines(inputFile);
+
+List<String> processedLines = lines.stream()
+    .map(String::toUpperCase)
+    .filter(line -> !line.contains("E"))
+    .collect(Collectors.toList());
+
+Files.write(outputFile, processedLines);
+// --- End of your code ---
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Prefer Modern I/O:** For file operations, always prefer the `java.nio.file` package (`Path`, `Paths`, `Files`). It is more powerful and consistent than the old `java.io.File` class.
+*   **Use the Right Tool for the Job:**
+    *   For reading/writing small text files, `Files.readAllLines()` and `Files.write()` are extremely convenient.
+    *   For large files or binary data, use streams (`InputStream`/`OutputStream`) or channels (`FileChannel`).
+*   **`try-with-resources` is Essential:** I/O operations often involve resources that must be closed. Using `try-with-resources` is the safest and most reliable way to ensure they are always closed, even when errors occur.
+*   **JSON over Serialization:** For saving objects or sending them over a network, prefer using a standard format like JSON with a library like Jackson or Gson over Java's built-in `Serializable` mechanism.
 
 ---
 

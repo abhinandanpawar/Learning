@@ -31,7 +31,6 @@ class JdbcDemoTest {
     static void setup() throws SQLException {
         // Create a DataSource for an H2 in-memory database.
         // "DB_CLOSE_DELAY=-1" keeps the DB open as long as the JVM is running.
-        // "INIT=RUNSCRIPT..." executes a script on connection to create our schema.
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;");
         config.setUsername("sa");
@@ -78,9 +77,14 @@ class JdbcDemoTest {
         System.out.println("Running Spring JdbcTemplate example...");
         String sql = "SELECT name FROM users WHERE id = ?";
 
-        // With JdbcTemplate, the boilerplate is gone.
-        // It handles the connection, statement, result set, and exception mapping.
-        String userName = jdbcTemplate.queryForObject(sql, String.class, 1);
+        // Your Mission:
+        // The raw JDBC example above is verbose. Your mission is to get the
+        // same result using the much simpler JdbcTemplate.
+        // 1. Use the 'jdbcTemplate.queryForObject' method.
+        // 2. The first argument is the SQL query.
+        // 3. The second argument is the expected return type's class (String.class).
+        // 4. The third argument is the value for the '?' parameter in the SQL (the ID 1).
+        String userName = null; // Replace this line with your code
 
         System.out.println("   ...found user: " + userName);
         assertEquals("Alice", userName);

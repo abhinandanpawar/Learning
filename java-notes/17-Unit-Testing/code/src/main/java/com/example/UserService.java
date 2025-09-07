@@ -46,6 +46,20 @@ public class UserService {
         userRepository.save(newUser);
         return newUser;
     }
+
+    /**
+     * Updates the name of an existing user.
+     * @param userId The ID of the user to update.
+     * @param newName The new name for the user.
+     * @return The updated User object.
+     * @throws UserNotFoundException if no user with that ID exists.
+     */
+    public User updateUserName(String userId, String newName) {
+        User user = getUserById(userId); // Reuse existing method to find the user
+        User updatedUser = new User(user.id(), newName); // Create a new user object with the new name
+        userRepository.save(updatedUser);
+        return updatedUser;
+    }
 }
 
 // Custom exception classes for our service

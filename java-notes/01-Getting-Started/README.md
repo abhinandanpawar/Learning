@@ -6,7 +6,7 @@ Now that you understand the *why* behind Java, let's get our hands dirty. This c
 *   [Prerequisites: Your Toolkit](#1-prerequisites-your-toolkit)
 *   [Your First Program: "Hello, JVM!"](#2-your-first-program-hello-jvm)
 *   [The Compilation & Execution Rhythm](#3-the-compilation-and-execution-rhythm)
-*   [Hands-On Lab: Your First Project](#4-hands-on-lab-your-first-project)
+*   [Your First Mission: Modify the Code](#4-your-first-mission-modify-the-code)
 *   [Interview Deep Dives](#interview-deep-dives)
 
 ---
@@ -104,17 +104,38 @@ This cycle is fundamental to Java development. Your IDE automates these steps fo
 
 ---
 
-## 4. Hands-On Lab: Your First Project
+## 4. Your First Mission: Modify the Code
 
-To make this real, we've created a simple, runnable "Hello, World!" project in the `code/` subdirectory.
+Reading code is one thing; writing it is another. It's time to get your hands on the keyboard. We've created a simple, runnable "Hello, World!" project in the `code/` subdirectory.
 
-**To run it:**
-1.  Make sure you have a JDK (version 11 or higher) and Apache Maven installed.
-2.  Open a terminal and navigate to the `code/` directory.
-3.  Run the project using Maven: `mvn compile exec:java`
-4.  You should see the output `Hello, 10X Developer!` on your console.
+**Your Mission:**
 
-This is the best way to confirm your setup is working correctly before moving on.
+1.  **Find the File:** Open the `code/` directory. Navigate to `src/main/java/com/tenx/intro/HelloWorld.java`.
+2.  **Accept the Challenge:** The program currently prints "Hello, 10X Developer!". Change the code so that it prints **"Hello, [Your Name]!"** instead.
+3.  **Run the Code:** Open a terminal in the `code/` directory and run the project using Maven: `mvn compile exec:java`.
+4.  **Verify Your Success:** You should see your new message printed to the console.
+
+**Bonus Mission:**
+
+Can you make the program print a second line of text? Try adding another `System.out.println()` line right after the first one. What happens?
+
+<details>
+  <summary>Stuck? Here's the solution</summary>
+
+  ```java
+  package com.tenx.intro;
+
+  public class HelloWorld {
+      public static void main(String[] args) {
+          // Mission 1: Change the text inside the quotes
+          System.out.println("Hello, Jules!");
+
+          // Bonus Mission: Add a second line
+          System.out.println("Java is fun!");
+      }
+  }
+  ```
+</details>
 
 ---
 
