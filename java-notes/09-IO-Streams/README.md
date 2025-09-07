@@ -19,25 +19,106 @@ The original I/O library (`java.io`) was designed around the **Decorator Pattern
 *   **Byte Streams (`InputStream`/`OutputStream`):** For reading/writing raw binary data (e.g., an image file).
 *   **Character Streams (`Reader`/`Writer`):** For reading/writing text data. These correctly handle character encodings (like UTF-8).
 
-**Visualizing the Decorator Pattern:**
-Imagine you want to read binary data from a file efficiently. You can combine classes:
+### A Detailed Look at `java.io` Hierarchies
+
+The `java.io` library is built on a set of abstract base classes. The two main hierarchies are for byte streams (`InputStream`/`OutputStream`) and character streams (`Reader`/`Writer`). The Decorator Pattern is used extensively to add functionality by wrapping base streams.
+
+#### Byte Stream Hierarchy
+
+Byte streams are used for reading and writing binary data (e.g., images, executable files). `InputStream` and `OutputStream` are the abstract base classes.
 
 ```mermaid
 graph TD
-    A(FileInputStream) -- "is wrapped by" --> B(BufferedInputStream)
-    B -- "is wrapped by" --> C(DataInputStream)
-
-    subgraph Legend
+    subgraph "Input Streams (for Reading Bytes)"
         direction LR
-        L1("Reads raw bytes from a file.")
-        L2("Adds buffering for efficiency.")
-        L3("Adds methods to read primitive types (e.g., readInt(), readDouble()).")
+        InputStream(InputStream - abstract)
+        InputStream --> FileInputStream("FileInputStream<br>(Reads from files)")
+        InputStream --> ByteArrayInputStream("ByteArrayInputStream<br>(Reads from byte array)")
+        InputStream --> PipedInputStream("PipedInputStream<br>(Reads from a pipe)")
+        InputStream --> FilterInputStream("FilterInputStream<br>(Decorator base class)")
+
+        FilterInputStream --> BufferedInputStream("BufferedInputStream<br>(Adds buffering)")
+        FilterInputStream --> DataInputStream("DataInputStream<br>(Reads primitive types)")
     end
 
-    A --- L1
-    B --- L2
-    C --- L3
+    subgraph "Output Streams (for Writing Bytes)"
+        direction LR
+        OutputStream(OutputStream - abstract)
+        OutputStream --> FileOutputStream("FileOutputStream<br>(Writes to files)")
+        OutputStream --> ByteArrayOutputStream("ByteArrayOutputStream<br>(Writes to byte array)")
+        OutputStream --> PipedOutputStream("PipedOutputStream<br>(Writes to a pipe)")
+        OutputStream --> FilterOutputStream("FilterOutputStream<br>(Decorator base class)")
+
+        FilterOutputStream --> BufferedOutputStream("BufferedOutputStream<br>(Adds buffering)")
+        FilterOutputStream --> DataOutputStream("DataOutputStream<br>(Writes primitive types)")
+        FilterOutputStream --> PrintStream("PrintStream<br>(Adds formatting, e.g., System.out)")
+    end
+
+    style InputStream fill:#f9f,stroke:#333,stroke-width:2px
+    style OutputStream fill:#f9f,stroke:#333,stroke-width:2px
 ```
+
+**Key `InputStream` Methods:**
+| Method | Description |
+| --- | --- |
+| `int read()` | Reads the next byte of data. Returns -1 at the end of the stream. |
+| `int read(byte[] b)` | Reads up to `b.length` bytes into an array. Returns the number of bytes read, or -1. |
+| `void close()` | Closes the stream and releases system resources. |
+
+**Key `OutputStream` Methods:**
+| Method | Description |
+| --- | --- |
+| `void write(int b)` | Writes the specified byte to the output stream. |
+| `void write(byte[] b)` | Writes `b.length` bytes from the specified byte array. |
+| `void flush()` | Flushes the stream, forcing any buffered output bytes to be written out. |
+| `void close()` | Closes the stream and releases system resources. |
+
+#### Character Stream Hierarchy
+
+Character streams are used for reading and writing text data, automatically handling character encodings (like UTF-8). `Reader` and `Writer` are the abstract base classes.
+
+```mermaid
+graph TD
+    subgraph "Readers (for Reading Characters)"
+        direction LR
+        Reader(Reader - abstract)
+        Reader --> FileReader("FileReader<br>(Reads text from files)")
+        Reader --> StringReader("StringReader<br>(Reads from a String)")
+        Reader --> InputStreamReader("InputStreamReader<br>(Bridge from byte to char stream)")
+        Reader --> BufferedReader("BufferedReader<br>(Adds buffering, reads line-by-line)")
+    end
+
+    subgraph "Writers (for Writing Characters)"
+        direction LR
+        Writer(Writer - abstract)
+        Writer --> FileWriter("FileWriter<br>(Writes text to files)")
+        Writer --> StringWriter("StringWriter<br>(Writes to a String)")
+        Writer --> OutputStreamWriter("OutputStreamWriter<br>(Bridge from char to byte stream)")
+        Writer --> BufferedWriter("BufferedWriter<br>(Adds buffering)")
+        Writer --> PrintWriter("PrintWriter<br>(Adds formatting)")
+    end
+
+    style Reader fill:#ccf,stroke:#333,stroke-width:2px
+    style Writer fill:#ccf,stroke:#333,stroke-width:2px
+```
+
+*   **Bridge Classes:** `InputStreamReader` and `OutputStreamWriter` are crucial "bridge" classes. An `InputStreamReader` wraps an `InputStream` and decodes the bytes into characters. An `OutputStreamWriter` wraps an `OutputStream` and encodes characters into bytes.
+
+**Key `Reader` Methods:**
+| Method | Description |
+| --- | --- |
+| `int read()` | Reads a single character. Returns -1 at the end of the stream. |
+| `int read(char[] cbuf)` | Reads characters into an array. Returns the number of characters read, or -1. |
+| `void close()` | Closes the stream. |
+
+**Key `Writer` Methods:**
+| Method | Description |
+| --- | --- |
+| `void write(int c)` | Writes a single character. |
+| `void write(char[] cbuf)` | Writes an array of characters. |
+| `void write(String str)` | Writes a string. |
+| `void flush()` | Flushes the stream. |
+| `void close()` | Closes the stream. |
 This design is flexible, but can lead to verbose code. For handling files, there is now a better way.
 
 ---
