@@ -1,9 +1,18 @@
 package com.javanotes.streams;
 
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+
+import java.util.Optional;
+import java.util.function.Function;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -71,5 +80,41 @@ public class AdvancedStreamExample {
         System.out.println("--- Parallel Streams ---");
         long count = IntStream.range(1, 1_000_000).parallel().filter(n -> n % 2 == 0).count();
         System.out.println("Count of even numbers (1 to 1,000,000) using parallel stream: " + count);
+
+        System.out.println("---");
+
+        // --- Optional ---
+        System.out.println("--- Optional ---");
+        Optional<String> maybeName = names.stream().filter(s -> s.length() > 10).findFirst();
+        System.out.println("Is name present? " + maybeName.isPresent());
+        System.out.println("Name or default: " + maybeName.orElse("No name found"));
+        maybeName.ifPresent(name -> System.out.println("Name found: " + name));
+        System.out.println("---");
+
+
+        // --- Exception Handling ---
+        System.out.println("--- Exception Handling ---");
+        Function<String, String> readFile = path -> {
+            try {
+                return new String(Files.readAllBytes(Paths.get(path)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        // Example with a file that doesn't exist to show the exception being thrown
+        try {
+            Stream.of("non_existent_file.txt").map(readFile).forEach(System.out::println);
+        } catch (Exception e) {
+            System.out.println("Caught expected exception: " + e.getMessage());
+        }
+        System.out.println("---");
+
+
+        // --- Custom Collector ---
+        System.out.println("--- Custom Collector ---");
+        String customJoined = names.stream().collect(new StringCollector(" | "));
+        System.out.println("Custom joined names: " + customJoined);
+        System.out.println("---");
+
     }
 }

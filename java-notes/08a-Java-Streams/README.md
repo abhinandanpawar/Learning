@@ -148,9 +148,73 @@ Stream<String> parallelStream = list.stream().parallel();
 -   **Stateful Lambdas:** Avoid using stateful lambda expressions in parallel streams, as they can lead to incorrect results due to race conditions.
 -   **Ordering:** The order of elements is not guaranteed in parallel streams unless you use an ordered terminal operation like `forEachOrdered()`.
 
+
+## 7. A Guide to `java.util.Optional`
+
+The `Optional` class is a container object which may or may not contain a non-null value. It's used to avoid `NullPointerException` and to design more expressive APIs. Many stream terminal operations, like `findFirst()` or `reduce()`, return an `Optional`.
+
+| Method              | Description                                                                    |
+| :------------------ | :----------------------------------------------------------------------------- |
+| `isPresent()`       | Returns `true` if there is a value present, otherwise `false`.                 |
+| `get()`             | If a value is present, returns the value, otherwise throws `NoSuchElementException`. |
+| `ifPresent(consumer)`| If a value is present, invokes the specified consumer with the value.        |
+| `orElse(other)`     | Returns the value if present, otherwise returns `other`.                       |
+| `orElseGet(supplier)`| Returns the value if present, otherwise returns the result of invoking `supplier`. |
+| `orElseThrow()`     | Returns the contained value, if present, otherwise throws `NoSuchElementException`. |
+
+## 8. Handling Exceptions in Streams
+
+Lambda expressions in streams can't throw checked exceptions directly. Here are a few strategies to handle them:
+
+1.  **Use a `try-catch` block inside the lambda:** This can be verbose but is straightforward.
+    ```java
+    stream.map(item -> {
+        try {
+            return methodThatThrowsCheckedException(item);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    ```
+2.  **Create a wrapper method:** Extract the `try-catch` logic into a helper method that returns a `Function`.
+3.  **Use a library:** Libraries like Vavr or throwing-function provide functional interfaces that can handle checked exceptions.
+
+## 9. Stream Performance and Best Practices
+
+-   **Laziness is Key:** Intermediate operations are not executed until a terminal operation is invoked. This allows the stream pipeline to be optimized.
+-   **Avoid Stateful Lambdas:** Lambdas that modify external state can lead to unpredictable results, especially in parallel streams.
+-   **Prefer Primitive Streams:** Use `IntStream`, `LongStream`, and `DoubleStream` when working with primitives to avoid boxing/unboxing overhead.
+-   **Be Mindful of Operation Order:** The order of intermediate operations matters. For example, `filter()` before `map()` is usually more efficient as it reduces the number of elements to be mapped.
+-   **Parallelism is Not Always Faster:** Measure performance before and after applying parallelism. The overhead of managing threads can make parallel streams slower for small datasets or simple operations.
+
+## 10. Streams vs. Traditional Loops
+
+| Aspect        | Streams                                       | Traditional Loops (`for`, `while`)              |
+| :------------ | :-------------------------------------------- | :---------------------------------------------- |
+| **Readability** | Declarative, expresses *what* to do.          | Imperative, specifies *how* to do it.           |
+| **Conciseness** | Generally more concise for complex operations. | Can be more verbose.                            |
+| **Flexibility** | Easily allows for parallel execution.         | Parallelization requires manual thread management. |
+| **Mutability**  | Encourages immutability and functional style. | Often relies on mutating state.                 |
+| **Debugging**   | Can be harder to debug due to lazy evaluation. | Easier to debug with breakpoints.               |
+
 ---
 
-## 7. Hands-On Lab: A Stream-Powered Example
+## 11. Writing a Custom Collector
+
+While the `Collectors` class provides many useful implementations, you can also create your own `Collector` by implementing the `java.util.stream.Collector` interface. This requires providing five functions:
+
+1.  **`supplier()`**: Creates a new mutable result container.
+2.  **`accumulator()`**: Adds a new element to an existing result container.
+3.  **`combiner()`**: Merges two result containers into one. This is used in parallel streams.
+4.  **`finisher()`**: Performs a final transformation from the intermediate result container to the final result type.
+5.  **`characteristics()`**: A set of `Collector.Characteristics` that describe the collector, such as `CONCURRENT`, `UNORDERED`, and `IDENTITY_FINISH`.
+
+Creating a custom collector is an advanced use case, but it provides ultimate flexibility when the standard collectors are not sufficient.
+
+---
+
+## 12. Hands-On Lab: A Stream-Powered Example
+
 
 We've created a runnable project in the `code/` directory that demonstrates many of the concepts discussed in this chapter, including:
 1.  Creating streams in various ways.
