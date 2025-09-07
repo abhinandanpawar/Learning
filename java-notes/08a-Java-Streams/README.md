@@ -84,6 +84,19 @@ These operations trigger the stream pipeline processing and produce a result or 
 
 ---
 
+
+## 3. Hands-On Lab: A Stream-Powered Example
+
+We've created a runnable project in the `code/` directory that demonstrates:
+1.  Creating a stream from a `List`.
+2.  Using `filter` and `map` to process the stream.
+3.  Using `collect` to gather the results into a new `List`.
+
+**To run it:**
+1.  Navigate to the `code/` directory.
+2.  Run `mvn compile exec:java`.
+3.  Explore the source code to see the Stream API in action.
+
 ## 3. More Ways to Create Streams
 
 Besides getting a stream from a `Collection`, you can create streams in several other ways.
@@ -226,3 +239,4 @@ We've created a runnable project in the `code/` directory that demonstrates many
 1.  Navigate to the `code/` directory.
 2.  Run `mvn compile exec:java`. By default, this will run the `AdvancedStreamExample.java` file.
 3.  Explore both `StreamExample.java` and `AdvancedStreamExample.java` to see the Stream API in action. You can change the `mainClass` in the `pom.xml` to run the other example.
+
