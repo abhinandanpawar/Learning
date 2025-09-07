@@ -148,7 +148,6 @@ Stream<String> parallelStream = list.stream().parallel();
 -   **Stateful Lambdas:** Avoid using stateful lambda expressions in parallel streams, as they can lead to incorrect results due to race conditions.
 -   **Ordering:** The order of elements is not guaranteed in parallel streams unless you use an ordered terminal operation like `forEachOrdered()`.
 
----
 
 ## 7. A Guide to `java.util.Optional`
 
@@ -215,6 +214,7 @@ Creating a custom collector is an advanced use case, but it provides ultimate fl
 ---
 
 ## 12. Hands-On Lab: A Stream-Powered Example
+
 
 We've created a runnable project in the `code/` directory that demonstrates many of the concepts discussed in this chapter, including:
 1.  Creating streams in various ways.

@@ -1,14 +1,18 @@
 package com.javanotes.streams;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+
 import java.util.Optional;
 import java.util.function.Function;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -76,6 +80,7 @@ public class AdvancedStreamExample {
         System.out.println("--- Parallel Streams ---");
         long count = IntStream.range(1, 1_000_000).parallel().filter(n -> n % 2 == 0).count();
         System.out.println("Count of even numbers (1 to 1,000,000) using parallel stream: " + count);
+
         System.out.println("---");
 
         // --- Optional ---
@@ -110,5 +115,6 @@ public class AdvancedStreamExample {
         String customJoined = names.stream().collect(new StringCollector(" | "));
         System.out.println("Custom joined names: " + customJoined);
         System.out.println("---");
+
     }
 }
