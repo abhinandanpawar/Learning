@@ -59,6 +59,18 @@ To set the i-th bit to `1`, you can OR the number with a mask.
 *   **Trick:** `number | (1 << i)`
 *   **Example:** Set the 1st bit of `5 (0101)`: `0101 | (1 << 1)` -> `0101 | 0010` -> `0111` (7).
 
+```mermaid
+graph TD
+    subgraph "Example: Set the 1st bit of 5"
+        A["number<br>0101 (5)"]
+        B["mask (1 << 1)<br>0010 (2)"]
+        C["result<br>0111 (7)"]
+
+        A -- "| (OR)" --> C
+        B -- "| (OR)" --> C
+    end
+```
+
 #### Clearing the i-th bit
 To set the i-th bit to `0`, you AND the number with a mask that has a `0` at the i-th position and `1`s everywhere else.
 *   **Trick:** `number & ~(1 << i)`

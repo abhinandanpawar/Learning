@@ -86,6 +86,21 @@ public enum OrderStatus {
 ```
 This is far more than just a set of names. An `enum` is a full-fledged class. You can add fields, methods, and constructors to it, making it an incredibly powerful tool.
 
+```mermaid
+classDiagram
+    class OrderStatus {
+        <<enumeration>>
+        PENDING
+        PROCESSING
+        SHIPPED
+        DELIVERED
+        CANCELLED
+        --
+        -String description
+        +getDescription() String
+    }
+```
+
 ```java
 public enum OrderStatus {
     PENDING("Order is pending confirmation."),

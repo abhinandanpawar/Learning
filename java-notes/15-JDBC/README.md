@@ -53,6 +53,22 @@ Always use `PreparedStatement` to protect against **SQL Injection** attacks. It 
     ```
     *If a user enters ` ' OR '1'='1 ` as their name, the query becomes `SELECT * FROM users WHERE name = '' OR '1'='1'`, returning all users!*
 
+```mermaid
+graph TD
+    subgraph "Vulnerable Statement"
+        direction LR
+        A["`SELECT...WHERE name = '` + "] --> B["`' OR '1'='1`"];
+        B --> C["`'`"];
+        C -- forms --> D("`SELECT...WHERE name = '' OR '1'='1'`<br><b>Malicious query!</b>");
+    end
+
+    subgraph "Safe PreparedStatement"
+        direction LR
+        E("`SELECT...WHERE name = ?`") -- binds parameter --> F("`' OR '1'='1`");
+        F -- result --> G("The database looks for a user<br>with the literal name `' OR '1'='1'`<br><b>No injection!</b>");
+    end
+```
+
 *   **Do this (Safe):**
     ```java
     String sql = "SELECT * FROM users WHERE name = ?";

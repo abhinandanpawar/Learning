@@ -79,6 +79,21 @@ Introduced as a final feature in **Java 21**, Virtual Threads are a revolutionar
 *   **Platform Threads:** These are the traditional Java threads, which are thin wrappers around expensive OS threads. You can only have a few thousand of them.
 *   **Virtual Threads:** These are extremely lightweight threads managed by the JVM, not the OS. You can have *millions* of them.
 
+```mermaid
+graph TD
+    subgraph "Platform Threads (1:1 with OS Threads)"
+        A[Java Thread 1] --- B[OS Thread 1]
+        C[Java Thread 2] --- D[OS Thread 2]
+    end
+
+    subgraph "Virtual Threads (M:1 with OS Threads)"
+        E[Virtual Thread 1] --> G(JVM)
+        F[Virtual Thread 2] --> G
+        H[...] --> G
+        G -- mounts on --> I[OS Thread 1]
+    end
+```
+
 This makes it possible to write simple, synchronous-looking code (e.g., "read from network, then write to database") where each request is handled by its own thread, without worrying about running out of threads.
 
 **Creating a Virtual Thread is easy:**

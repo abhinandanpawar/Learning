@@ -42,6 +42,24 @@ graph TD
 
 There are two standard ways to implement a DP solution. We will use the Fibonacci sequence as our running example.
 
+```mermaid
+graph TD
+    subgraph "Top-Down (Memoization)"
+        direction TB
+        A("Goal: fib(5)") --> B("Need fib(4) and fib(3).<br>Are they in the cache?");
+        B -- No --> C("Compute and store fib(3)");
+        B -- No --> D("Compute and store fib(4)");
+        C & D --> E("Compute fib(5) from cached results");
+    end
+
+    subgraph "Bottom-Up (Tabulation)"
+        direction TB
+        F("Base Cases: fib(0)=0, fib(1)=1") --> G("Iteratively compute fib(2), fib(3), fib(4)...");
+        G --> H("Store each result in a table");
+        H --> I("The last table entry is the answer for fib(5)");
+    end
+```
+
 ### a. Top-Down with Memoization
 This approach is essentially a "smarter" version of a recursive solution. You write the logic recursively, but you maintain a cache (like a map or an array) to store the results of subproblems. Before computing, you check the cache. If the result is there, you return it. If not, you compute it, store it in the cache, and then return it.
 

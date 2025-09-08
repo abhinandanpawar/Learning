@@ -56,6 +56,29 @@ graph TD
 
 Traversal means visiting every vertex in a graph. The two fundamental algorithms for this are Breadth-First Search (BFS) and Depth-First Search (DFS).
 
+```mermaid
+graph TD
+    subgraph "Graph"
+        A --> B
+        A --> C
+        B --> D
+        B --> E
+        C --> F
+    end
+
+    subgraph "BFS (Queue-based)"
+        direction LR
+        T1_A(A) --> T1_B(B) --> T1_C(C) --> T1_D(D) --> T1_E(E) --> T1_F(F)
+        note for T1_F "Visits level-by-level"
+    end
+
+    subgraph "DFS (Stack-based)"
+        direction LR
+        T2_A(A) --> T2_B(B) --> T2_D(D) --> T2_E(E) --> T2_C(C) --> T2_F(F)
+        note for T2_F "Goes deep, then backtracks"
+    end
+```
+
 ### a. Breadth-First Search (BFS)
 BFS explores the graph layer by layer. It starts at a source vertex, explores all of its immediate neighbors, and then for each of those neighbors, explores their unexplored neighbors, and so on.
 

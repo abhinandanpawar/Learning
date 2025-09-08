@@ -36,6 +36,19 @@ Here's how to approach common interview topics with this mindset.
 
 Don't just memorize 100 random problems. Master the underlying **patterns**. If you know the pattern, you can solve any problem of that type.
 
+```mermaid
+mindmap
+  root((Essential Patterns))
+    Sliding Window
+    Two Pointers
+    Tree Traversal (BFS/DFS)
+    Graph Traversal (BFS/DFS)
+    Backtracking
+    Dynamic Programming
+    Top 'K' Elements
+    (and more...)
+```
+
 #### The "Must-Know" Patterns and a Classic Example for Each:
 *   **Sliding Window:** *Maximum Sum Subarray of Size K*
 *   **Two Pointers:** *Sort Colors (Dutch National Flag problem)*

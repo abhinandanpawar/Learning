@@ -52,6 +52,21 @@ In Java 7, we introduced a new, modern API for file handling. It's more powerful
 *   **`Files`:** A utility class with a rich set of static methods for operating on files (e.g., read, write, copy, delete, check existence).
 
 **Modern File Reading:**
+
+```mermaid
+graph TD
+    subgraph "Reading a file: Classic vs. Modern"
+        subgraph "Classic IO (java.io)"
+            A("new FileReader(path)") --> B("new BufferedReader(reader)");
+            B --> C("try-with-resources or try-finally");
+        end
+
+        subgraph "Modern IO (java.nio.file)"
+            D("Paths.get(path)") --> E("Files.readAllLines(path)");
+        end
+    end
+```
+
 ```java
 // Old way with Readers
 try (BufferedReader reader = new BufferedReader(new FileReader("file.txt"))) {

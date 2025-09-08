@@ -25,6 +25,25 @@ Unit testing is the practice of testing individual units of code (a method or a 
 
 A clean test should be easy to read and understand. The **Arrange-Act-Assert (AAA)** pattern is a standard way to structure your test methods to achieve this clarity.
 
+```mermaid
+graph TD
+    subgraph "The AAA Pattern"
+        direction TB
+        A(1. Arrange) --> B(2. Act);
+        B --> C(3. Assert);
+    end
+
+    subgraph "Description"
+        A_Desc("Set up all preconditions.<br><i>e.g., Create objects, mock dependencies.</i>");
+        B_Desc("Call the method you are testing.");
+        C_Desc("Verify the result is what you expected.<br><i>e.g., `assertEquals(5, result);`</i>");
+    end
+
+    A -- "is for" --> A_Desc;
+    B -- "is for" --> B_Desc;
+    C -- "is for" --> C_Desc;
+```
+
 *   **Arrange:** Set up the test. This is where you create objects, prepare inputs, and set up any mocks or dependencies.
 *   **Act:** Execute the method you are actually testing.
 *   **Assert:** Verify the outcome. Check if the method produced the expected result.

@@ -126,6 +126,21 @@ graph TD
 
 We designed Java around four core principles that we believed were essential for building robust, scalable, and maintainable software.
 
+```mermaid
+graph TD
+    subgraph "The Four Pillars of OOP"
+        A(OOP) --> B(Encapsulation);
+        A --> C(Inheritance);
+        A --> D(Polymorphism);
+        A --> E(Abstraction);
+
+        B --> B_Desc["(Data Hiding)<br/>Binding data and methods together"];
+        C --> C_Desc["(Code Reuse)<br/>Creating new classes from existing ones"];
+        D --> D_Desc["(Many Forms)<br/>One interface, many implementations"];
+        E --> E_Desc["(Detail Hiding)<br/>Showing essential features only"];
+    end
+```
+
 ### a. Encapsulation: The Black Box Principle
 
 We believe that an object should be a "black box". Its internal data should be hidden from the outside world. This is achieved by making fields `private` and providing `public` methods (getters and setters) to access them.
