@@ -6,7 +6,7 @@ Welcome back. Now that you've set up your environment, it's time to learn the ba
 *   [Variables: Primitives vs. References](#1-variables-the-nouns-of-our-language)
 *   [Operators: The Verbs of Our Language](#2-operators-the-verbs-of-our-language)
 *   [Control Flow: The Grammar of Our Language](#3-control-flow-the-grammar-of-our-language)
-*   [Hands-On Lab: A Simple Calculator](#4-hands-on-lab-a-simple-calculator)
+*   [Your Mission: Power Up the Calculator](#4-your-mission-power-up-the-calculator)
 *   [Interview Deep Dives](#interview-deep-dives)
 
 ---
@@ -33,6 +33,12 @@ A reference type variable does not hold the object itself, but rather a *referen
 The JVM organizes memory into two main areas: the **stack** and the **heap**.
 *   **The Stack:** Fast, but small. Each thread gets its own stack. It's used for storing local variables (primitives and object references) and managing method calls. Memory is automatically reclaimed when a method finishes.
 *   **The Heap:** Slower, but large. Shared by all threads. This is where all objects are created (`new`). Memory is managed by the **Garbage Collector (GC)**.
+
+### Mental Model: Stack vs. Heap
+
+A simple way to think about this:
+*   **The Stack is like a stack of plates at a buffet.** When a new method is called, a new plate is put on top. This plate holds all the local variables for that method. When the method finishes, its plate is taken off the top, and all its variables are gone. It's fast, efficient, and strictly Last-In, First-Out (LIFO).
+*   **The Heap is like a large, open library.** When you create an object (`new`), you're asking the librarian (JVM) to find a space in the library for a new book (the object). Your variable on the stack is just a library card with the location of that book. The library is huge and flexible, but finding and managing the books is a more complex job, which is handled by the Garbage Collector.
 
 Let's visualize it:
 ```java
@@ -252,14 +258,81 @@ System.out.println(dayName); // Wednesday
 
 ---
 
-## 4. Hands-On Lab: A Simple Calculator
+### Check Your Understanding
 
-We've created a small, runnable project in the `code/` subdirectory that uses all the concepts from this chapter. It's a simple calculator that takes two numbers and an operator.
+**Question 1:** You declare a variable `double temperature = 98.6;`. Does the `temperature` variable live on the Stack or the Heap?
+<details>
+  <summary>Answer</summary>
+  The `temperature` variable itself lives on the Stack. Because `double` is a primitive type, its value (98.6) is stored directly on the Stack as well.
+</details>
 
-**To run it:**
-1.  Navigate to the `code/` directory.
-2.  Run the project using Maven: `mvn compile exec:java`
-3.  Explore the source code in `src/main/java/` to see variables, operators, and control flow in action.
+**Question 2:** When should you use a `for` loop versus a `while` loop?
+<details>
+  <summary>Answer</summary>
+  Use a `for` loop when you know the exact number of times you want to iterate (e.g., 10 times, or once for every item in a list). Use a `while` loop when you want to iterate as long as a certain condition is true, and you don't know in advance when that condition will become false.
+</details>
+
+---
+
+## 4. Your Mission: Power Up the Calculator
+
+The code in the `code/` subdirectory is a simple calculator. It's a great example of all the concepts in this chapter. But we can make it better.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open the `code/src/main/java/com/tenx/basics/Calculator.java` file.
+2.  **Analyze the `switch` statement:** Notice how it handles `+`, `-`, `*`, and `/`.
+3.  **Accept the Challenge:** Add a new case to the `switch` statement to handle the exponentiation (`^`) operator. For example, `2 ^ 3` should result in `8`.
+    *   **Hint:** You can use the `Math.pow(base, exponent)` method, but you'll need to cast the result back to an `int`. For example: `(int) Math.pow(a, b)`.
+4.  **Test Your Code:** Modify the `main` method to test your new case. Change the `operator` variable to `'^'` and run the program (`mvn compile exec:java`). Does it work?
+
+**Bonus Mission:**
+
+What happens if you try to divide by zero? The current code doesn't handle this. Add an `if` statement to check for division by zero before performing the `/` operation. If it's a division by zero, print an error message.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+```java
+package com.tenx.basics;
+
+public class Calculator {
+    public static void main(String[] args) {
+        int a = 5;
+        int b = 0;
+        char operator = '/'; // Change this to test your new '^' case!
+        int result = 0;
+
+        // Bonus Mission: Check for division by zero
+        if (operator == '/' && b == 0) {
+            System.out.println("Error: Cannot divide by zero!");
+        } else {
+            switch (operator) {
+                case '+': result = a + b; break;
+                case '-': result = a - b; break;
+                case '*': result = a * b; break;
+                case '/': result = a / b; break;
+                // Mission 1: Add the exponentiation case
+                case '^': result = (int) Math.pow(a, b); break;
+                default:
+                    System.out.println("Error: Invalid operator!");
+                    return; // Exit the program
+            }
+            System.out.printf("%d %c %d = %d%n", a, operator, b, result);
+        }
+    }
+}
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Two Types of Variables:** Java has **primitive types** (like `int`, `double`, `boolean`) which store simple values directly, and **reference types** (like `String` or any other object) which store a memory address pointing to the actual object.
+*   **Stack vs. Heap:** The **Stack** is for fast, temporary storage of local variables and method calls. The **Heap** is for the long-term storage of all objects.
+*   **Control Flow is Key:** Statements like `if-else`, `for`, `while`, and `switch` are essential for controlling the logic and flow of your program.
+*   **Modern `switch` is better:** Java's modern `switch` expressions (Java 14+) are safer and more powerful than the old `switch` statements.
 
 ---
 

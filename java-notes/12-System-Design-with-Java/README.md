@@ -6,7 +6,10 @@ We designed Java to build robust, large-scale systems. This chapter explores *wh
 *   [Why Java for System Design?](#1-why-java-for-system-design)
 *   [Architectural Evolution: Monolith to Microservices](#2-architectural-evolution-monolith-to-microservices)
 *   [A Framework for System Design Interviews](#3-a-framework-for-system-design-interviews)
+*   [Mental Models for System Design](#mental-models-for-system-design)
 *   [Key Architectural Patterns](#4-key-architectural-patterns)
+*   [Check Your Understanding](#check-your-understanding)
+*   [Your Mission: Design a URL Shortener](#your-mission-design-a-url-shortener)
 
 ---
 
@@ -113,6 +116,56 @@ Always explain the "why" behind your decisions and acknowledge the downsides.
 
 ---
 
+### Check Your Understanding
+
+**Question 1:** You are asked to design a system for a brand new startup with a team of 5 engineers. The product idea is new and likely to change frequently. Which architecture would you likely choose to start with: a Monolith or Microservices? Why?
+<details>
+  <summary>Answer</summary>
+  A **Monolith** is almost always the right answer for a new project with a small team. It is much simpler to develop, deploy, and test. This allows the team to move quickly and iterate on the product idea without the high operational overhead of a microservices architecture.
+</details>
+
+**Question 2:** You are designing a social media site. You expect a massive number of users reading posts, but a much smaller number of users writing posts (a 1000:1 read-to-write ratio). Which architectural pattern might be useful for optimizing this system?
+<details>
+  <summary>Answer</summary>
+  **CQRS (Command Query Responsibility Segregation)** would be an excellent pattern to consider. You could have a simple, fast "write" path for posting content and a highly optimized, heavily cached "read" path for displaying content to users.
+</details>
+
+---
+
+### Your Mission: Design a URL Shortener
+
+This is a classic system design interview question. Your mission is to apply the 4-step framework to this problem. You don't need to write code; the goal is to think through the problem and articulate your design.
+
+**The Task:** Design a service like TinyURL that takes a long URL and returns a short, unique alias.
+
+**Your Mission:**
+
+1.  **Step 1: Clarify Requirements.**
+    *   What are the functional requirements? (e.g., shorten a URL, redirect an alias to the original URL).
+    *   What are the non-functional requirements? Think about scale. How many new URLs per month? How many redirects per second? Should the links be customizable? How long should they last? Write down your assumptions.
+
+2.  **Step 2: High-Level Design.**
+    *   Draw a simple diagram with the main components. What are the key APIs? (e.g., `POST /api/v1/shorten` and `GET /{alias}`). What database will you use?
+
+3.  **Step 3: Deep Dive.**
+    *   How will you generate the short alias? (e.g., a hash of the long URL, a random string, a counter). What are the pros and cons of each approach?
+    *   How would you design the database schema? What would be the main table(s) and columns?
+
+4.  **Step 4: Articulate Trade-offs.**
+    *   What is the biggest bottleneck in your system? (Hint: for a URL shortener, it's usually the write path for generating a unique alias).
+    *   How could you scale the database if the number of reads becomes massive?
+
+<details>
+<summary>Example Thought Process</summary>
+
+*   **Requirements:** Functional: Shorten URL, redirect. Non-functional: High availability for reads, low latency on redirect, alias should be short (e.g., 7 characters). Assume 100 million new URLs/month, 100:1 read/write ratio.
+*   **High-Level:** User -> API Gateway -> Shortening Service (for writes) / Redirect Service (for reads) -> Database. Maybe a cache in front of the DB for the Redirect Service.
+*   **Deep Dive:** Generating the alias is key. A simple counter converted to base62 (`[a-zA-Z0-9]`) is a good start. This guarantees no collisions. The database could be a simple SQL table `(alias VARCHAR(7) PRIMARY KEY, long_url TEXT)`.
+*   **Trade-offs:** The single counter for generating aliases is a single point of failure and a write bottleneck. We could use multiple counters with offsets to distribute the load. Adding a Redis cache for popular links would reduce database read load but introduces potential inconsistency if a URL is updated.
+</details>
+
+---
+
 ## 4. Key Architectural Patterns
 
 Mentioning these patterns shows you are familiar with established solutions.
@@ -158,3 +211,13 @@ stateDiagram-v2
     Half_Open --> Open: Failure
 ```
 Use a library like **Resilience4j**.
+
+---
+
+### Key Takeaways
+
+*   **System Design is a Process:** Don't jump to solutions. Follow a structured approach: Clarify requirements, create a high-level design, deep-dive into components, and articulate trade-offs.
+*   **Start Simple:** For new systems, a **Monolith** is often the best starting point. You can always evolve to **Microservices** later if and when the complexity is justified.
+*   **Ask About Scale:** The non-functional requirements, especially requests per second (RPS) and data size, will determine your architecture.
+*   **Know Your Patterns:** Be familiar with core architectural patterns like CQRS and Circuit Breaker so you can apply them to solve specific problems.
+*   **Trade-offs are Everything:** There is no single "right" answer in system design. The goal is to choose a solution and clearly explain why it's appropriate for the given requirements, while acknowledging its downsides.

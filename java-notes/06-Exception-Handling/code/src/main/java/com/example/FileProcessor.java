@@ -12,17 +12,20 @@ public class FileProcessor {
 
     public static void main(String[] args) {
         System.out.println("--- Exception Handling Showcase ---");
-        try {
-            // The method we call is declared with 'throws', so we must handle it.
-            processFile("sample.txt");
-            System.out.println("File processing completed successfully.");
-        } catch (InvalidFileException e) {
-            // Handling our custom checked exception
-            System.err.println("Error processing file: " + e.getMessage());
-        } catch (IOException e) {
-            // Handling the general IO exception from file reading
-            System.err.println("A critical IO error occurred: " + e.getMessage());
-        }
+
+        // Your Mission:
+        // The 'processFile' method can throw two checked exceptions:
+        // IOException and InvalidFileException.
+        // 1. Wrap the call to processFile("sample.txt") in a 'try' block.
+        // 2. Add a 'catch' block for InvalidFileException and print its message to System.err.
+        // 3. Add a 'catch' block for the more general IOException and print its message.
+        // 4. Run the code with and without the 'sample.txt' file to see both handlers work.
+
+        // --- Your code goes here ---
+        // processFile("sample.txt");
+        // System.out.println("File processing completed successfully.");
+        // --- End of your code ---
+
         System.out.println("-----------------------------------");
     }
 

@@ -6,8 +6,7 @@
 
 *   [The Core Idea: Classes and Objects](#1-classes-and-objects-blueprints-and-buildings)
 *   [The Four Pillars of OOP](#2-the-four-pillars-of-oop-our-design-philosophy)
-*   [Hands-On Lab: Runnable Code](#3-hands-on-lab-runnable-code)
-*   [Exercises: Test Your Knowledge](#4-exercises-test-your-knowledge)
+*   [Your Mission: Build an E-commerce System](#3-your-mission-build-an-e-commerce-system)
 *   [Interview Deep Dives](#interview-deep-dives)
 
 ---
@@ -126,20 +125,19 @@ graph TD
 
 We designed Java around four core principles that we believed were essential for building robust, scalable, and maintainable software.
 
-```mermaid
-graph TD
-    subgraph "The Four Pillars of OOP"
-        A(OOP) --> B(Encapsulation);
-        A --> C(Inheritance);
-        A --> D(Polymorphism);
-        A --> E(Abstraction);
 
-        B --> B_Desc["(Data Hiding)<br/>Binding data and methods together"];
-        C --> C_Desc["(Code Reuse)<br/>Creating new classes from existing ones"];
-        D --> D_Desc["(Many Forms)<br/>One interface, many implementations"];
-        E --> E_Desc["(Detail Hiding)<br/>Showing essential features only"];
-    end
-```
+### Mental Models for the Four Pillars
+
+To make these concepts intuitive, let's use some analogies.
+
+*   **Encapsulation is a Capsule:** Think of a medical capsule. The plastic casing (the `public` methods) protects the medicine inside (the `private` data). You don't need to know the chemical formula of the medicine to use it; you just swallow the capsule. It's a self-contained unit that protects its internal state.
+
+*   **Inheritance is a Family Tree:** A child inherits traits like eye color and height from their parents. In OOP, a child class inherits fields and methods from its parent class. This creates a natural hierarchy and allows you to reuse common features without rewriting them. A `Book` *is a* `Product` and inherits its name and price.
+
+*   **Polymorphism is a Universal Remote:** A universal remote has a single "Power" button. Depending on whether you point it at a TV, a Blu-ray player, or a sound system, that *same button* performs a different action. In Java, you can have a single method name (`display()`) that behaves differently depending on the actual object it's called on (`Product`, `Book`, `Clothing`).
+
+*   **Abstraction is a Car's Dashboard:** When you drive a car, you use a simple interface: a steering wheel, pedals, and a gear stick. You don't need to know about the engine's combustion cycle or the transmission's inner workings. Abstraction hides the complex reality behind a simple interface.
+
 
 ### a. Encapsulation: The Black Box Principle
 
@@ -231,36 +229,102 @@ Abstraction is about hiding the implementation details and showing only the esse
 
 ---
 
-## 3. Hands-On Lab: Runnable Code
+### Check Your Understanding
 
-Reading is good, but doing is better. We've created a small, runnable Maven project in the `code/` subdirectory.
+**Question 1:** If a `Car` class has a private field `int speed`, what principle of OOP prevents you from writing `myCar.speed = 100;` from outside the `Car` class?
+<details>
+  <summary>Answer</summary>
+  **Encapsulation.** The data (`speed`) is hidden, and you should only be able to modify it through public methods (like `myCar.setSpeed(100);`).
+</details>
 
-To run it:
-1.  Navigate to the `code/` directory.
-2.  Run the project using Maven: `mvn compile exec:java`
-3.  Explore the source code in `src/main/java/` to see the concepts in action.
-
-This is the best way to solidify your understanding of classes, objects, inheritance, and polymorphism.
+**Question 2:** You have a `Product` variable, but it holds a `Book` object (`Product p = new Book(...)`). When you call `p.display()`, which `display` method is executed—the one from `Product` or the one from `Book`? What is this principle called?
+<details>
+  <summary>Answer</summary>
+  The `display` method from the **`Book`** class is executed. This is called **Polymorphism**. The JVM determines the correct method to call at runtime based on the actual object type, not the reference type.
+</details>
 
 ---
 
-## 4. Exercises: Test Your Knowledge
+## 3. Your Mission: Build an E-commerce System
 
-1.  **Create a `Clothing` class:**
-    *   It should inherit from `Product`.
-    *   Add a private `String` field for `size` (e.g., "M", "L", "XL").
-    *   Add a private `String` field for `color`.
-    *   Create a constructor that initializes all fields, including the inherited ones.
-    *   Override the `display()` method to also print the size and color.
+It's time to apply these pillars of OOP. We've created a small, runnable Maven project in the `code/` subdirectory that includes the `Product` and `Book` classes. Your mission is to extend this system.
 
-2.  **The `final` keyword:**
-    *   What happens if you declare a method as `final` in the `Product` class? Try adding `final` to the `getPrice()` method. Can a subclass override it?
-    *   What happens if you declare the `Product` class itself as `final`? Can `Book` still inherit from it?
+**Part 1: Create a `Clothing` class**
+1.  **Find the Code:** Open the `code/src/main/java/com/tenx/oop/` directory.
+2.  **Create a New File:** Create a new Java class file named `Clothing.java`.
+3.  **Accept the Challenge:**
+    *   Make the `Clothing` class inherit from `Product`.
+    *   Add two private fields: `String size` and `String color`.
+    *   Create a constructor that initializes all fields, including the inherited ones from `Product`.
+    *   Override the `display()` method to print the name, price, size, and color.
 
-3.  **Polymorphism in Action:**
-    *   Create an array or `ArrayList` of `Product`.
-    *   Add a `Product`, a `Book`, and your new `Clothing` object to it.
-    *   Loop through the array and call the `display()` method on each object. Observe how the correct `display()` method is called for each object type. This is the power of polymorphism!
+**Part 2: Test with Polymorphism**
+1.  **Open `Main.java`:** This is the entry point of our application.
+2.  **Create an Array:** Create an array or `ArrayList` of `Product`.
+3.  **Add Your Objects:** Add a `Product` instance, a `Book` instance, and your new `Clothing` instance to the list.
+4.  **Loop and Display:** Loop through the list and call the `display()` method on each object. Observe how polymorphism works—the correct `display()` method is called for each object type!
+
+**Bonus Mission: The `final` Keyword**
+
+What happens if you declare a method as `final` in the `Product` class? Try adding `final` to the `getPrice()` method. Can the `Book` class still override it? What about the `Product` class itself? Can you make it `final`? What error do you see?
+
+<details>
+<summary>Stuck? Here's a solution for Part 1 & 2</summary>
+
+**Clothing.java:**
+```java
+package com.tenx.oop;
+
+public class Clothing extends Product {
+    private String size;
+    private String color;
+
+    public Clothing(String name, double price, String size, String color) {
+        super(name, price);
+        this.size = size;
+        this.color = color;
+    }
+
+    @Override
+    public void display() {
+        super.display();
+        System.out.println("Size: " + this.size + ", Color: " + this.color);
+    }
+}
+```
+
+**Main.java:**
+```java
+package com.tenx.oop;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Product> products = new ArrayList<>();
+        products.add(new Product("Generic Monitor", 250.00));
+        products.add(new Book("Clean Code", 40.00, "Robert C. Martin"));
+        products.add(new Clothing("T-Shirt", 25.00, "L", "Blue"));
+
+        for (Product p : products) {
+            p.display();
+            System.out.println("-----------------");
+        }
+    }
+}
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Class vs. Object:** A **class** is a blueprint (e.g., the plan for a house). An **object** is a concrete instance created from that blueprint (e.g., an actual house).
+*   **Encapsulation:** Protect your object's data by making fields `private` and providing `public` methods for access. Think of it as a protective capsule.
+*   **Inheritance:** Create new classes (`subclasses`) that reuse and extend the functionality of existing classes (`superclasses`). This forms an "is-a" relationship (a `Book` is a `Product`).
+*   **Polymorphism:** Allows you to treat objects of different classes in a uniform way. You can have a `Product` reference that points to a `Book` or `Clothing` object, and the correct `display()` method will be called automatically.
+*   **Abstraction:** Hide complex implementation details behind a simple interface. (This will be explored more in the next chapter).
 
 ---
 

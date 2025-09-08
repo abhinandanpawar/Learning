@@ -31,11 +31,17 @@ public class UtilsDemo {
      * @param <T>  The type of elements.
      */
     public static <T> void copy(List<? extends T> src, List<? super T> dest) {
-        // 'src' is a PRODUCER, so we use 'extends'. We can get T's from it.
-        // 'dest' is a CONSUMER, so we use 'super'. We can put T's into it.
-        for (T element : src) {
-            dest.add(element);
-        }
+        // Your Mission:
+        // Implement the body of this method.
+        // 1. Loop through each element in the 'src' list.
+        // 2. Add each element to the 'dest' list.
+        // Why does this work? Because you can get a 'T' from 'src' (Producer Extends)
+        // and you can put a 'T' into 'dest' (Consumer Super).
+
+        // --- Your code goes here ---
+
+
+        // --- End of your code ---
     }
 
 

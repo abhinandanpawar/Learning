@@ -69,8 +69,16 @@ public class CollectionDemo {
         people.sort(byName); // Lists have a built-in sort method that takes a Comparator
         System.out.println("Sorted by Name (Comparator): " + people);
 
-        // Sorting by age with an inline lambda
-        people.sort((p1, p2) -> Integer.compare(p1.getAge(), p2.getAge()));
+        // Your Mission:
+        // 1. Sort the 'people' list by age, from youngest to oldest.
+        // 2. Use a lambda expression to create a Comparator inline.
+        //    Hint: The sort method is people.sort(...);
+        //    Hint: Integer.compare(p1.getAge(), p2.getAge()) is the logic you need.
+
+        // --- Your code goes here ---
+
+
+        // --- End of your code ---
         System.out.println("Sorted by Age (Comparator): " + people);
 
 

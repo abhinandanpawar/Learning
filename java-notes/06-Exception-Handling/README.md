@@ -4,10 +4,12 @@ In a perfect world, programs would always run without errors. Files would always
 
 **What's in this chapter:**
 *   [The `Throwable` Hierarchy: A Family of Problems](#1-the-throwable-hierarchy-a-family-of-problems)
+*   [Mental Model: Playing Catch](#mental-model-playing-catch)
 *   [Handling Exceptions: `try`, `catch`, `finally`](#2-handling-exceptions-try-catch-finally)
 *   [The Modern Way: `try-with-resources`](#3-the-modern-way-try-with-resources)
 *   [Checked vs. Unchecked: A Design Philosophy](#4-checked-vs-unchecked-a-design-philosophy)
-*   [Hands-On Lab: Safe File Reading](#5-hands-on-lab-safe-file-reading)
+*   [Check Your Understanding](#check-your-understanding)
+*   [Your Mission: Handle the Errors](#5-your-mission-handle-the-errors)
 *   [Interview Deep Dives](#interview-deep-dives)
 
 ---
@@ -38,6 +40,17 @@ classDiagram
 
 *   **`Error`:** Represents critical, abnormal conditions that are external to the application and usually unrecoverable (e.g., the JVM running out of memory). Your program should not try to `catch` these.
 *   **`Exception`:** Represents conditions that a well-written application should anticipate and can often recover from.
+
+---
+
+### Mental Model: Playing Catch
+
+Think of exception handling like a game of catch.
+
+*   **The `throw` keyword is the Pitcher:** The pitcher throws a baseball. This is like a method throwing an exception when something goes wrong.
+*   **The `try` block is the Catcher:** The catcher puts their mitt up and *tries* to catch the ball. This is the code that might fail.
+*   **The `catch` block is the Recovery:** If the catcher misses the ball (an exception is caught), they have a plan to recover—they run and pick up the ball. This is your error-handling code. You can have different `catch` blocks for different types of throws (a fastball vs. a curveball).
+*   **The `finally` block is "Game Over":** No matter what happens—whether the ball was caught or missed—the game eventually ends, and the players walk off the field. The `finally` block *always* executes, making it perfect for cleanup actions like putting the equipment away.
 
 ---
 
@@ -128,18 +141,70 @@ This was one of our most controversial design decisions. We divided the `Excepti
 
 ---
 
-## 5. Hands-On Lab: Safe File Reading
+### Check Your Understanding
 
-To see these concepts in action, we've created a small project in the `code/` subdirectory. It demonstrates:
-*   Using `try-with-resources` to read a file.
-*   Handling a `FileNotFoundException`.
-*   Creating and throwing a custom checked exception.
+**Question 1:** You are writing a method that parses a user's birthday from a string (`"YYYY-MM-DD"`). The user might enter a badly formatted string (e.g., `"yesterday"`). Should your `parseBirthday` method throw a `checked` or `unchecked` exception if the format is invalid?
+<details>
+  <summary>Answer</summary>
+  This is a classic case for an **unchecked** exception, specifically `IllegalArgumentException`. A malformed date string is a *programming error* on the part of the caller—they should have validated the input before calling your method. Forcing every caller to `try-catch` this would be cumbersome.
+</details>
 
-**To run it:**
-1.  Navigate to the `code/` directory.
-2.  Run `mvn compile exec:java`. The program will first fail because a file is missing.
-3.  Create a file named `sample.txt` in the `code/` directory.
-4.  Run the program again to see it succeed.
+**Question 2:** Your method connects to a remote server to download a file. The network could fail, or the server could be down. Should the exception for this case be `checked` or `unchecked`?
+<details>
+  <summary>Answer</summary>
+  This should be a **checked** exception (like `IOException`). A network failure is an external, unpredictable, but potentially recoverable condition. It's not a bug in your code. The compiler forces you to handle this to build a more robust application that can gracefully handle network issues.
+</details>
+
+---
+
+## 5. Your Mission: Handle the Errors
+
+The code in the `code/` directory is designed to process a file, but it's incomplete. The `processFile` method is declared to `throw` checked exceptions, but the `main` method doesn't handle them yet. Your mission is to write the `try-catch` block to handle these potential errors gracefully.
+
+**Your Mission:**
+
+1.  **Find the Code:** Open the `code/src/main/java/com/example/FileProcessor.java` file.
+2.  **Analyze the `main` method:** You'll see a commented-out section with instructions.
+3.  **Accept the Challenge:**
+    *   Uncomment the code.
+    *   Wrap the call to `processFile("sample.txt")` in a `try` block.
+    *   Add a `catch` block for `InvalidFileException`. In this block, print the exception's message to `System.err`.
+    *   Add a second `catch` block for the more general `IOException` and do the same.
+4.  **Test Your Code:**
+    *   Run `mvn compile exec:java` from the `code/` directory *without* creating the `sample.txt` file. You should see your `InvalidFileException` message.
+    *   Create an empty `sample.txt` file in the `code/` directory and run the command again. You should see the message "File is empty."
+    *   Add some text to `sample.txt` and run it again to see the success message.
+
+<details>
+<summary>Stuck? Here's the solution</summary>
+
+```java
+// Inside the main method
+
+try {
+    // The method we call is declared with 'throws', so we must handle it.
+    processFile("sample.txt");
+    System.out.println("File processing completed successfully.");
+} catch (InvalidFileException e) {
+    // Handling our custom checked exception
+    System.err.println("Error processing file: " + e.getMessage());
+} catch (IOException e) {
+    // Handling the general IO exception from file reading
+    System.err.println("A critical IO error occurred: " + e.getMessage());
+}
+```
+</details>
+
+---
+
+### Key Takeaways
+
+*   **Errors are Objects:** In Java, errors and exceptions are objects that inherit from `Throwable`.
+*   **`try-catch-finally`:** The fundamental way to handle exceptions. `try` the risky code, `catch` the exceptions you can handle, and use `finally` for cleanup code that must always run.
+*   **`try-with-resources` is King:** For any resource that needs to be closed (files, streams, database connections), always prefer the modern `try-with-resources` statement. It's safer and more readable.
+*   **Checked vs. Unchecked is a Philosophy:**
+    *   **Checked:** For predictable, recoverable errors (e.g., network failure). The compiler forces you to handle them.
+    *   **Unchecked (Runtime):** For programming bugs (e.g., `NullPointerException`). The compiler doesn't force you to handle them because you should fix the bug instead.
 
 ---
 
