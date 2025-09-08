@@ -68,6 +68,18 @@ graph TD
 #### Pattern Matching for `instanceof`
 Reduces boilerplate by combining a type check and a cast.
 
+```mermaid
+graph TD
+    subgraph "Before: Manual Check and Cast"
+        A{obj instanceof String?} -- Yes --> B["String s = (String) obj<br/><i>(explicit cast)</i>"];
+        B --> C("Use s");
+    end
+
+    subgraph "After: Pattern Matching"
+        E{obj instanceof String s} -- Yes --> F("Use s directly<br/><i>(no cast needed)</i>");
+    end
+```
+
 *   **Before:**
     ```java
     if (obj instanceof String) {
@@ -144,6 +156,7 @@ New interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) were adde
 
 ---
 
+
 ### Check Your Understanding
 
 **Question 1:** You have a class that is a simple data carrier for an `(x, y)` coordinate. It needs a constructor, getters for `x` and `y`, `equals()`, `hashCode()`, and `toString()`. Which modern Java feature is the perfect fit for this?
@@ -196,6 +209,144 @@ public static double getArea(Shape shape) {
 </details>
 
 ---
+
+## Modern Java in Action: Stream API Examples
+
+The Stream API, introduced in Java 8, is one of the most significant additions to the language. It provides a powerful way to process collections of data in a declarative, functional style. Let's look at a few examples of common operations.
+
+### Example 1: `reduce` to Summarize Data
+
+**User Question:** How can I sum two numbers using the Stream API?
+
+**Answer:** Of course! Let's put the pieces together.
+The correct code is:
+`Stream.of(num1, num2).reduce(0, Integer::sum);`
+
+Let's break that down:
+ * `Stream.of(num1, num2)`: This part creates a stream that contains your two numbers.
+ * `.reduce()`: This is the terminal operation that will produce a single result.
+ * `0`: This is the **identity**, or the starting value. Our sum starts at 0 before we add anything.
+ * `Integer::sum`: This is a **method reference** that tells `reduce` how to combine the numbers. It's a neat shortcut for writing the lambda `(total, number) -> total + number`.
+
+Here’s how the computer sees it:
+1. Start with the total as `0`.
+2. Take the first number from the stream (`num1`) and add it to the total. Total is now `0 + num1`.
+3. Take the next number (`num2`) and add it to the total. Total is now `(0 + num1) + num2`.
+4. The stream is empty, so the final result is the total.
+
+That was a tricky one to start with because it's not a typical use for streams, but you did a great job figuring out that `reduce` was the key!
+
+### Example 2: Lambda vs. Method Reference
+
+**User Question:** What is the `::` syntax?
+
+**Answer:** You're very close! The `::` syntax is related to lambda expressions, but it has its own specific name: a **method reference**.
+Think of it this way: a method reference is a shorthand for a lambda expression that just calls a single, existing method.
+
+Here's a simple breakdown of the difference:
+ * **Lambda Expression (`->`)**: You write out the instructions. It's like giving someone a recipe.
+   * Example: `word -> word.length()`
+   * In English: "Take the variable `word` and return the result of `word.length()`."
+ * **Method Reference (`::`)**: You refer to an existing recipe by its name.
+   * Example: `String::length`
+   * In English: "Use the `length` method from the `String` class."
+
+The great thing is that they can be used interchangeably in many cases, but the method reference is often cleaner and easier to read. You're pointing directly to the method you want to use. 👍
+
+### Example 3: `String::length` Deep Dive
+
+Let's look at `String::length` more closely. It's a method reference. It's a shorthand way of writing a lambda expression that does nothing but call a single, existing method. Think of it as a direct pointer to the `length()` method of the `String` class.
+
+#### The Breakdown
+The double colon `::` is the operator that creates a method reference.
+ * **`String`** (left side): This is the class (or object) that contains the method.
+ * **`length`** (right side): This is the name of the method you want to call.
+
+When you use `.map(String::length)`, the Java compiler understands the following:
+ * The `.map()` operation is working on a stream of `String` objects.
+ * It needs a function that takes a `String` as input.
+ * `String::length` points to a method that takes no arguments but operates on a `String` instance and returns an `int`.
+ * The compiler automatically maps each `String` object from the stream to the `length()` method call on that object.
+
+#### Side-by-Side Comparison
+Using a method reference is often cleaner and more readable than writing out the full lambda expression.
+
+**Lambda Version:**
+```java
+List<Integer> lengths = words.stream()
+                             .map(word -> word.length()) // Explicitly define the lambda
+                             .collect(Collectors.toList());
+```
+
+**Method Reference Version:**
+```java
+List<Integer> lengths = words.stream()
+                             .map(String::length) // Point directly to the method
+                             .collect(Collectors.toList());
+```
+Both versions do the exact same thing. The method reference `String::length` is simply a more concise and expressive way to write `word -> word.length()`.
+
+### 6 Common Use Cases for the Java Stream API
+
+Here are several common use cases for the Java Stream API, ranging from simple data manipulation to more complex operations.
+
+**1. Filtering a Collection**
+This is one of the most basic uses. You can easily select items from a list that meet a certain condition.
+*Use Case:* From a list of products, find all the products that are on sale.
+```java
+List<Product> cheapProducts = allProducts.stream()
+    .filter(product -> product.isOnSale())
+    .collect(Collectors.toList());
+```
+
+**2. Transforming Data (Mapping)**
+You often need to convert a list of one type of object into a list of another type. `map` is perfect for this.
+*Use Case:* You have a list of `User` objects, but you only need a list of their email addresses.
+```java
+List<String> userEmails = users.stream()
+    .map(User::getEmail) // Uses a method reference
+    .collect(Collectors.toList());
+```
+
+**3. Finding a Specific Item**
+Streams provide an efficient way to search for an element without writing a manual loop.
+*Use Case:* Find the first user in a list whose username is "admin". This returns an `Optional`, which safely handles cases where no match is found.
+```java
+Optional<User> adminUser = users.stream()
+    .filter(user -> "admin".equals(user.getUsername()))
+    .findFirst();
+```
+
+**4. Grouping Data**
+This is a very powerful feature. You can group a list of objects into a `Map` based on a specific property.
+*Use Case:* Group a list of employees by their department.
+```java
+Map<Department, List<Employee>> employeesByDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment));
+```
+
+**5. Performing Calculations on Data**
+Streams make it easy to perform aggregate calculations on collections of numbers.
+*Use Case:* From a list of transactions, calculate the total revenue.
+```java
+double totalRevenue = transactions.stream()
+    .mapToDouble(Transaction::getAmount)
+    .sum();
+```
+
+**6. Joining Strings**
+You can easily combine a list of strings into a single, formatted string.
+*Use Case:* Create a single, comma-separated string from a list of tags.
+```java
+String tagString = tags.stream()
+    .filter(tag -> !tag.isEmpty())
+    .collect(Collectors.joining(", ")); // Result: "Java, Stream, API"
+```
+
+---
+
+## 4. Hands-On Lab: A Modern Features Showcase
+
 
 ### Key Takeaways
 

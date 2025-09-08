@@ -118,4 +118,24 @@ We've created a runnable project in the `code/` directory that:
 ### Q: What is the difference between a balanced and an unbalanced tree?
 *   **Simple Answer:** A balanced tree has a height of O(log n). An unbalanced tree can be as bad as O(n), effectively becoming a linked list.
 *   **Detailed Explanation:** Operations on a BST (like search, insert, delete) are fast because you can discard half the tree at each step. This only works if the tree is **balanced**, meaning the left and right subtrees have roughly the same height. If you insert sorted elements into a BST, it becomes a completely unbalanced tree (a linked list), and performance degrades to O(n).
+
+```mermaid
+graph TD
+    subgraph "Balanced BST (Height: O(log n))"
+        A(4) --> B(2)
+        A --> C(6)
+        B --> D(1)
+        B --> E(3)
+        C --> F(5)
+        C --> G(7)
+    end
+
+    subgraph "Unbalanced BST (Height: O(n))"
+        H(1) --> I(2)
+        I --> J(3)
+        J --> K(4)
+        K --> L(5)
+    end
+```
+
 *   **Self-Balancing Trees:** Special types of BSTs, like **AVL trees** and **Red-Black trees**, automatically perform rotations during insertion and deletion to keep the tree balanced. Java's `TreeMap` and `TreeSet` are implemented using Red-Black trees.

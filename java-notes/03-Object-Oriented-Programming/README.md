@@ -125,6 +125,7 @@ graph TD
 
 We designed Java around four core principles that we believed were essential for building robust, scalable, and maintainable software.
 
+
 ### Mental Models for the Four Pillars
 
 To make these concepts intuitive, let's use some analogies.
@@ -136,6 +137,7 @@ To make these concepts intuitive, let's use some analogies.
 *   **Polymorphism is a Universal Remote:** A universal remote has a single "Power" button. Depending on whether you point it at a TV, a Blu-ray player, or a sound system, that *same button* performs a different action. In Java, you can have a single method name (`display()`) that behaves differently depending on the actual object it's called on (`Product`, `Book`, `Clothing`).
 
 *   **Abstraction is a Car's Dashboard:** When you drive a car, you use a simple interface: a steering wheel, pedals, and a gear stick. You don't need to know about the engine's combustion cycle or the transmission's inner workings. Abstraction hides the complex reality behind a simple interface.
+
 
 ### a. Encapsulation: The Black Box Principle
 

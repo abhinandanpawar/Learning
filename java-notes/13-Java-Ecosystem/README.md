@@ -79,6 +79,19 @@ A typical REST API should start with these dependencies in your `pom.xml` or `bu
 
 #### b. Application Structure
 Separate your code by feature or by layer. A common layered approach is:
+
+```mermaid
+graph TD
+    direction LR
+    A(Web Layer<br><i>Controllers</i>) --> B(Service Layer<br><i>Business Logic</i>);
+    B --> C(Repository Layer<br><i>Data Access</i>);
+    C --> D(Domain Layer<br><i>Entities</i>);
+
+    subgraph "Flow of Control"
+        A --> B --> C --> D
+    end
+```
+
 *   `com.example.web`: REST Controllers.
 *   `com.example.service`: Business logic.
 *   `com.example.repository`: Data access interfaces (e.g., Spring Data JPA repositories).

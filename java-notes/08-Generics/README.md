@@ -131,6 +131,24 @@ Wildcards (`?`) are used to create flexible APIs that can accept generics of "un
 *   `List<? super T>`: A **lower-bounded** wildcard. The list holds `T` or a superclass of `T`.
 
 This leads to a famous mnemonic: **PECS (Producer Extends, Consumer Super)**.
+
+```mermaid
+graph TD
+    subgraph "PECS: Producer Extends"
+        direction TB
+        A("List<? extends Animal>") -- "is a PRODUCER of Animals" --> B("You can GET from it.");
+        B --> C("for (Animal a : list) { ... } // OK");
+        B --> D("list.add(new Cat()); // NOT OK");
+    end
+
+    subgraph "PECS: Consumer Super"
+        direction TB
+        E("List<? super Dog>") -- "is a CONSUMER of Dogs" --> F("You can ADD to it.");
+        F --> G("list.add(new Dog()); // OK");
+        F --> H("Dog d = list.get(0); // NOT OK (might be an Animal)");
+    end
+```
+
 *   **Producer Extends:** If a generic structure is a **producer** (you only get values *out* of it), use `extends`.
     ```java
     // This method can print a list of any kind of Animal.

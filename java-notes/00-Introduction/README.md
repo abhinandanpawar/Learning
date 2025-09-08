@@ -117,6 +117,18 @@ Let's begin the journey.
 
 *   **Detailed Explanation:**
     *   **Programming Paradigms** are different styles or "ways of thinking" about programming.
+
+    ```mermaid
+    graph TD
+        A(Programming Paradigms) --> B(Imperative);
+        A --> C(Declarative);
+
+        subgraph "Java's Influences"
+            B --> D(Object-Oriented Programming);
+            C --> E(Functional Programming);
+        end
+    ```
+
     *   **Imperative Programming:** This style tells the computer *how* to do something, step-by-step.
         *   **Object-Oriented Programming (OOP)** is a type of imperative programming where code is organized around objects. This is Java's core. It helps manage the complexity of large systems by modeling real-world entities.
     *   **Declarative Programming:** This style tells the computer *what* you want, not how to do it.

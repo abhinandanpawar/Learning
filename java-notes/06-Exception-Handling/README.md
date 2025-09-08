@@ -61,6 +61,17 @@ This is the classic mechanism for handling exceptions.
 *   **`catch`:** You use a `catch` block to define the "recovery" code that runs if a specific exception is thrown.
 *   **`finally`:** The `finally` block is our guarantee that a piece of code will *always* run, whether an exception was thrown or not. This is essential for cleanup tasks like closing files.
 
+```mermaid
+graph TD
+    subgraph "Execution Flow"
+        A[Start] --> B(try block);
+        B -- "No Exception" --> C(finally block);
+        B -- "Exception Thrown" --> D(catch block);
+        D --> C;
+        C --> E[End];
+    end
+```
+
 ```java
 public void oldSchoolFileReader(String path) {
     FileReader reader = null;

@@ -96,6 +96,19 @@ Let's break this down from a designer's perspective:
 
 When you work with Java, you're engaging in a conversation with the JVM. Here's the rhythm:
 
+```mermaid
+graph TD
+    subgraph "Developer's Machine"
+        A[1. Write Code in .java file] -- `javac HelloWorld.java` --> B(2. Compile to .class file)
+    end
+
+    subgraph "Any Machine with JRE"
+        B -- `java HelloWorld` --> C{3. JVM Executes Bytecode}
+    end
+
+    C --> D[Program Runs]
+```
+
 1.  **Write:** You save your code in a `HelloWorld.java` file.
 2.  **Compile:** You use the JDK's compiler to translate it into bytecode: `javac HelloWorld.java`. This creates a `HelloWorld.class` file.
 3.  **Run:** You ask the JVM to execute the bytecode: `java HelloWorld`. The JVM loads your class, finds the `main` method, and runs the code.

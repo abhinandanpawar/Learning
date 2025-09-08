@@ -19,6 +19,35 @@ We designed Java to build robust, large-scale systems. This chapter explores *wh
 *   **Concurrency:** Mature and powerful concurrency features are essential for scalable applications.
 *   **The Ecosystem:** The vast ecosystem of open-source libraries and frameworks (Spring, Hibernate, etc.) is arguably Java's greatest strength.
 
+```mermaid
+graph TD
+    subgraph "The Java Ecosystem"
+        A(Core Java Platform)
+        A --> B(Language)
+        A --> C(JVM)
+        A --> D(Core Libraries)
+
+        subgraph "Tooling"
+            E(Build Tools<br>Maven, Gradle)
+            F(IDEs<br>IntelliJ, Eclipse, VSCode)
+        end
+
+        subgraph "Frameworks"
+            G(Spring)
+            H(Quarkus)
+            I(Hibernate)
+            J(and many more...)
+        end
+
+        A -- enables --> E
+        A -- enables --> F
+        A -- enables --> G
+        A -- enables --> H
+        A -- enables --> I
+        A -- enables --> J
+    end
+```
+
 ---
 
 ## 2. Architectural Evolution: Monolith to Microservices

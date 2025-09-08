@@ -6,6 +6,16 @@ Writing code that *works* is the first step. Writing code that is clean, readabl
 
 We can think about code quality in four key areas:
 
+```mermaid
+graph TD
+    subgraph "Pillars of High-Quality Code"
+        A(Code Quality) --> B(Readability);
+        A --> C(Maintainability);
+        A --> D(Robustness);
+        A --> E(Testability);
+    end
+```
+
 1.  **Readability:** Code is read far more often than it is written. It should be as clear as possible to the next person who has to work on it (which might be you in six months).
 2.  **Maintainability:** How easy is it to change or extend the code?
 3.  **Robustness:** How well does the code handle errors and unexpected inputs?
