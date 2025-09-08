@@ -68,6 +68,21 @@ JavaFX was designed from the ground up to be a modern replacement for Swing.
     *   Support for **FXML**, an XML-based markup language for defining user interfaces. This separates the UI layout from the application logic.
     *   **CSS** for styling components.
     *   Built-in support for properties, data binding, animation, and multimedia.
+
+```mermaid
+graph TD
+    subgraph "JavaFX MVC-like Pattern"
+        A(View<br><b>FXML File</b><br><i>Defines UI structure</i>)
+        B(Controller<br><b>Java Class</b><br><i>Handles user events</i>)
+        C(Model<br><b>Java Objects</b><br><i>Holds application data</i>)
+
+        A -- "Triggers events" --> B
+        B -- "Updates" --> C
+        C -- "Notifies of changes" --> B
+        B -- "Updates" --> A
+    end
+```
+
 *   **Current Status:** While JavaFX is no longer bundled with the JDK, it is actively developed as an open-source project (OpenJFX) and is the recommended official toolkit for new Java desktop applications.
 
 ---

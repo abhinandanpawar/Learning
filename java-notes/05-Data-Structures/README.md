@@ -4,6 +4,34 @@ As language designers, we knew that providing powerful, efficient, and easy-to-u
 
 This chapter provides a high-level overview of the most common data structures available in the **Java Collections Framework**. We will explore the design trade-offs we made for each, so you can learn to choose the right tool for the job. Deeper dives into specific structures and algorithms will follow in later chapters.
 
+```mermaid
+graph TD
+    subgraph "Java Collections Framework"
+        direction LR
+
+        subgraph "Interfaces"
+            Collection --> List
+            Collection --> Set
+            Collection --> Queue
+            Map
+        end
+
+        subgraph "Common Classes"
+            ArrayList -- implements --> List
+            LinkedList -- implements --> List
+            LinkedList -- implements --> Queue
+
+            HashSet -- implements --> Set
+            TreeSet -- implements --> Set
+
+            PriorityQueue -- implements --> Queue
+
+            HashMap -- implements --> Map
+            TreeMap -- implements --> Map
+        end
+    end
+```
+
 **What's in this chapter:**
 *   [`ArrayList`: The Resizable Array](#1-arraylist-the-resizable-array)
 *   [`LinkedList`: The Sequential Chain](#2-linkedlist-the-sequential-chain)

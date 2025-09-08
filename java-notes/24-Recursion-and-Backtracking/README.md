@@ -75,6 +75,16 @@ graph TD
 
 Most backtracking problems can be solved with a variation of this template.
 
+```mermaid
+graph TD
+    subgraph "The 'Choose, Explore, Un-choose' Pattern"
+        A(Current State) --> B{Choose};
+        B --> C(Explore...<br><i>recursive call</i>);
+        C --> D{Un-choose<br>(Backtrack)};
+        D --> B;
+    end
+```
+
 ```java
 void backtrack(State state, List<Choice> choices) {
     if (is_a_solution(state)) {

@@ -206,6 +206,14 @@ for (int i = 1; i <= 5; i++) {
 
 #### `while` loop (Condition-Based Looping)
 Use a `while` loop when you want to repeat an action as long as a condition is true.
+```mermaid
+graph TD
+    A[Start] --> B{count < 3?};
+    B -- Yes --> C[System.out.println("Hello!")];
+    C --> D[count++];
+    D --> B;
+    B -- No --> E[End];
+```
 ```java
 int count = 0;
 while (count < 3) {

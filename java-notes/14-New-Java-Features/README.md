@@ -55,6 +55,18 @@ graph TD
 #### Pattern Matching for `instanceof`
 Reduces boilerplate by combining a type check and a cast.
 
+```mermaid
+graph TD
+    subgraph "Before: Manual Check and Cast"
+        A{obj instanceof String?} -- Yes --> B["String s = (String) obj<br/><i>(explicit cast)</i>"];
+        B --> C("Use s");
+    end
+
+    subgraph "After: Pattern Matching"
+        E{obj instanceof String s} -- Yes --> F("Use s directly<br/><i>(no cast needed)</i>");
+    end
+```
+
 *   **Before:**
     ```java
     if (obj instanceof String) {

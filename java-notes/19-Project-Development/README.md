@@ -192,3 +192,36 @@ graph TD
     A -- "HTTP Request" --> B
     D -- "JPA/JDBC" --> E
 ```
+
+And here is a more detailed sequence diagram showing the flow for our two main use cases:
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as API (UrlController)
+    participant S as Service (UrlShortenerService)
+    participant R as Repository
+    participant DB as Database
+
+    loop Create Short URL
+        C->>A: POST /shorten (originalUrl)
+        A->>S: shortenUrl(originalUrl)
+        S->>R: save(UrlMapping)
+        R->>DB: INSERT
+        DB-->>R: OK
+        R-->>S: UrlMapping
+        S-->>A: UrlMapping
+        A-->>C: 200 OK
+    end
+
+    loop Redirect
+        C->>A: GET /{id}
+        A->>S: getOriginalUrl(id)
+        S->>R: findById(id)
+        R->>DB: SELECT
+        DB-->>R: UrlMapping
+        R-->>S: Optional<UrlMapping>
+        S-->>A: Optional<String>
+        A-->>C: 302 Redirect
+    end
+```

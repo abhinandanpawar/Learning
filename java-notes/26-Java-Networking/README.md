@@ -29,6 +29,15 @@ This is the **preferred** way to make HTTP requests in modern Java.
 
 **Making a Simple GET Request:**
 
+```mermaid
+graph TD
+    subgraph "Modern HttpClient Workflow"
+        A[1. Create HttpClient] --> B[2. Build HttpRequest];
+        B --> C[3. Send Request];
+        C --> D[4. Process HttpResponse];
+    end
+```
+
 ```java
 // 1. Create an HttpClient
 HttpClient client = HttpClient.newHttpClient();

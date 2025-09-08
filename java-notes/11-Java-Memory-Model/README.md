@@ -113,6 +113,19 @@ When you declare a variable `volatile`, you are telling the JVM:
 **When to use it:**
 Use `volatile` when one thread writes to a variable, and other threads only read it. It's perfect for things like a status flag.
 
+```mermaid
+graph TD
+    subgraph "Thread 1 (Writer)"
+        A("writes volatile flag") --> B["Flush to Main Memory"];
+    end
+    subgraph "Thread 2 (Reader)"
+        C("reads volatile flag") <-- D["Read from Main Memory"];
+    end
+
+    B --> MainMemory[Main Memory<br>(volatile boolean stopped)]
+    MainMemory --> D
+```
+
 ```java
 class Worker {
     private volatile boolean stopped = false;

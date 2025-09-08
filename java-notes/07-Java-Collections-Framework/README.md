@@ -95,6 +95,20 @@ graph TD
 
 We provided two mechanisms for defining how objects are ordered.
 
+```mermaid
+graph TD
+    subgraph "Comparable: For Natural Ordering"
+        direction LR
+        A("Person implements Comparable<Person>") --> B("Defines compareTo(other)<br><i>The one, natural way to sort a Person.</i>");
+    end
+
+    subgraph "Comparator: For Custom/External Ordering"
+        direction LR
+        C("SortByName implements Comparator<Person>") --> D("Defines compare(p1, p2)<br><i>One way to sort.</i>");
+        E("SortByAge implements Comparator<Person>") --> F("Defines compare(p1, p2)<br><i>Another way to sort.</i>");
+    end
+```
+
 *   **`Comparable`:** For defining the **natural order** of an object. A class implements `Comparable` itself. There can be only one natural order.
     *   **Example:** A `Person` class might be naturally ordered by their unique ID.
     *   **Method:** `public int compareTo(Person other)`
