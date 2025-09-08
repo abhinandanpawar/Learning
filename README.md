@@ -24,6 +24,7 @@ First, make sure you have the dependencies installed:
 npm install
 ```
 
+
 Then, run the script with the input file path. The output file path is optional.
 
 ```bash
@@ -39,3 +40,4 @@ For example:
 ```
 
 This will create a new file, `java-notes/12-System-Design-with-Java/README_with_diagrams.md`, with the Mermaid diagrams rendered as SVGs.
+
