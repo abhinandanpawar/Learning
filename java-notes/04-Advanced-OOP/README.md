@@ -14,44 +14,42 @@ Now that you understand the core principles of OOP, let's explore some of the mo
 
 Abstraction is the art of hiding implementation details. It allows you to define a *contract* for what a class can do, without worrying about *how* it does it. This is the key to building **loosely coupled** systems, where components can be changed or replaced without breaking everything else. Java provides two primary tools for this: **abstract classes** and **interfaces**.
 
-### Mental Models for Abstraction
+### Abstract Class vs. Interface: A Visual Guide
 
-*   **Abstract Class is a Recipe with Some Steps Missing:** Imagine a recipe for "Cake". It might have some steps already defined ("1. Preheat oven to 350°F.", "5. Bake for 30 minutes."). But it also has abstract steps like "2. Prepare the batter." and "4. Add the frosting.". You can't make a generic "Cake"; you have to create a specific *kind* of cake, like a `ChocolateCake` or a `CarrotCake`, that fills in those missing steps. An abstract class provides a base of shared implementation but forces subclasses to provide the rest.
-
-*   **Interface is a Wall Socket:** A wall socket is a contract. It guarantees that anything you plug into it will receive electricity in a standard format. The socket doesn't know or care if you plug in a lamp, a phone charger, or a vacuum cleaner. It just provides a standard point of connection. An interface defines a "can-do" capability. Any class can promise to fulfill that contract by `implementing` the interface.
-
-### a. Abstract Classes: The "is-a" Relationship
-
-An abstract class is a template for a group of related classes. It can provide shared code and define abstract methods that subclasses *must* implement. Use an abstract class when you have a clear "is-a" relationship.
-
-**Example:** A `Book` *is-a* `Product`. An `Electronic` device *is-a* `Product`. They share common attributes like `name` and `price`.
+| Abstract Class (The Recipe) | Interface (The Wall Socket) |
+| :--- | :--- |
+| Represents an **"is-a"** relationship. | Represents a **"can-do"** capability. |
+| A class can **extend** only one abstract class. | A class can **implement** multiple interfaces. |
+| Can have state (fields) and implementation. | Traditionally, only constants and abstract methods. |
+| Provides a base with some missing steps. | Provides a pure contract or promise. |
 
 ```mermaid
 graph TD
-    subgraph "is-a" relationship
-        A(Product<br><i>abstract</i>) --> B(Book)
-        A --> C(Electronic)
-    end
-```
-
-### b. Interfaces: The "can-do" Capability
-
-An interface is a pure contract. It defines a set of methods that a class *must* implement. A class can implement multiple interfaces, allowing it to "wear many hats". Use an interface to define a "can-do" or "has-a" capability.
-
-**Example:** A `Book` *can be* shipped. A `Car` *can be* shipped. A `DigitalDownload` cannot. A `Car` *is* drivable. A `Book` is not.
-
-```mermaid
-graph TD
-    subgraph "can-do" capabilities
-        A(Shippable)
-        B(Downloadable)
-        C(Drivable)
+    subgraph "Abstract Class: The Recipe"
+        direction TB
+        A["Mammal (Abstract Class)<br><i>Provides shared code</i>"]
+        A -- "extends" --> B("Lion")
+        A -- "extends" --> C("Tiger")
+        A -- "defines" --> D("eat()")
+        A -- "defines" --> E("sleep()")
+        A -- "abstract" --> F("makeSound()")
+        B -- "implements" --> F
+        C -- "implements" --> F
+        note_a["Use for 'is-a' relationships<br>and shared state/implementation."]
     end
 
-    P1(Book) -- implements --> A
-    P2(Car) -- implements --> A
-    P2 -- implements --> C
-    P3(Ebook) -- implements --> B
+    subgraph "Interface: The Wall Socket"
+        direction TB
+        G["Performable (Interface)<br><i>Defines a contract</i>"]
+        G -- "defines" --> H("performTrick()")
+        I("Parrot") -- "implements" --> G
+        J("Seal") -- "implements" --> G
+        K("Lion")
+        note_g["Use for 'can-do' capabilities<br>across unrelated classes."]
+    end
+
+    style A fill:#cde4ff
+    style G fill:#ffcdd2
 ```
 
 ### The Evolution of Interfaces: `default` methods
@@ -60,15 +58,34 @@ Originally, interfaces could only have abstract methods. But what if you wanted 
 
 To solve this, Java 8 introduced **`default` methods**. A `default` method in an interface provides a default implementation. This allows us to add new functionality to interfaces without breaking existing code.
 
-```java
-public interface Shippable {
-    double getWeight(); // abstract method
+```mermaid
+graph TD
+    subgraph "Evolving Interfaces with 'default' Methods"
+        direction TB
+        I["Shippable Interface"]
+        subgraph I
+            direction TB
+            M1["getWeight() (abstract)"]
+            M2["getShippingLabel() (default)<br><i>'return \"Standard\";'</i>"]
+        end
 
-    // A default method provides a default implementation.
-    default String getShippingLabel() {
-        return "Standard Shipping";
-    }
-}
+        C1["Book"] -- "implements" --> I
+        C2["Box"] -- "implements" --> I
+
+        subgraph C1
+            direction TB
+            C1_M1["getWeight() -> 1.5"]
+            note_c1["Inherits default getShippingLabel()"]
+        end
+
+        subgraph C2
+            direction TB
+            C2_M1["getWeight() -> 5.0"]
+            C2_M2["@Override getShippingLabel()<br><i>'return \"Oversized\";'</i>"]
+        end
+
+        note["'default' methods let you add new functionality<br>without breaking existing classes."]
+    end
 ```
 
 **Key Takeaway:** Prefer interfaces for defining contracts and capabilities. Use an abstract class only when you need to share state (fields) and implementation code among a tightly related group of classes.
@@ -79,32 +96,32 @@ public interface Shippable {
 
 Before Java 5, developers often used `int` or `String` constants to represent a fixed set of values (e.g., `public static final int STATUS_PENDING = 0;`). This was error-prone and not type-safe.
 
-We introduced **`enum`** to create a special type that represents a fixed set of constants.
-
-```java
-public enum OrderStatus {
-    PENDING,
-    PROCESSING,
-    SHIPPED,
-    DELIVERED,
-    CANCELLED
-}
-```
-This is far more than just a set of names. An `enum` is a full-fledged class. You can add fields, methods, and constructors to it, making it an incredibly powerful tool.
+We introduced **`enum`** to create a special type that represents a fixed set of constants. But an `enum` is far more than just a set of names. **An `enum` is a full-fledged class.** You can add fields, methods, and constructors to it, making it an incredibly powerful tool.
 
 ```mermaid
-classDiagram
-    class OrderStatus {
-        <<enumeration>>
-        PENDING
-        PROCESSING
-        SHIPPED
-        DELIVERED
-        CANCELLED
-        --
-        -String description
-        +getDescription() String
-    }
+graph TD
+    subgraph "Enums are Powerful Classes"
+        direction TB
+        E["OrderStatus Enum"]
+        subgraph E
+            direction TB
+            C1["PENDING(\"Pending confirmation.\")"]
+            C2["SHIPPED(\"Has been shipped.\")"]
+            C3["..."]
+            F["private final String description"]
+            M["public String getDescription()"]
+        end
+
+        Code["Your Code"] -- "uses" --> E
+
+        subgraph "Benefits"
+            B1["Type Safety"]
+            B2["Clearer Code"]
+            B3["Can have state and behavior"]
+        end
+
+        E -- "provides" --> Benefits
+    end
 ```
 
 ```java
@@ -117,6 +134,7 @@ public enum OrderStatus {
 
     private final String description;
 
+    // Enum constructors are implicitly private
     OrderStatus(String description) {
         this.description = description;
     }
@@ -227,8 +245,6 @@ if (product instanceof Giftable) {
 
 ## Interview Deep Dives
 
-(Content from the original `README.md` for Q15-Q18, with minor formatting improvements and clarification on Shallow vs. Deep copy)
-
 ### Q18: What is Object Cloning and the difference between Shallow and Deep Copy?
 
 *   **Simple Answer:** Cloning creates a copy of an object. A shallow copy just copies the fields, while a deep copy also copies any objects the fields refer to.
@@ -239,15 +255,18 @@ if (product instanceof Giftable) {
     **Visualizing the Difference:**
     ```mermaid
     graph TD
-        subgraph Original
+        subgraph "Original Order"
             O1(Order) --> A1(Address)
         end
-        subgraph Shallow Copy
+        subgraph "Shallow Copy"
             O2(Order Copy) --> A1
+            note_s["Both orders share the<br>same Address object!"]
         end
-        subgraph Deep Copy
+        subgraph "Deep Copy"
             O3(Order Copy) --> A2(Address Copy)
+            note_d["The copy has its own<br>independent Address object."]
         end
+        style A1 fill:#ffcdd2
     ```
 
 *   **Caution:** Java's `Cloneable` mechanism is considered tricky and is often avoided. It's usually better and safer to provide a **copy constructor** (`public Order(Order other)`) or a **static factory method** (`public static Order newInstance(Order other)`) to create copies.

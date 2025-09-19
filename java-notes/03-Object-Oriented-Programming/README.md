@@ -13,26 +13,31 @@
 
 ## 1. Classes and Objects: Blueprints and Buildings
 
-The fundamental concept of OOP is the distinction between a *class* and an *object*.
+The fundamental concept of OOP is the distinction between a **class** and an **object**.
 
-*   **Class:** A class is the blueprint. It defines the structure (fields) and behavior (methods) of a type of object. It's an abstract concept.
-*   **Object:** An object is the actual building created from the blueprint. It's a concrete *instance* of a class, with its own state.
+*   **Class:** A class is the **blueprint**. It defines the structure (fields) and behavior (methods) of a type of object. It's an abstract concept.
+*   **Object:** An object is the **actual building** created from the blueprint. It's a concrete *instance* of a class, with its own state.
 
 Let's model a `Product` in our e-commerce application. A good `Product` class should encapsulate its data, hiding the internal details from the outside world.
 
 ```java
+// Product.java
+
 public class Product {
-    // Private instance variables (state)
+    // --- Private instance variables (the object's state) ---
+    // By making these 'private', we protect them from the outside world.
     private String name;
     private double price;
 
-    // Constructor: a special method for creating objects
+    // --- Constructor: A special method for creating objects ---
+    // Its job is to initialize the state of the new object.
     public Product(String name, double price) {
         this.name = name;
         this.price = price;
     }
 
-    // Getter methods (accessors)
+    // --- Getter methods (accessors) ---
+    // These provide controlled, read-only access to the private data.
     public String getName() {
         return name;
     }
@@ -41,7 +46,7 @@ public class Product {
         return price;
     }
 
-    // Method (behavior)
+    // --- Public method (the object's behavior) ---
     public void display() {
         System.out.println(name + ": $" + price);
     }
@@ -51,13 +56,16 @@ public class Product {
 When you create an object (instantiate a class), you use the `new` keyword and the constructor to provide the initial state.
 
 ```java
+// Creating an instance of the Product class
 Product laptop = new Product("Laptop", 1200.00);
+
+// Calling a public method on the object
 laptop.display(); // Output: Laptop: $1200.0
 ```
 
 ### JVM Deep Dive: Object Layout on the Heap
 
-When `new Product("Laptop", 1200.00)` is executed, a precise sequence of events happens inside the JVM:
+When `new Product("Laptop", 1200.00)` is executed, here's what happens inside the JVM, step by step:
 
 1.  **Memory Allocation:** The JVM allocates a chunk of memory on the **heap** for the `Product` object. The size is determined by the fields in the class.
 2.  **Object Header:** The first part of this memory chunk is the *Object Header*. This isn't something you can access directly in your Java code, but it's crucial for the JVM. It contains:
@@ -123,41 +131,67 @@ graph TD
 
 ## 2. The Four Pillars of OOP: Our Design Philosophy
 
-We designed Java around four core principles that we believed were essential for building robust, scalable, and maintainable software.
+We designed Java around four core principles that we believed were essential for building robust, scalable, and maintainable software. These are not just academic concepts; they are practical tools that help you write better code.
 
+### a. Encapsulation: The Protective Capsule
 
-### Mental Models for the Four Pillars
+**Encapsulation** is the practice of bundling an object's data (fields) and the methods that operate on that data into a single unit (a class). It also involves hiding the internal state of the object from the outside world.
 
-To make these concepts intuitive, let's use some analogies.
+**The Goal:** To protect an object from accidental or unauthorized modification. It's a defensive strategy that makes your code more robust.
 
-*   **Encapsulation is a Capsule:** Think of a medical capsule. The plastic casing (the `public` methods) protects the medicine inside (the `private` data). You don't need to know the chemical formula of the medicine to use it; you just swallow the capsule. It's a self-contained unit that protects its internal state.
+**The Analogy: A Medical Capsule**
+Think of a medical capsule. The plastic casing (the `public` methods) protects the medicine inside (the `private` data). You don't need to know the chemical formula of the medicine to use it; you just swallow the capsule. It's a self-contained unit that protects its internal state.
 
-*   **Inheritance is a Family Tree:** A child inherits traits like eye color and height from their parents. In OOP, a child class inherits fields and methods from its parent class. This creates a natural hierarchy and allows you to reuse common features without rewriting them. A `Book` *is a* `Product` and inherits its name and price.
+```mermaid
+graph TD
+    subgraph "Product Class (The Capsule)"
+        direction LR
 
-*   **Polymorphism is a Universal Remote:** A universal remote has a single "Power" button. Depending on whether you point it at a TV, a Blu-ray player, or a sound system, that *same button* performs a different action. In Java, you can have a single method name (`display()`) that behaves differently depending on the actual object it's called on (`Product`, `Book`, `Clothing`).
+        subgraph "Internal State (Private Data)"
+            direction TB
+            name["String name"]
+            price["double price"]
+        end
 
-*   **Abstraction is a Car's Dashboard:** When you drive a car, you use a simple interface: a steering wheel, pedals, and a gear stick. You don't need to know about the engine's combustion cycle or the transmission's inner workings. Abstraction hides the complex reality behind a simple interface.
+        subgraph "Public Interface (Public Methods)"
+            direction TB
+            getName["getName()"]
+            getPrice["getPrice()"]
+            display["display()"]
+        end
 
+        style `Internal State (Private Data)` fill:#ffcdd2,stroke:#c62828,stroke-width:2px
+    end
 
-### a. Encapsulation: The Black Box Principle
+    outside_world("External Code")
 
-We believe that an object should be a "black box". Its internal data should be hidden from the outside world. This is achieved by making fields `private` and providing `public` methods (getters and setters) to access them.
+    outside_world -- "Allowed Access" --> getName
+    outside_world -- "Allowed Access" --> getPrice
+    outside_world -- "Allowed Access" --> display
+    outside_world -- "Blocked Access" --x name
+    outside_world -- "Blocked Access" --x price
 
-This was a crucial design decision to prevent developers from accidentally corrupting the state of an object. It enforces a clear contract for how to interact with an object.
+    note["External code can only interact with the public methods, not the private data."]
+```
 
-### b. Inheritance: Standing on the Shoulders of Giants
+### b. Inheritance: The Family Tree
 
-Inheritance allows you to create a new class (a *subclass* or *child class*) that inherits the properties and methods of an existing class (a *superclass* or *parent class*). This promotes code reuse and creates a natural hierarchy.
+**Inheritance** allows you to create a new class (a *subclass* or *child class*) that inherits the properties and methods of an existing class (a *superclass* or *parent class*).
 
-For our e-commerce app, we could have different types of products. A `Book` is a specific kind of `Product`.
+**The Goal:** To promote code reuse and create a logical hierarchy. This is the **"is-a"** relationship in OOP.
+
+**The Analogy: A Family Tree**
+A child inherits traits like eye color and height from their parents. In OOP, a child class inherits fields and methods from its parent class. A `Book` *is a* `Product` and inherits its name and price.
 
 ```java
-// Book is the subclass, Product is the superclass
+// Book.java
+// 'Book' is the subclass, 'Product' is the superclass.
 public class Book extends Product {
     private String author;
 
     public Book(String name, double price, String author) {
-        // Call the constructor of the superclass (Product)
+        // 'super()' calls the constructor of the superclass (Product)
+        // to initialize the inherited fields.
         super(name, price);
         this.author = author;
     }
@@ -166,10 +200,10 @@ public class Book extends Product {
         return author;
     }
 
-    // We can also @Override methods
+    // We can also @Override methods from the parent class.
     @Override
     public void display() {
-        // Call the superclass's display method, then add our own info
+        // We can reuse the parent's method, then add our own info.
         super.display();
         System.out.println("Author: " + author);
     }
@@ -199,33 +233,143 @@ classDiagram
     }
 ```
 
-### c. Polymorphism: One Interface, Many Forms
+### c. Polymorphism: The Universal Remote
 
-Polymorphism (from Greek, meaning "many forms") is the ability of an object to take on many forms. In Java, it means you can use a superclass reference to refer to a subclass object.
+**Polymorphism** (from Greek, meaning "many forms") is the ability of an object to take on many forms. In Java, it means you can use a superclass reference to refer to a subclass object.
 
-```java
-Product myProduct = new Book("The Pragmatic Programmer", 45.00, "Andy Hunt");
-myProduct.display(); // Calls the Book's display() method!
+**The Goal:** To write more flexible and decoupled code. You can write code that works with a general type (like `Product`) without needing to know the specific subtype (like `Book` or `Clothing`).
+
+**The Analogy: A Universal Remote**
+A universal remote has a single "Power" button. Depending on whether you point it at a TV, a Blu-ray player, or a sound system, that *same button* performs a different action.
+
+```mermaid
+graph TD
+    subgraph "Polymorphism: The Universal Remote"
+        remote("Universal Remote")
+
+        subgraph "Devices"
+            tv("TV")
+            soundbar("Soundbar")
+            console("Game Console")
+        end
+
+        subgraph "Actions"
+            tv_power["TV Power On/Off"]
+            soundbar_power["Soundbar Power On/Off"]
+            console_power["Console Power On/Off"]
+        end
+
+        remote -- "pressPower()" --> tv
+        remote -- "pressPower()" --> soundbar
+        remote -- "pressPower()" --> console
+
+        tv -- "executes" --> tv_power
+        soundbar -- "executes" --> soundbar_power
+        console -- "executes" --> console_power
+
+        style remote fill:#cde4ff,stroke:#666
+    end
+
+    note["`device.pressPower()` calls the correct method for the actual object."]
 ```
 
-Even though `myProduct` is declared as a `Product`, the JVM knows it's *actually* a `Book` at runtime. This is called **runtime polymorphism** or **dynamic method dispatch**.
+In Java, this means you can have a single method name (`display()`) that behaves differently depending on the actual object it's called on (`Product`, `Book`, `Clothing`).
+
+```java
+// The variable is of type Product, but the object is a Book.
+Product myProduct = new Book("The Pragmatic Programmer", 45.00, "Andy Hunt");
+
+// The JVM knows it's actually a Book at runtime, so it calls the Book's display() method!
+myProduct.display();
+```
+
+This is called **runtime polymorphism** or **dynamic method dispatch**.
 
 #### JVM Deep Dive: Virtual Method Tables (vtables)
 
-How does the JVM know which `display()` method to call? This is where the magic of polymorphism comes in, and it's implemented using something called a "virtual method table" or "vtable".
+How does the JVM know which `display()` method to call? This is implemented using something called a "virtual method table" or "vtable".
 
 Every class has a vtable that contains the memory addresses of its methods. When a subclass like `Book` overrides a method, the JVM updates the vtable for `Book` to point to the new, overridden method.
 
-When you call `myProduct.display()`, the JVM:
-1. Looks at the actual object `myProduct` refers to (a `Book` object).
-2. Consults the `Book` class's vtable.
-3. Finds the address for the `display()` method and executes it.
+```mermaid
+graph TD
+    subgraph "JVM Internals: Virtual Method Tables (vtables)"
+        subgraph "Class Metadata (in Metaspace)"
+            product_vtable["Product vtable"]
+            subgraph product_vtable
+                product_display["display() -> @addr_product_display"]
+                product_getprice["getPrice() -> @addr_product_getprice"]
+            end
 
-This is why the `Book`'s version of `display()` is called, even though the reference type is `Product`.
+            book_vtable["Book vtable"]
+            subgraph book_vtable
+                book_display["display() -> @addr_book_display (Overridden)"]
+                book_getprice["getPrice() -> @addr_product_getprice (Inherited)"]
+                book_getauthor["getAuthor() -> @addr_book_getauthor"]
+            end
+        end
 
-### d. Abstraction: Hiding the Details
+        subgraph "Heap Memory"
+            product_obj["Product myProduct = new Book(...)"]
+            product_obj -- "refers to" --> book_instance
+            book_instance["Book Object"]
+            book_instance -- "has a pointer to" --> book_vtable
+        end
 
-Abstraction is about hiding the implementation details and showing only the essential features. We provided two main ways to achieve this in Java: **abstract classes** and **interfaces**. We'll dive deeper into these in the next chapter, but the core idea is to define a contract without a concrete implementation.
+        subgraph "Code Execution"
+            call["myProduct.display()"]
+            call -- "1. JVM checks actual object (Book)" --> book_instance
+            book_instance -- "2. JVM looks up vtable" --> book_vtable
+            book_vtable -- "3. Finds overridden method" --> book_display
+        end
+
+        style book_display fill:#ffcdd2,stroke:#c62828
+    end
+```
+
+When you call `myProduct.display()`, the JVM looks at the actual object (`Book`), consults its vtable, and calls the overridden `display()` method.
+
+### d. Abstraction: The Car Dashboard
+
+**Abstraction** is about hiding the implementation details and showing only the essential features.
+
+**The Goal:** To reduce complexity and isolate the impact of changes.
+
+**The Analogy: A Car's Dashboard**
+When you drive a car, you use a simple interface: a steering wheel, pedals, and a gear stick. You don't need to know about the engine's combustion cycle or the transmission's inner workings. Abstraction hides the complex reality behind a simple interface.
+
+```mermaid
+graph TD
+    subgraph "Abstraction: The Car"
+        subgraph "Simple Interface (What you see)"
+            dashboard["Dashboard"]
+            subgraph dashboard
+                steering_wheel["Steering Wheel"]
+                pedals["Pedals"]
+                gear_stick["Gear Stick"]
+            end
+        end
+
+        subgraph "Complex Reality (What's hidden)"
+            engine["Engine"]
+            transmission["Transmission"]
+            electronics["Electronics"]
+        end
+
+        dashboard -- "Controls" --> engine
+        dashboard -- "Controls" --> transmission
+        dashboard -- "Controls" --> electronics
+
+        style `Complex Reality (What's hidden)` fill:#e0e0e0,stroke:#616161,stroke-dasharray: 5 5
+    end
+
+    driver("Driver")
+    driver -- "Interacts with" --> dashboard
+
+    note["The driver uses a simple interface without needing to know the complex details underneath."]
+```
+
+We provided two main ways to achieve this in Java: **abstract classes** and **interfaces**. We'll dive deeper into these in the next chapter, but the core idea is to define a contract without a concrete implementation.
 
 ---
 
@@ -234,13 +378,19 @@ Abstraction is about hiding the implementation details and showing only the esse
 **Question 1:** If a `Car` class has a private field `int speed`, what principle of OOP prevents you from writing `myCar.speed = 100;` from outside the `Car` class?
 <details>
   <summary>Answer</summary>
-  **Encapsulation.** The data (`speed`) is hidden, and you should only be able to modify it through public methods (like `myCar.setSpeed(100);`).
+  **Encapsulation.** The data (`speed`) is hidden, and you should only be able to modify it through public methods (like `myCar.setSpeed(100);`). This protects the `Car` object from being put into an invalid state (e.g., a negative speed).
 </details>
 
 **Question 2:** You have a `Product` variable, but it holds a `Book` object (`Product p = new Book(...)`). When you call `p.display()`, which `display` method is executed—the one from `Product` or the one from `Book`? What is this principle called?
 <details>
   <summary>Answer</summary>
   The `display` method from the **`Book`** class is executed. This is called **Polymorphism**. The JVM determines the correct method to call at runtime based on the actual object type, not the reference type.
+</details>
+
+**Question 3:** What is the key difference between Inheritance and Encapsulation?
+<details>
+  <summary>Answer</summary>
+  **Inheritance** is about creating a hierarchy and reusing code from a parent class (an "is-a" relationship). **Encapsulation** is about bundling data and methods together and hiding the data to protect it (a "black box" principle).
 </details>
 
 ---
@@ -389,8 +539,8 @@ public class Main {
 
         subgraph "Ambiguity"
             direction TD
-            q{D.foo() ?} --> b_impl{B.foo() implementation}
-            q --> c_impl{C.foo() implementation}
+            q{"D.foo() ?"} --> b_impl{"B.foo() implementation"}
+            q --> c_impl{"C.foo() implementation"}
         end
 
         style D fill:#ffcdd2,stroke:#c62828,stroke-width:2px
