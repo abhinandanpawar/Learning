@@ -2,21 +2,21 @@
 
 As language designers, we knew that providing powerful, efficient, and easy-to-use data structures was not just a feature—it was essential. The way you organize your data has a profound impact on your program's performance, scalability, and clarity.
 
-This chapter provides a high-level overview of the most common data structures available in the **Java Collections Framework**. We will explore the design trade-offs we made for each, so you can learn to choose the right tool for the job. Deeper dives into specific structures and algorithms will follow in later chapters.
+This chapter provides a high-level overview of the most common data structures available in the **Java Collections Framework**. We will explore the design trade-offs we made for each, so you can learn to choose the right tool for the job.
 
 ```mermaid
 graph TD
     subgraph "Java Collections Framework"
         direction LR
 
-        subgraph "Interfaces"
+        subgraph "Interfaces (The Contracts)"
             Collection --> List
             Collection --> Set
             Collection --> Queue
             Map
         end
 
-        subgraph "Common Classes"
+        subgraph "Common Classes (The Implementations)"
             ArrayList -- implements --> List
             LinkedList -- implements --> List
             LinkedList -- implements --> Queue
@@ -29,21 +29,25 @@ graph TD
             HashMap -- implements --> Map
             TreeMap -- implements --> Map
         end
+
+        style `Interfaces (The Contracts)` fill:#cde4ff
+        style `Common Classes (The Implementations)` fill:#e1f5fe
     end
 ```
 
 **What's in this chapter:**
-*   [Mental Models for Core Data Structures](#mental-models-for-core-data-structures)
-*   [`ArrayList`: The Resizable Array](#1-arraylist-the-resizable-array)
-*   [`LinkedList`: The Sequential Chain](#2-linkedlist-the-sequential-chain)
-*   [Your Mission: Count Word Frequencies](#3-your-mission-count-word-frequencies)
-*   [`HashMap`: The Key-Value Store](#3-hashmap-the-key-value-store)
-*   [Check Your Understanding](#check-your-understanding)
-*   [Performance at a Glance: Big-O Notation](#4-performance-at-a-glance-big-o-notation)
+*   [Mental Models for Core Data Structures](#1-mental-models-for-core-data-structures)
+*   [`ArrayList`: The Resizable Array](#2-arraylist-the-resizable-array)
+*   [`LinkedList`: The Sequential Chain](#3-linkedlist-the-sequential-chain)
+*   [`Stack`: Last-In, First-Out](#4-stack-last-in-first-out)
+*   [`Queue`: First-In, First-Out](#5-queue-first-in-first-out)
+*   [`HashMap`: The Key-Value Store](#6-hashmap-the-key-value-store)
+*   [Your Mission: Count Word Frequencies](#7-your-mission-count-word-frequencies)
+*   [Performance at a Glance: Big-O Notation](#8-performance-at-a-glance-big-o-notation)
 
 ---
 
-### Mental Models for Core Data Structures
+## 1. Mental Models for Core Data Structures
 
 To make these abstract structures concrete, let's use some real-world analogies.
 
@@ -59,26 +63,18 @@ To make these abstract structures concrete, let's use some real-world analogies.
 
 ---
 
-## 1. `ArrayList`: The Resizable Array
+## 2. `ArrayList`: The Resizable Array
 
 An `ArrayList` is a list backed by a plain Java array. It's the most common list implementation and should generally be your default choice.
 
 **How it works:**
-It wraps a regular array, but when the array gets full, it automatically creates a new, larger array (typically 1.5x the size) and copies the old elements over.
+It wraps a regular array, but when the array gets full, it automatically creates a new, larger array (typically 1.5x the size) and copies the old elements over. This is called **amortized constant time** `O(1)` for additions.
 
 ```mermaid
 graph TD
-    subgraph ArrayList
-        direction LR
-        subgraph "Internal Array (capacity=10)"
-            A[0: Elem]
-            B[1: Elem]
-            C[2: Elem]
-            D[3: Elem]
-            E[...]
-        end
+    subgraph "ArrayList Resizing"
+        A["<b>Before Add:</b><br>[A, B, C, D]<br>(size=4, capacity=4)"] -- "add('E')" --> B["<b>After Add:</b><br>[A, B, C, D, E, , , ]<br>(size=5, capacity=8)<br><i>New array created, elements copied.</i>"]
     end
-    note for ArrayList "size = 4, capacity = 10"
 ```
 
 **When to use it:**
@@ -87,26 +83,126 @@ graph TD
 
 ---
 
-## 2. `LinkedList`: The Sequential Chain
+## 3. `LinkedList`: The Sequential Chain
 
 A `LinkedList` stores elements in a chain of nodes. Each node is an object that holds an element and a reference (a pointer) to the next node in the chain.
 
 **How it works:**
-To add an element, you just create a new node and update the pointers. To remove an element, you just "un-link" it by changing the pointers of its neighbors.
+To add or remove an element, you just create a new node and update the pointers of its neighbors. This makes additions and removals in the middle of the list much faster than in an `ArrayList`.
 
 ```mermaid
-graph LR
-    A[Node: Elem1] --> B[Node: Elem2] --> C[Node: Elem3] --> D((null))
+graph TD
+    subgraph "LinkedList Operations"
+        A("Node A") --> B("Node C")
+        A -- "add(B) after A" --> C("Node A") --> D("Node B") --> E("Node C")
+    end
 ```
 
 **When to use it:**
-*   When you frequently add or remove elements from the beginning or middle of the list.
-*   When you don't need fast random access (getting the 1000th element requires traversing 1000 nodes).
-*   When you need the characteristics of a queue or a deque (more on this later).
+*   When you frequently add or remove elements from the beginning, middle, or end of the list.
+*   When you don't need fast random access.
 
 ---
 
-## 3. Your Mission: Count Word Frequencies
+## 4. `Stack`: Last-In, First-Out
+
+A `Stack` is a data structure that follows the **LIFO (Last-In, First-Out)** principle. Think of it as a stack of plates.
+
+**How it works:**
+You `push` elements onto the top of the stack and `pop` them off the top.
+
+```mermaid
+graph TD
+    subgraph "Stack (LIFO)"
+        direction TB
+        Top --> A("Plate C") --> B("Plate B") --> C("Plate A")
+        subgraph "Operations"
+            direction LR
+            Push["push(D)"] -- adds to top --> Top
+            Pop["pop()"] -- removes from top --> Top
+        end
+    end
+```
+
+**When to use it:**
+*   Parsing expressions (e.g., checking for balanced parentheses).
+*   Managing function calls (the "call stack").
+*   Implementing "undo" functionality.
+
+```java
+Stack<String> stack = new Stack<>();
+stack.push("A");
+stack.push("B");
+stack.push("C");
+System.out.println(stack.pop()); // "C"
+```
+
+---
+
+## 5. `Queue`: First-In, First-Out
+
+A `Queue` is a data structure that follows the **FIFO (First-In, First-Out)** principle. Think of it as a checkout line.
+
+**How it works:**
+You `add` (or `offer`) elements to the back of the queue and `remove` (or `poll`) them from the front.
+
+```mermaid
+graph TD
+    subgraph "Queue (FIFO)"
+        direction LR
+        Front --> A("Person A") --> B("Person B") --> C("Person C") --> Back
+        subgraph "Operations"
+            direction TD
+            Enqueue["add(D)"] -- adds to back --> Back
+            Dequeue["remove()"] -- removes from front --> Front
+        end
+    end
+```
+
+**When to use it:**
+*   Processing tasks in the order they were received.
+*   Breadth-first search in graphs and trees.
+*   Managing requests in a web server.
+
+```java
+Queue<String> queue = new LinkedList<>(); // LinkedList implements Queue
+queue.add("A");
+queue.add("B");
+queue.add("C");
+System.out.println(queue.remove()); // "A"
+```
+
+---
+
+## 6. `HashMap`: The Key-Value Store
+
+A `HashMap` is a powerful structure that stores key-value pairs. It uses the `hashCode()` of the key to calculate an index, allowing for incredibly fast lookups.
+
+**How it works:**
+A `HashMap` uses an internal array of "buckets". When you `put(key, value)`, it calculates the key's hash code to determine which bucket to place the entry in. If multiple keys hash to the same bucket (a "collision"), the entries are stored as a linked list within that bucket.
+
+```mermaid
+graph TD
+    subgraph "HashMap with Collision"
+        direction LR
+        subgraph "Internal Array (Buckets)"
+            B0["Bucket 0"]
+            B1["Bucket 1"] --> E1{"key: 'name', hash: 123"}
+            B2["Bucket 2"] --> E2{"key: 'city', hash: 456"}
+            B3["Bucket 3"] --> E3{"key: 'job', hash: 789"}
+            B1 --> E4{"key: 'user', hash: 123"}
+        end
+        note for E4 "<b>Hash Collision!</b><br>Both 'name' and 'user' have hash 123.<br>They are stored in a list/tree in the same bucket."
+    end
+```
+
+**When to use it:**
+*   Anytime you need to associate one piece of data with another.
+*   When you need to look up data by a unique identifier. This is one of the most useful data structures in all of programming.
+
+---
+
+## 7. Your Mission: Count Word Frequencies
 
 The best way to understand data structures is to use them. Your mission is to write a program that counts the frequency of each word in a sentence. This is a classic problem that perfectly demonstrates the power of `HashMap`.
 
@@ -115,10 +211,7 @@ We have created a new project for you in the `code/` directory.
 **Your Mission:**
 
 1.  **Find the Code:** Open the `code/src/main/java/com/tenx/ds/WordFrequency.java` file.
-2.  **Follow the Instructions:** The file contains comments guiding you through the mission. You will need to:
-    *   Split a sentence into a list of words. An `ArrayList` is a good choice here.
-    *   Create a `HashMap` to store the frequency of each word.
-    *   Loop through the words and update their counts in the `HashMap`.
+2.  **Follow the Instructions:** The file contains comments guiding you through the mission.
 3.  **Run Your Code:** Navigate to the `code/` directory in your terminal and run `mvn compile exec:java`.
 4.  **Verify Your Output:** You should see the map of word counts printed to the console.
 
@@ -136,20 +229,12 @@ import java.util.HashMap;
 public class WordFrequency {
     public static void main(String[] args) {
         String sentence = "The quick brown fox jumps over the lazy dog";
-
-        // 1. Split the sentence into a list of words.
         List<String> words = Arrays.asList(sentence.toLowerCase().split(" "));
-
-        // 2. Create a HashMap to store word frequencies.
         Map<String, Integer> wordFrequencies = new HashMap<>();
 
-        // 3. Loop through the list of words and update the count.
         for (String word : words) {
-            int count = wordFrequencies.getOrDefault(word, 0);
-            wordFrequencies.put(word, count + 1);
+            wordFrequencies.put(word, wordFrequencies.getOrDefault(word, 0) + 1);
         }
-
-        // 4. Print out the final frequency map.
         System.out.println("Word Frequencies: " + wordFrequencies);
     }
 }
@@ -158,50 +243,7 @@ public class WordFrequency {
 
 ---
 
-## 3. `HashMap`: The Key-Value Store
-
-A `HashMap` is a powerful structure that stores key-value pairs. It uses the `hashCode()` of the key to calculate an index, allowing for incredibly fast lookups.
-
-**How it works:**
-A `HashMap` uses an internal array of "buckets". When you `put(key, value)`, it calculates the key's hash code to determine which bucket to place the entry in. If multiple keys hash to the same bucket (a "collision"), the entries are stored as a linked list within that bucket. (Since Java 8, these lists are converted to balanced trees if they get too long, further improving performance).
-
-```mermaid
-graph TD
-    subgraph HashMap
-        direction LR
-        subgraph "Internal Array of Buckets"
-            B0[Bucket 0] --> E1("key1, val1") --> E2("keyA, valA")
-            B1[Bucket 1]
-            B2[Bucket 2] --> E3("key2, val2")
-            B3[...]
-        end
-    end
-    note for E2 "Hash Collision!"
-```
-
-**When to use it:**
-*   Anytime you need to associate one piece of data with another.
-*   When you need to look up data by a unique identifier. This is one of the most useful data structures in all of programming.
-
----
-
-### Check Your Understanding
-
-**Question 1:** You are building a playlist for a music app. Users need to be able to quickly jump to any song in the playlist (e.g., play song #1, then song #20). They will rarely add or remove songs from the middle of the playlist. Which data structure is a better choice: `ArrayList` or `LinkedList`?
-<details>
-  <summary>Answer</summary>
-  An **`ArrayList`** is the better choice. Fast index-based access (`get(i)`) is the most important requirement here, which is where `ArrayList` excels (`O(1)`).
-</details>
-
-**Question 2:** You are creating a system to manage customer support tickets. You need to store each ticket with a unique ticket ID (e.g., "TICKET-001"). Your support agents need to be able to retrieve any ticket instantly if they have the ID. What is the best data structure for this?
-<details>
-  <summary>Answer</summary>
-  A **`HashMap`** is perfect for this. You can use the unique ticket ID as the key and the ticket object as the value. This allows for extremely fast lookups (`O(1)`).
-</details>
-
----
-
-## 4. Performance at a Glance: Big-O Notation
+## 8. Performance at a Glance: Big-O Notation
 
 Choosing the right data structure requires understanding its performance characteristics. Big-O notation gives us a standardized way to talk about this.
 
@@ -210,7 +252,7 @@ Choosing the right data structure requires understanding its performance charact
 | **`get(index)`**  | `O(1)`      | `O(n)`       | `N/A`            | `ArrayList` is the clear winner for random access.                 |
 | **`add(element)`**| `O(1)`*     | `O(1)`       | `O(1)`*          | *Amortized constant time. Resizing can take O(n).                  |
 | **`remove(index)`**| `O(n)`      | `O(n)`       | `N/A`            | `remove(element)` is O(n) for both lists.                          |
-| **`contains(element)`**| `O(n)` | `O(n)`       | `O(1)`*          | For `HashMap`, this is `containsKey()`, which is extremely fast.   |
+| **`containsKey(key)`**| `O(n)` | `O(n)`       | `O(1)`*          | This is where `HashMap` shines.   |
 
 **Key Takeaways:**
 *   **Choose the Right Tool:** The data structure you choose has a huge impact on performance.
